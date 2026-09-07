@@ -1,0 +1,93 @@
+/* ============================================
+   BADCOM — VARIABLES.CSS
+   Design Tokens & Custom Properties
+   ============================================ */
+
+:root {
+
+  /* ——— COLOR SYSTEM ——— */
+
+  /* Background */
+  --color-bg:          #031226;
+  --color-bg-dark:     #05070B;
+  --color-bg-mid:      #061A33;
+  --color-bg-card:     #071d3d;
+
+  /* Blues (Badcom primary) */
+  --color-blue:        #1452A4;
+  --color-blue-royal:  #2369C8;
+  --color-blue-light:  #4A91E2;
+  --color-blue-dim:    rgba(20, 82, 164, 0.2);
+  --color-blue-glow:   rgba(74, 145, 226, 0.12);
+
+  /* Gold (accent only) */
+  --color-gold:        #E6C36C;
+  --color-gold-deep:   #B99138;
+  --color-gold-dim:    rgba(230, 195, 108, 0.15);
+
+  /* Neutrals */
+  --color-white:       #F5F7FA;
+  --color-muted:       #98A6B8;
+  --color-muted-dim:   rgba(148, 166, 184, 0.3);
+  --color-black:       #05070B;
+
+  /* ——— TYPOGRAPHY ——— */
+  --font-headline:     'Bebas Neue', 'Anton', 'Impact', sans-serif;
+  --font-body:         'Inter', 'DM Sans', system-ui, sans-serif;
+
+  /* Type scale */
+  --text-xs:    clamp(0.7rem,  1vw,    0.8rem);
+  --text-sm:    clamp(0.8rem,  1.2vw,  0.9rem);
+  --text-base:  clamp(0.9rem,  1.5vw,  1rem);
+  --text-md:    clamp(1rem,    2vw,    1.125rem);
+  --text-lg:    clamp(1.1rem,  2vw,    1.25rem);
+  --text-xl:    clamp(1.25rem, 2.5vw,  1.5rem);
+  --text-2xl:   clamp(1.5rem,  3vw,    2rem);
+  --text-3xl:   clamp(2rem,    4vw,    3rem);
+  --text-4xl:   clamp(3rem,    6vw,    5rem);
+  --text-5xl:   clamp(4rem,    8vw,    7rem);
+  --text-hero:  clamp(5rem,    12vw,   11rem);
+
+  /* ——— SPACING ——— */
+  --space-xs:   0.5rem;
+  --space-sm:   1rem;
+  --space-md:   2rem;
+  --space-lg:   4rem;
+  --space-xl:   8rem;
+  --space-2xl:  12rem;
+
+  /* ——— LAYOUT ——— */
+  --container-width:   1440px;
+  --container-pad:     clamp(1.5rem, 5vw, 6rem);
+  --section-pad:       clamp(5rem, 10vw, 10rem);
+
+  /* ——— BORDERS ——— */
+  --border-thin:       1px solid rgba(148, 166, 184, 0.12);
+  --border-blue:       1px solid rgba(74, 145, 226, 0.25);
+  --border-gold:       1px solid rgba(230, 195, 108, 0.35);
+  --border-white:      1px solid rgba(245, 247, 250, 0.1);
+
+  /* ——— EFFECTS ——— */
+  --glow-blue:         0 0 60px rgba(74, 145, 226, 0.12);
+  --glow-blue-sm:      0 0 30px rgba(74, 145, 226, 0.15);
+  --glow-blue-lg:      0 0 120px rgba(74, 145, 226, 0.2);
+  --glow-gold:         0 0 30px rgba(230, 195, 108, 0.18);
+
+  /* ——— TRANSITIONS ——— */
+  --ease-out:          cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out:       cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast:   0.2s var(--ease-out);
+  --transition-med:    0.4s var(--ease-out);
+  --transition-slow:   0.7s var(--ease-out);
+
+  /* ——— Z-INDEX ——— */
+  --z-base:    1;
+  --z-above:   10;
+  --z-nav:     1000;
+  --z-overlay: 1500;
+  --z-modal:   2000;
+
+  /* ——— PLAYER CARD ——— */
+  --card-ratio: 0.72; /* ~3:4 ish */
+  --card-width: clamp(220px, 25vw, 320px);
+}

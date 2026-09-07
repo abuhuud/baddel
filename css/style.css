@@ -1,0 +1,12 @@
+/* ============================================
+   BADCOM — STYLE.CSS
+   Master CSS Import File
+   ============================================ */
+
+@import url('reset.css');
+@import url('variables.css');
+@import url('typography.css');
+@import url('layout.css');
+@import url('components.css');
+@import url('animations.css');
+@import url('responsive.css');
