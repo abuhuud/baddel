@@ -287,12 +287,7 @@
     setupAvatarDropzone('comm-image-dropzone', 'file-comm-image', 'comm-image-url', 'comm-preview-img');
   }
 
-  function refreshAll() {
-    renderSchedulesTable();
-    renderPlayersTable();
-    renderCommunityTable();
-    initBackupSection();
-  }
+  // refreshAll is defined above (line ~159) — duplicate removed
 
   // ——— Tabs Navigation ———
   function initTabs() {
@@ -532,44 +527,7 @@
     }
   }
 
-  // Classic single file input helper
-  function setupImageFileInput(fileInputId, urlInputId, previewImgId) {
-    const fileInput = document.getElementById(fileInputId);
-    const urlInput = document.getElementById(urlInputId);
-    const previewImg = document.getElementById(previewImgId);
-
-    if (!fileInput) return;
-
-    fileInput.addEventListener('change', function () {
-      const file = this.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        compressImage(e.target.result, 1200, 0.85, function (compressedBase64) {
-          if (urlInput) urlInput.value = compressedBase64;
-          if (previewImg) {
-            previewImg.src = compressedBase64;
-            previewImg.style.display = 'inline-block';
-          }
-        });
-      };
-      reader.readAsDataURL(file);
-    });
-
-    if (urlInput) {
-      urlInput.addEventListener('input', function () {
-        if (previewImg) {
-          if (this.value.trim()) {
-            previewImg.src = this.value.trim();
-            previewImg.style.display = 'inline-block';
-          } else {
-            previewImg.style.display = 'none';
-          }
-        }
-      });
-    }
-  }
+  // setupImageFileInput removed — superseded by setupAvatarDropzone (drag-and-drop + compression)
 
 
   // ============================================

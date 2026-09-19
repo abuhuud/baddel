@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Baddel CMS — Unit Tests</title>
+  <style>
+    :root {
+      --bg: #0a0f1c;
+      --surface: #111827;
+      --border: rgba(255,255,255,0.08);
+      --pass: #34D399;
+      --fail: #F87171;
+      --skip: #FBBF24;
+      --muted: #6B7280;
+      --white: #F9FAFB;
+      --blue: #4A91E2;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      padding: 2rem;
+    }
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--blue);
+      margin-bottom: 0.25rem;
+    }
+    .subtitle { color: var(--muted); margin-bottom: 2rem; font-size: 0.85rem; }
+    #summary {
+      display: flex;
+      gap: 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.5rem;
+      margin-bottom: 2rem;
+      font-weight: 600;
+    }
+    .stat { display: flex; flex-direction: column; }
+    .stat-val { font-size: 1.8rem; line-height: 1; }
+    .stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; text-transform: uppercase; }
+    .pass-val { color: var(--pass); }
+    .fail-val { color: var(--fail); }
+    .skip-val { color: var(--skip); }
+    .suite {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 1.25rem;
+      overflow: hidden;
+    }
+    .suite-header {
+      padding: 0.75rem 1.25rem;
+      font-weight: 700;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--blue);
+      border-bottom: 1px solid var(--border);
+      background: rgba(74,145,226,0.05);
+    }
+    .test-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.55rem 1.25rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.83rem;
+    }
+    .test-row:last-child { border-bottom: none; }
+    .icon { font-size: 0.9rem; flex-shrink: 0; margin-top: 0.1rem; }
+    .icon-pass { color: var(--pass); }
+    .icon-fail { color: var(--fail); }
+    .test-name { flex: 1; color: var(--white); }
+    .test-msg { font-size: 0.78rem; color: var(--fail); margin-top: 0.15rem; }
+    .test-name.failed { color: var(--fail); }
+    #run-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, #4A91E2, #2563EB);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem 1.4rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 1.5rem;
+      transition: opacity 0.2s;
+    }
+    #run-btn:hover { opacity: 0.85; }
+    #run-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+
+  <h1>BADDEL CMS — UNIT TESTS</h1>
+  <p class="subtitle">In-browser test suite for js/data.js · No external dependencies</p>
+
+  <button id="run-btn" onclick="runAll()">Run All Tests</button>
+
+  <div id="summary" style="display:none">
+    <div class="stat"><span class="stat-val pass-val" id="s-pass">0</span><span class="stat-label">Passed</span></div>
+    <div class="stat"><span class="stat-val fail-val" id="s-fail">0</span><span class="stat-label">Failed</span></div>
+    <div class="stat"><span class="stat-val" id="s-total" style="color:var(--white)">0</span><span class="stat-label">Total</span></div>
+    <div class="stat"><span class="stat-val" id="s-time" style="color:var(--muted)">--</span><span class="stat-label">Duration</span></div>
+  </div>
+
+  <div id="results"></div>
+
+  <!-- Load the real BadcomData module under test -->
+  <script src="../js/data.js"></script>
+
+  <script>
+  // ============================================================
+  // Minimal Test Harness
+  // ============================================================
+  var T = {
+    suites: [],
+    currentSuite: null,
+
+    describe: function(name, fn) {
+      var suite = { name: name, tests: [] };
+      this.suites.push(suite);
+      this.currentSuite = suite;
+      fn();
+      this.currentSuite = null;
+    },
+
+    it: function(name, fn) {
+      if (!this.currentSuite) return;
+      this.currentSuite.tests.push({ name: name, fn: fn });
+    },
+
+    assert: function(cond, msg) {
+      if (!cond) throw new Error(msg || 'Assertion failed');
+    },
+
+    assertEqual: function(a, b, msg) {
+      if (a !== b) throw new Error((msg || '') + ' Expected ' + JSON.stringify(b) + ', got ' + JSON.stringify(a));
+    },
+
+    assertIncludes: function(arr, val, msg) {
+      if (!arr.includes(val)) throw new Error((msg || '') + ' Array does not include ' + JSON.stringify(val));
+    },
+
+    assertType: function(val, type, msg) {
+      if (typeof val !== type) throw new Error((msg || '') + ' Expected type ' + type + ', got ' + typeof val);
+    }
+  };
+
+  // ============================================================
+  // TEST SUITES
+  // ============================================================
+
+  T.describe('BadcomData - API Surface', function() {
+    T.it('BadcomData is exposed as a global object', function() {
+      T.assert(typeof window.BadcomData !== 'undefined', 'BadcomData should be a global');
+      T.assertType(window.BadcomData, 'object', 'BadcomData');
+    });
+    T.it('getPlayers() returns an array', function() {
+      T.assert(Array.isArray(window.BadcomData.getPlayers()), 'getPlayers() must return an array');
+    });
+    T.it('getSchedules() returns an array', function() {
+      T.assert(Array.isArray(window.BadcomData.getSchedules()), 'getSchedules() must return an array');
+    });
+    T.it('getCommunityGallery() returns an array', function() {
+      T.assert(Array.isArray(window.BadcomData.getCommunityGallery()), 'getCommunityGallery() must return an array');
+    });
+    T.it('savePlayers is a function', function() {
+      T.assertType(window.BadcomData.savePlayers, 'function');
+    });
+    T.it('saveSchedules is a function', function() {
+      T.assertType(window.BadcomData.saveSchedules, 'function');
+    });
+    T.it('saveCommunityGallery is a function', function() {
+      T.assertType(window.BadcomData.saveCommunityGallery, 'function');
+    });
+    T.it('exportDataJS is a function', function() {
+      T.assertType(window.BadcomData.exportDataJS, 'function');
+    });
+    T.it('getDataHash returns a non-empty string', function() {
+      var hash = window.BadcomData.getDataHash();
+      T.assertType(hash, 'string');
+      T.assert(hash.length > 4, 'Hash should not be empty');
+    });
+  });
+
+  T.describe('BadcomData - Players CRUD', function() {
+    T.it('default players list has >= 10 players', function() {
+      var players = window.BadcomData.getPlayers();
+      T.assert(players.length >= 10, 'Expected >= 10 players, got ' + players.length);
+    });
+    T.it('every player has id, number, name, category', function() {
+      window.BadcomData.getPlayers().forEach(function(p) {
+        T.assert(p.id, 'Player missing id');
+        T.assert(p.number, 'Player ' + p.id + ' missing number');
+        T.assert(p.name, 'Player ' + p.id + ' missing name');
+        T.assertIncludes(['men', 'women'], p.category, 'Player ' + p.id + ' invalid category');
+      });
+    });
+    T.it('every player has a gallery array', function() {
+      window.BadcomData.getPlayers().forEach(function(p) {
+        T.assert(Array.isArray(p.gallery), 'Player ' + p.id + ' gallery must be an array');
+      });
+    });
+    T.it('savePlayers() persists and getPlayers() reflects it', function() {
+      var original = window.BadcomData.getPlayers();
+      var mock = { id: 'test_player_unit', number: '99', name: 'Unit Test Player', category: 'men', instagram: '@unit_test', image: '', gallery: [] };
+      window.BadcomData.savePlayers(original.concat([mock]));
+      var found = window.BadcomData.getPlayers().find(function(p) { return p.id === 'test_player_unit'; });
+      T.assert(found, 'Newly saved player must be retrievable');
+      T.assertEqual(found.name, 'Unit Test Player');
+      window.BadcomData.savePlayers(original);
+    });
+    T.it('savePlayers() with null is a no-op', function() {
+      var before = window.BadcomData.getPlayers().length;
+      window.BadcomData.savePlayers(null);
+      T.assertEqual(window.BadcomData.getPlayers().length, before, 'Null input must not modify player list');
+    });
+    T.it('menPlayers and womenPlayers are correctly split', function() {
+      var all = window.BadcomData.getPlayers();
+      var men = all.filter(function(p) { return p.category === 'men'; });
+      var women = all.filter(function(p) { return p.category === 'women'; });
+      T.assert(men.length > 0, 'Must have male players');
+      T.assert(women.length > 0, 'Must have female players');
+      T.assertEqual(men.length + women.length, all.length, 'men + women must equal total');
+    });
+  });
+
+  T.describe('BadcomData - Schedules CRUD', function() {
+    T.it('default schedules list is non-empty', function() {
+      T.assert(window.BadcomData.getSchedules().length > 0, 'Must have at least one default schedule');
+    });
+    T.it('every schedule has id, title, valid sport, valid eventStatus', function() {
+      window.BadcomData.getSchedules().forEach(function(s) {
+        T.assert(s.id, 'Schedule missing id');
+        T.assert(s.title, 'Schedule ' + s.id + ' missing title');
+        T.assertIncludes(['badminton', 'padel'], s.sport, 'Schedule ' + s.id + ' invalid sport');
+        T.assertIncludes(['upcoming', 'completed'], s.eventStatus, 'Schedule ' + s.id + ' invalid eventStatus: ' + s.eventStatus);
+      });
+    });
+    T.it('saveSchedules() persists and getSchedules() reflects it', function() {
+      var original = window.BadcomData.getSchedules();
+      var mock = { id: 'sch_unit_test', title: 'UNIT TEST SESSION', sport: 'badminton', isoDate: '2099-01-01', dateFormatted: 'Rabu, 1 Januari 2099', date: '1 Jan 2099', time: '09:00 - 11:00 WIB', venue: 'Test Venue', courtNames: 'Court 1', fee: 'Rp 10.000 / orang', status: 'open', eventStatus: 'upcoming', slotsLeft: 5, totalSlots: 10, notes: 'Unit test' };
+      window.BadcomData.saveSchedules(original.concat([mock]));
+      var found = window.BadcomData.getSchedules().find(function(s) { return s.id === 'sch_unit_test'; });
+      T.assert(found, 'Newly saved schedule must be retrievable');
+      T.assertEqual(found.eventStatus, 'upcoming');
+      window.BadcomData.saveSchedules(original);
+    });
+    T.it('normalizeSchedule coerces invalid eventStatus to "upcoming"', function() {
+      var original = window.BadcomData.getSchedules();
+      window.BadcomData.saveSchedules([{ id: 'sch_bad', title: 'Bad Status', sport: 'padel', isoDate: '2099-05-05', dateFormatted: 'X', date: 'X', time: '10:00 - 12:00 WIB', venue: 'Arena', fee: 'Gratis', status: 'open', eventStatus: 'INVALID', slotsLeft: 3, totalSlots: 8, notes: 'Test' }]);
+      var saved = window.BadcomData.getSchedules();
+      T.assertEqual(saved[0].eventStatus, 'upcoming', 'Invalid eventStatus must be coerced to "upcoming"');
+      window.BadcomData.saveSchedules(original);
+    });
+    T.it('past isoDate without eventStatus gets normalized to "completed"', function() {
+      var original = window.BadcomData.getSchedules();
+      window.BadcomData.saveSchedules([{ id: 'sch_past', title: 'Past Session', sport: 'badminton', isoDate: '2020-01-15', dateFormatted: 'Rabu, 15 Jan 2020', date: '15 Jan 2020', time: '19:00 - 21:00 WIB', venue: 'Old Venue', fee: 'Rp 30.000 / orang', status: 'full', slotsLeft: 0, totalSlots: 12, notes: 'Old' }]);
+      var saved = window.BadcomData.getSchedules();
+      T.assertEqual(saved[0].eventStatus, 'completed', 'Past isoDate must resolve to "completed"');
+      window.BadcomData.saveSchedules(original);
+    });
+    T.it('saveSchedules() with non-array string is a no-op', function() {
+      var before = window.BadcomData.getSchedules().length;
+      window.BadcomData.saveSchedules('not-an-array');
+      T.assertEqual(window.BadcomData.getSchedules().length, before, 'Non-array must not modify schedules');
+    });
+  });
+
+  T.describe('BadcomData - Community Gallery CRUD', function() {
+    T.it('default gallery is non-empty', function() {
+      T.assert(window.BadcomData.getCommunityGallery().length > 0, 'Must have at least one default gallery item');
+    });
+    T.it('every gallery item has id, image, title, subtitle, tag', function() {
+      window.BadcomData.getCommunityGallery().forEach(function(item) {
+        T.assert(item.id, 'Gallery item missing id');
+        T.assert(item.image, 'Gallery item ' + item.id + ' missing image');
+        T.assert(item.title, 'Gallery item ' + item.id + ' missing title');
+        T.assert(item.subtitle, 'Gallery item ' + item.id + ' missing subtitle');
+        T.assert(item.tag, 'Gallery item ' + item.id + ' missing tag');
+      });
+    });
+    T.it('saveCommunityGallery() persists and getCommunityGallery() reflects it', function() {
+      var original = window.BadcomData.getCommunityGallery();
+      var mock = { id: 'cg_unit_test', image: 'assets/images/gallery/1.JPG', title: 'UNIT TEST MOMENT', subtitle: 'TEST ARENA - 2026', tag: 'TEST' };
+      window.BadcomData.saveCommunityGallery(original.concat([mock]));
+      var found = window.BadcomData.getCommunityGallery().find(function(c) { return c.id === 'cg_unit_test'; });
+      T.assert(found, 'Newly saved gallery item must be retrievable');
+      T.assertEqual(found.title, 'UNIT TEST MOMENT');
+      window.BadcomData.saveCommunityGallery(original);
+    });
+    T.it('saveCommunityGallery() with undefined is a no-op', function() {
+      var before = window.BadcomData.getCommunityGallery().length;
+      window.BadcomData.saveCommunityGallery(undefined);
+      T.assertEqual(window.BadcomData.getCommunityGallery().length, before, 'Undefined must not modify gallery');
+    });
+  });
+
+  T.describe('BadcomData - exportDataJS()', function() {
+    T.it('returns valid JSON string', function() {
+      var result = window.BadcomData.exportDataJS();
+      T.assertType(result, 'string', 'exportDataJS must return a string');
+      var parsed;
+      try { parsed = JSON.parse(result); } catch(e) { throw new Error('Not valid JSON: ' + e.message); }
+      T.assert(parsed, 'Parsed JSON must be truthy');
+    });
+    T.it('has version, menPlayers, womenPlayers, schedules, communityGallery keys', function() {
+      var parsed = JSON.parse(window.BadcomData.exportDataJS());
+      T.assert(parsed.version, 'Must have version');
+      T.assert(Array.isArray(parsed.menPlayers), 'Must have menPlayers array');
+      T.assert(Array.isArray(parsed.womenPlayers), 'Must have womenPlayers array');
+      T.assert(Array.isArray(parsed.schedules), 'Must have schedules array');
+      T.assert(Array.isArray(parsed.communityGallery), 'Must have communityGallery array');
+    });
+  });
+
+  T.describe('BadcomData - Hash Cache Invalidation', function() {
+    T.it('getDataHash() starts with "baddel_"', function() {
+      var hash = window.BadcomData.getDataHash();
+      T.assert(hash.startsWith('baddel_'), 'Hash should start with "baddel_", got: ' + hash);
+    });
+    T.it('getDataHash() is deterministic on repeated calls', function() {
+      T.assertEqual(window.BadcomData.getDataHash(), window.BadcomData.getDataHash(), 'Hash must be deterministic');
+    });
+  });
+
+  T.describe('BadcomData - Legacy Export Props', function() {
+    T.it('BadcomData.menPlayers is a non-empty array', function() {
+      T.assert(Array.isArray(window.BadcomData.menPlayers) && window.BadcomData.menPlayers.length > 0, 'menPlayers must be non-empty array');
+    });
+    T.it('BadcomData.womenPlayers is a non-empty array', function() {
+      T.assert(Array.isArray(window.BadcomData.womenPlayers) && window.BadcomData.womenPlayers.length > 0, 'womenPlayers must be non-empty array');
+    });
+    T.it('BadcomData.schedules is a non-empty array', function() {
+      T.assert(Array.isArray(window.BadcomData.schedules) && window.BadcomData.schedules.length > 0, 'schedules must be non-empty array');
+    });
+    T.it('BadcomData.communityGallery is a non-empty array', function() {
+      T.assert(Array.isArray(window.BadcomData.communityGallery) && window.BadcomData.communityGallery.length > 0, 'communityGallery must be non-empty array');
+    });
+    T.it('BadcomData.social has instagram and whatsapp', function() {
+      var s = window.BadcomData.social;
+      T.assert(s && s.instagram, 'Must have social.instagram');
+      T.assert(s && s.whatsapp, 'Must have social.whatsapp');
+    });
+    T.it('BadcomData.community has name and tagline', function() {
+      var c = window.BadcomData.community;
+      T.assert(c && c.name, 'Must have community.name');
+      T.assert(c && Array.isArray(c.tagline), 'Must have community.tagline as array');
+    });
+  });
+
+  // ============================================================
+  // Run Engine
+  // ============================================================
+  async function runAll() {
+    var btn = document.getElementById('run-btn');
+    btn.disabled = true;
+    btn.textContent = 'Running...';
+    var resultsEl = document.getElementById('results');
+    resultsEl.innerHTML = '';
+    var totalPass = 0, totalFail = 0;
+    var start = performance.now();
+
+    for (var si = 0; si < T.suites.length; si++) {
+      var suite = T.suites[si];
+      var suiteEl = document.createElement('div');
+      suiteEl.className = 'suite';
+      suiteEl.innerHTML = '<div class="suite-header">' + escHtml(suite.name) + '</div>';
+
+      for (var ti = 0; ti < suite.tests.length; ti++) {
+        var test = suite.tests[ti];
+        var status = 'pass', errMsg = '';
+        try {
+          var result = test.fn();
+          if (result && typeof result.then === 'function') await result;
+        } catch(e) {
+          status = 'fail';
+          errMsg = e.message;
+        }
+        if (status === 'pass') totalPass++; else totalFail++;
+
+        var row = document.createElement('div');
+        row.className = 'test-row';
+        row.innerHTML =
+          '<span class="icon icon-' + status + '">' + (status === 'pass' ? '\u2714' : '\u2716') + '</span>' +
+          '<div>' +
+            '<div class="test-name' + (status === 'fail' ? ' failed' : '') + '">' + escHtml(test.name) + '</div>' +
+            (errMsg ? '<div class="test-msg">' + escHtml(errMsg) + '</div>' : '') +
+          '</div>';
+        suiteEl.appendChild(row);
+      }
+      resultsEl.appendChild(suiteEl);
+    }
+
+    var elapsed = (performance.now() - start).toFixed(0);
+    document.getElementById('s-pass').textContent = totalPass;
+    document.getElementById('s-fail').textContent = totalFail;
+    document.getElementById('s-total').textContent = totalPass + totalFail;
+    document.getElementById('s-time').textContent = elapsed + 'ms';
+    document.getElementById('summary').style.display = 'flex';
+    btn.disabled = false;
+    btn.textContent = 'Run All Tests';
+  }
+
+  function escHtml(str) {
+    return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  </script>
+</body>
+</html>
