@@ -16,7 +16,12 @@
 
   // State
   let currentSelectedPlayerId = null;
+  let currentModalEditingMoments = [];
+  let currentQuickGalleryPlayerId = null;
   let isDashboardInitialized = false;
+  let playerSearchQuery = '';
+  let playerDivisionFilter = 'all';
+  let playerGalleryFilter = 'all';
 
   // DOM Elements
   const tabs = document.querySelectorAll('.admin-tab-btn');
@@ -41,6 +46,9 @@
   const modalPlayer = document.getElementById('modal-player');
   const modalPlayerGallery = document.getElementById('modal-player-gallery');
   const modalCommunity = document.getElementById('modal-community');
+  const modalImageLightbox = document.getElementById('modal-image-lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+  const lightboxCaption = document.getElementById('lightbox-caption');
 
   // ——— Cryptographic Hash Helper (Web Crypto API SHA-256) ———
   async function computeHash(message) {
@@ -148,8 +156,8 @@
     initTabs();
     initModals();
     renderSchedulesTable();
+    setupPlayerSearchAndFilters();
     renderPlayersTable();
-    initPlayerGalleryManager();
     renderCommunityTable();
     initBackupSection();
 
@@ -165,30 +173,122 @@
       };
     }
 
-    // Schedule Buttons
+    // Schedule Buttons & Interactive Pickers
+    setupScheduleDateTimePickers();
     document.getElementById('btn-add-schedule').addEventListener('click', () => openScheduleModal());
     document.getElementById('btn-save-schedule').addEventListener('click', saveSchedule);
 
     // Player Buttons
     document.getElementById('btn-add-player').addEventListener('click', () => openPlayerModal());
     document.getElementById('btn-save-player').addEventListener('click', savePlayer);
-    setupImageFileInput('file-player-photo', 'player-photo-url', 'player-preview-img');
+    
+    // Player Avatar Drag & Drop + Input
+    setupAvatarDropzone('player-avatar-dropzone', 'file-player-photo', 'player-photo-url', 'player-preview-img');
 
-    // Player Gallery Buttons
-    document.getElementById('btn-add-player-photo').addEventListener('click', openPlayerGalleryModal);
-    document.getElementById('btn-save-player-moment').addEventListener('click', savePlayerMoment);
-    setupImageFileInput('file-player-moment', 'player-moment-url', 'player-moment-preview');
+    // Player Modal Segmented Tabs Switcher
+    setupPlayerModalTabs();
+
+    // Player Modal Gallery Dropzone (Multi-Upload & Drag and Drop)
+    setupMultiFileDropzone('player-modal-gallery-dropzone', 'file-player-gallery-multi', (newImages) => {
+      currentModalEditingMoments.push(...newImages);
+      renderModalMomentsGrid();
+      showToast(`${newImages.length} foto momen ditambahkan ke antrean simpan!`, 'success');
+    });
+
+    // Player Modal Manual URL Add
+    const btnAddModalUrl = document.getElementById('btn-add-modal-moment-url');
+    const inputModalUrl = document.getElementById('player-modal-moment-url');
+    if (btnAddModalUrl && inputModalUrl) {
+      const handleAddUrl = () => {
+        const val = inputModalUrl.value.trim();
+        if (!val) {
+          showToast('Masukkan link / URL gambar terlebih dahulu.', 'error');
+          return;
+        }
+        currentModalEditingMoments.push(val);
+        inputModalUrl.value = '';
+        renderModalMomentsGrid();
+        showToast('Foto momen via URL berhasil ditambahkan!', 'success');
+      };
+      btnAddModalUrl.addEventListener('click', handleAddUrl);
+      inputModalUrl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleAddUrl();
+        }
+      });
+    }
+
+    // Player Modal Clear All Moments
+    const btnClearAllMoments = document.getElementById('btn-clear-all-modal-moments');
+    if (btnClearAllMoments) {
+      btnClearAllMoments.addEventListener('click', () => {
+        if (confirm('Hapus semua foto momen di galeri pemain ini?')) {
+          currentModalEditingMoments = [];
+          renderModalMomentsGrid();
+          showToast('Semua foto momen di modal dihapus.', 'info');
+        }
+      });
+    }
+
+    // Quick Gallery Modal Dropzone (Direct from Table)
+    setupMultiFileDropzone('quick-gallery-dropzone', 'file-quick-gallery-multi', (newImages) => {
+      if (!currentQuickGalleryPlayerId) return;
+      const players = window.BadcomData.getPlayers();
+      const p = players.find(x => x.id === currentQuickGalleryPlayerId);
+      if (!p) return;
+
+      if (!p.gallery) p.gallery = [];
+      p.gallery.push(...newImages);
+      window.BadcomData.savePlayers(players);
+
+      renderQuickModalMomentsGrid(p);
+      renderPlayersTable();
+      showToast(`${newImages.length} foto momen berhasil diupload ke galeri ${p.name}!`, 'success');
+    });
+
+    // Quick Gallery Manual URL Add
+    const btnQuickAddUrl = document.getElementById('btn-quick-add-url');
+    const inputQuickUrl = document.getElementById('quick-moment-url-input');
+    if (btnQuickAddUrl && inputQuickUrl) {
+      const handleQuickAdd = () => {
+        const val = inputQuickUrl.value.trim();
+        if (!val) {
+          showToast('Masukkan link gambar terlebih dahulu.', 'error');
+          return;
+        }
+        if (!currentQuickGalleryPlayerId) return;
+        const players = window.BadcomData.getPlayers();
+        const p = players.find(x => x.id === currentQuickGalleryPlayerId);
+        if (!p) return;
+
+        if (!p.gallery) p.gallery = [];
+        p.gallery.push(val);
+        window.BadcomData.savePlayers(players);
+
+        inputQuickUrl.value = '';
+        renderQuickModalMomentsGrid(p);
+        renderPlayersTable();
+        showToast('Foto momen berhasil ditambahkan ke galeri!', 'success');
+      };
+      btnQuickAddUrl.addEventListener('click', handleQuickAdd);
+      inputQuickUrl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleQuickAdd();
+        }
+      });
+    }
 
     // Community Gallery Buttons
     document.getElementById('btn-add-community-photo').addEventListener('click', () => openCommunityModal());
     document.getElementById('btn-save-community').addEventListener('click', saveCommunityMoment);
-    setupImageFileInput('file-comm-image', 'comm-image-url', 'comm-preview-img');
+    setupAvatarDropzone('comm-image-dropzone', 'file-comm-image', 'comm-image-url', 'comm-preview-img');
   }
 
   function refreshAll() {
     renderSchedulesTable();
     renderPlayersTable();
-    initPlayerGalleryManager();
     renderCommunityTable();
     initBackupSection();
   }
@@ -222,8 +322,8 @@
       });
     });
 
-    // Close on backdrop
-    [modalSchedule, modalPlayer, modalPlayerGallery, modalCommunity].forEach(modal => {
+    // Close on backdrop click
+    [modalSchedule, modalPlayer, modalPlayerGallery, modalCommunity, modalImageLightbox].forEach(modal => {
       if (!modal) return;
       modal.addEventListener('click', (e) => {
         if (e.target === modal) modal.classList.remove('open');
@@ -240,49 +340,7 @@
     }, 3200);
   }
 
-  // ——— Image File & Base64 Converter ———
-  function setupImageFileInput(fileInputId, urlInputId, previewImgId) {
-    const fileInput = document.getElementById(fileInputId);
-    const urlInput = document.getElementById(urlInputId);
-    const previewImg = document.getElementById(previewImgId);
-
-    if (!fileInput) return;
-
-    fileInput.addEventListener('change', function () {
-      const file = this.files[0];
-      if (!file) return;
-
-      if (file.size > 2 * 1024 * 1024) {
-        showToast('Foto agak besar (>2MB). Sedang dikompresi agar muat di penyimpanan...', 'success');
-      }
-
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        compressImage(e.target.result, 900, 0.85, function (compressedBase64) {
-          if (urlInput) urlInput.value = compressedBase64;
-          if (previewImg) {
-            previewImg.src = compressedBase64;
-            previewImg.style.display = 'inline-block';
-          }
-        });
-      };
-      reader.readAsDataURL(file);
-    });
-
-    if (urlInput) {
-      urlInput.addEventListener('input', function () {
-        if (previewImg) {
-          if (this.value.trim()) {
-            previewImg.src = this.value.trim();
-            previewImg.style.display = 'inline-block';
-          } else {
-            previewImg.style.display = 'none';
-          }
-        }
-      });
-    }
-  }
-
+  // ——— Image Compression & Base64 Converters ———
   function compressImage(base64Src, maxWidth, quality, callback) {
     const img = new Image();
     img.src = base64Src;
@@ -309,6 +367,213 @@
     };
   }
 
+  // Process a batch of files (Multi-file upload & Drag and Drop)
+  function processMultipleImages(fileList, callback) {
+    if (!fileList || fileList.length === 0) return;
+    const files = Array.from(fileList).filter(f => f.type.startsWith('image/'));
+
+    if (files.length === 0) {
+      showToast('File yang dipilih harus berformat gambar (JPG, PNG, WebP).', 'error');
+      return;
+    }
+
+    showToast(`Memproses dan mengompresi ${files.length} foto momen...`, 'info');
+
+    const promises = files.map(file => {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          compressImage(e.target.result, 1200, 0.82, function (compressedBase64) {
+            resolve(compressedBase64);
+          });
+        };
+        reader.onerror = function () {
+          resolve(null);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    Promise.all(promises).then(results => {
+      const validImages = results.filter(Boolean);
+      if (validImages.length > 0 && typeof callback === 'function') {
+        callback(validImages);
+      }
+    });
+  }
+
+  // Setup Drag and Drop Zone for Multi-Image uploads
+  function setupMultiFileDropzone(dropzoneId, fileInputId, onFilesProcessed) {
+    const dropzone = document.getElementById(dropzoneId);
+    const fileInput = document.getElementById(fileInputId);
+    if (!dropzone || !fileInput) return;
+
+    // Click dropzone to open file dialog
+    dropzone.addEventListener('click', (e) => {
+      if (e.target !== fileInput) {
+        fileInput.click();
+      }
+    });
+
+    // Drag-over visual feedback
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.add('is-dragover');
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.remove('is-dragover');
+      }, false);
+    });
+
+    // Handle Drop
+    dropzone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = dt ? dt.files : null;
+      if (files && files.length > 0) {
+        processMultipleImages(files, onFilesProcessed);
+      }
+    }, false);
+
+    // Handle File Input Change
+    fileInput.addEventListener('change', function () {
+      if (this.files && this.files.length > 0) {
+        processMultipleImages(this.files, onFilesProcessed);
+        this.value = ''; // Reset so the same files can be chosen again if needed
+      }
+    });
+  }
+
+  // Setup Avatar Dropzone (Single image)
+  function setupAvatarDropzone(dropzoneId, fileInputId, urlInputId, previewImgId) {
+    const dropzone = document.getElementById(dropzoneId);
+    const fileInput = document.getElementById(fileInputId);
+    const urlInput = document.getElementById(urlInputId);
+    const previewImg = document.getElementById(previewImgId);
+
+    if (!dropzone || !fileInput) return;
+
+    dropzone.addEventListener('click', (e) => {
+      if (e.target !== fileInput) {
+        fileInput.click();
+      }
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.add('is-dragover');
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.remove('is-dragover');
+      }, false);
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = dt ? dt.files : null;
+      if (files && files.length > 0) {
+        const file = files[0];
+        if (!file.type.startsWith('image/')) {
+          showToast('File harus berupa gambar.', 'error');
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = function (evt) {
+          compressImage(evt.target.result, 900, 0.85, function (compressed) {
+            if (urlInput) urlInput.value = compressed;
+            if (previewImg) {
+              previewImg.src = compressed;
+              previewImg.style.display = 'inline-block';
+            }
+            showToast('Foto profil utama berhasil dimuat!', 'success');
+          });
+        };
+        reader.readAsDataURL(file);
+      }
+    }, false);
+
+    fileInput.addEventListener('change', function () {
+      const file = this.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (evt) {
+        compressImage(evt.target.result, 900, 0.85, function (compressed) {
+          if (urlInput) urlInput.value = compressed;
+          if (previewImg) {
+            previewImg.src = compressed;
+            previewImg.style.display = 'inline-block';
+          }
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+
+    if (urlInput) {
+      urlInput.addEventListener('input', function () {
+        if (previewImg) {
+          if (this.value.trim()) {
+            previewImg.src = this.value.trim();
+            previewImg.style.display = 'inline-block';
+          } else {
+            previewImg.style.display = 'none';
+          }
+        }
+      });
+    }
+  }
+
+  // Classic single file input helper
+  function setupImageFileInput(fileInputId, urlInputId, previewImgId) {
+    const fileInput = document.getElementById(fileInputId);
+    const urlInput = document.getElementById(urlInputId);
+    const previewImg = document.getElementById(previewImgId);
+
+    if (!fileInput) return;
+
+    fileInput.addEventListener('change', function () {
+      const file = this.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        compressImage(e.target.result, 1200, 0.85, function (compressedBase64) {
+          if (urlInput) urlInput.value = compressedBase64;
+          if (previewImg) {
+            previewImg.src = compressedBase64;
+            previewImg.style.display = 'inline-block';
+          }
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+
+    if (urlInput) {
+      urlInput.addEventListener('input', function () {
+        if (previewImg) {
+          if (this.value.trim()) {
+            previewImg.src = this.value.trim();
+            previewImg.style.display = 'inline-block';
+          } else {
+            previewImg.style.display = 'none';
+          }
+        }
+      });
+    }
+  }
+
 
   // ============================================
   // TAB 1: SCHEDULES MANAGEMENT
@@ -318,7 +583,65 @@
     const tbody = document.getElementById('table-schedules-body');
     if (!tbody) return;
 
-    const schedules = window.BadcomData.getSchedules();
+    const raw = window.BadcomData.getSchedules();
+
+    // Sort by nearest date first (upcoming closest date first, then past dates)
+    const ADMIN_MON = {
+      jan:0,feb:1,mar:2,apr:3,mei:4,may:4,
+      jun:5,jul:6,agu:7,aug:7,sep:8,okt:9,oct:9,nov:10,des:11,dec:11
+    };
+    function adminParseDate(item) {
+      if (!item) return null;
+      if (item.isoDate && /^\d{4}-\d{2}-\d{2}$/.test(item.isoDate)) {
+        return new Date(item.isoDate + 'T00:00:00');
+      }
+      const s = (item.dateFormatted || item.date || '').replace(/^[^,]+,\s*/, '').trim();
+      if (!s) return null;
+
+      // Check YYYY-MM-DD
+      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+        return new Date(s + 'T00:00:00');
+      }
+
+      // Check DD/MM/YYYY or DD-MM-YYYY
+      const dmy = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+      if (dmy) {
+        return new Date(parseInt(dmy[3], 10), parseInt(dmy[2], 10) - 1, parseInt(dmy[1], 10));
+      }
+
+      // Check e.g. "20 September 2026"
+      const p = s.split(/\s+/);
+      if (p.length >= 3) {
+        const d = parseInt(p[0], 10);
+        const m = ADMIN_MON[(p[1] || '').toLowerCase().slice(0, 3)];
+        const y = parseInt(p[2], 10);
+        if (!isNaN(d) && m !== undefined && !isNaN(y)) return new Date(y, m, d);
+      }
+
+      const parsed = Date.parse(s);
+      if (!isNaN(parsed)) return new Date(parsed);
+
+      return null;
+    }
+
+    const todayDate = new Date();
+    todayDate.setHours(0, 0, 0, 0);
+
+    const schedules = raw.slice().sort((a, b) => {
+      const da = adminParseDate(a), db = adminParseDate(b);
+      if (da && db) {
+        const aUpcoming = da >= todayDate;
+        const bUpcoming = db >= todayDate;
+        if (aUpcoming && !bUpcoming) return -1;
+        if (!aUpcoming && bUpcoming) return 1;
+        if (aUpcoming) return da - db; // upcoming closest first
+        return db - da; // past closest to today first
+      }
+      if (da) return -1;
+      if (db) return 1;
+      return 0;
+    });
+
     if (schedules.length === 0) {
       tbody.innerHTML = `
         <tr>
@@ -339,6 +662,8 @@
         ? `<span class="schedule-status-badge status-full">Full Booked</span>`
         : `<span class="schedule-status-badge status-open">${item.slotsLeft || 0} Tersedia</span>`;
 
+      const courtStr = item.courtNames || item.court || '';
+
       return `
         <tr>
           <td style="font-weight:600; color:var(--color-white);">${escapeHTML(item.title)}</td>
@@ -347,7 +672,19 @@
             <div>${escapeHTML(item.dateFormatted || item.date)}</div>
             <div style="font-size:0.75rem; color:var(--color-muted);">${escapeHTML(item.time)}</div>
           </td>
-          <td>${escapeHTML(item.venue)}</td>
+          <td>
+            <div style="font-weight:600; color:var(--color-white);">${escapeHTML(item.venue)}</div>
+            ${courtStr ? `
+              <div style="display:inline-flex; align-items:center; gap:0.25rem; margin-top:0.25rem; font-size:0.75rem; color:var(--color-gold); background:rgba(230,195,108,0.1); border:1px solid rgba(230,195,108,0.3); border-radius:4px; padding:0.1rem 0.45rem;">
+                <i class="fas fa-square-check" style="font-size:0.7rem;"></i> ${escapeHTML(courtStr)}
+              </div>
+            ` : ''}
+            <div>
+              <a href="${escapeHTML(item.mapsUrl || item.locationUrl || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(item.venue)))}" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:0.3rem; margin-top:0.25rem; font-size:0.75rem; color:var(--color-gold); text-decoration:none;" title="Buka Petunjuk di Google Maps">
+                <i class="fas fa-location-arrow"></i> Petunjuk GMaps ↗
+              </a>
+            </div>
+          </td>
           <td><span style="color:var(--color-gold); font-weight:600;">${escapeHTML(item.fee || '-')}</span></td>
           <td>${statusBadge}</td>
           <td style="text-align:right; white-space:nowrap;">
@@ -372,10 +709,123 @@
     });
   }
 
+  // ——— Date & Time Picker Helpers for Schedule ———
+  function formatIndonesianDate(isoString) {
+    if (!isoString) return '';
+    const parts = isoString.split('-').map(Number);
+    if (parts.length < 3 || isNaN(parts[0])) return '';
+    const dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    return days[dateObj.getDay()] + ', ' + parts[2] + ' ' + months[dateObj.getMonth()] + ' ' + parts[0];
+  }
+
+  function formatRupiah(num, unit = '/ orang') {
+    const val = parseInt(num, 10);
+    if (isNaN(val) || val <= 0) return 'Gratis';
+    return 'Rp ' + val.toLocaleString('id-ID') + ' ' + unit;
+  }
+
+  function parseRupiahDigits(str) {
+    if (!str) return 0;
+    const digits = String(str).replace(/\D/g, '');
+    return parseInt(digits, 10) || 0;
+  }
+
+  function setupScheduleDateTimePickers() {
+    const datePicker = document.getElementById('sched-date-picker');
+    const dateInput = document.getElementById('sched-date');
+    const timeStart = document.getElementById('sched-time-start');
+    const timeEnd = document.getElementById('sched-time-end');
+    const timeInput = document.getElementById('sched-time');
+    const feeAmount = document.getElementById('sched-fee-amount');
+    const feeUnit = document.getElementById('sched-fee-unit');
+    const feeInput = document.getElementById('sched-fee');
+
+    if (datePicker && dateInput) {
+      datePicker.addEventListener('change', function () {
+        if (this.value) {
+          dateInput.value = formatIndonesianDate(this.value);
+        }
+      });
+    }
+
+    function updateTime() {
+      if (timeStart && timeEnd && timeInput) {
+        const s = timeStart.value || '19:00';
+        const e = timeEnd.value || '21:00';
+        timeInput.value = `${s} - ${e} WIB`;
+      }
+    }
+
+    if (timeStart && timeEnd) {
+      timeStart.addEventListener('input', updateTime);
+      timeStart.addEventListener('change', updateTime);
+      timeEnd.addEventListener('input', updateTime);
+      timeEnd.addEventListener('change', updateTime);
+    }
+
+    function updateFee() {
+      if (feeAmount && feeInput) {
+        const raw = feeAmount.value.trim();
+        if (raw === '') {
+          feeInput.value = '';
+          return;
+        }
+        const unit = feeUnit ? feeUnit.value : '/ orang';
+        feeInput.value = formatRupiah(raw, unit);
+      }
+    }
+
+    if (feeAmount) {
+      feeAmount.addEventListener('input', updateFee);
+      feeAmount.addEventListener('change', updateFee);
+    }
+    if (feeUnit) {
+      feeUnit.addEventListener('change', updateFee);
+    }
+
+    // Google Maps preview helper
+    const venueInput = document.getElementById('sched-venue');
+    const mapsUrlInput = document.getElementById('sched-maps-url');
+    const btnPreviewMaps = document.getElementById('btn-preview-maps');
+
+    function updateMapsPreview() {
+      if (!btnPreviewMaps) return;
+      const customUrl = mapsUrlInput ? mapsUrlInput.value.trim() : '';
+      const venue = venueInput ? venueInput.value.trim() : '';
+      if (customUrl) {
+        btnPreviewMaps.href = customUrl;
+      } else if (venue) {
+        btnPreviewMaps.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(venue);
+      } else {
+        btnPreviewMaps.href = 'https://maps.google.com';
+      }
+    }
+
+    if (mapsUrlInput) {
+      mapsUrlInput.addEventListener('input', updateMapsPreview);
+    }
+    if (venueInput) {
+      venueInput.addEventListener('input', updateMapsPreview);
+    }
+  }
+
   function openScheduleModal(id = null) {
     const isEdit = Boolean(id);
     document.getElementById('modal-schedule-title').textContent = isEdit ? 'Edit Jadwal Main' : 'Tambah Jadwal Main Baru';
     document.getElementById('sched-id').value = id || '';
+
+    const datePicker = document.getElementById('sched-date-picker');
+    const dateInput = document.getElementById('sched-date');
+    const timeStart = document.getElementById('sched-time-start');
+    const timeEnd = document.getElementById('sched-time-end');
+    const timeInput = document.getElementById('sched-time');
+    const feeAmount = document.getElementById('sched-fee-amount');
+    const feeUnit = document.getElementById('sched-fee-unit');
+    const feeInput = document.getElementById('sched-fee');
+    const mapsUrlInput = document.getElementById('sched-maps-url');
+    const btnPreviewMaps = document.getElementById('btn-preview-maps');
 
     if (isEdit) {
       const schedules = window.BadcomData.getSchedules();
@@ -384,22 +834,84 @@
         document.getElementById('sched-title').value = sched.title || '';
         document.getElementById('sched-sport').value = sched.sport || 'badminton';
         document.getElementById('sched-status').value = sched.status || 'open';
-        document.getElementById('sched-date').value = sched.dateFormatted || sched.date || '';
-        document.getElementById('sched-time').value = sched.time || '';
+        if (dateInput) dateInput.value = sched.dateFormatted || sched.date || '';
+        if (timeInput) timeInput.value = sched.time || '19:00 - 21:00 WIB';
         document.getElementById('sched-venue').value = sched.venue || '';
-        document.getElementById('sched-fee').value = sched.fee || '';
+        // Populate court field
+        const courtCountInput = document.getElementById('sched-court-count');
+        const courtNamesInput = document.getElementById('sched-court-names');
+        const savedNames = sched.courtNames || sched.court || '';
+        if (courtCountInput) courtCountInput.value = '';
+        if (courtNamesInput) courtNamesInput.value = savedNames;
+        
+        // Populate maps URL and preview
+        const mapsHref = sched.mapsUrl || sched.locationUrl || '';
+        if (mapsUrlInput) mapsUrlInput.value = mapsHref;
+        if (btnPreviewMaps) {
+          btnPreviewMaps.href = mapsHref || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(sched.venue || 'Jakarta'));
+        }
+
+        // Populate fee amount and format
+        const rawDigits = parseRupiahDigits(sched.fee);
+        if (feeAmount) feeAmount.value = rawDigits > 0 ? rawDigits : '';
+        if (feeUnit && sched.fee) {
+          if (sched.fee.includes('/ sesi')) feeUnit.value = '/ sesi';
+          else if (sched.fee.includes('/ tim')) feeUnit.value = '/ tim';
+          else feeUnit.value = '/ orang';
+        }
+        if (feeInput) feeInput.value = sched.fee || (rawDigits > 0 ? formatRupiah(rawDigits, feeUnit ? feeUnit.value : '/ orang') : 'Rp 65.000 / orang');
+
         document.getElementById('sched-slots').value = sched.slotsLeft != null ? sched.slotsLeft : 4;
         document.getElementById('sched-total-slots').value = sched.totalSlots || 12;
         document.getElementById('sched-notes').value = sched.notes || '';
+
+        // If sched.isoDate exists, set datePicker
+        if (sched.isoDate && datePicker) {
+          datePicker.value = sched.isoDate;
+        } else if (datePicker) {
+          datePicker.value = '';
+        }
+
+        // Try to parse time into timeStart and timeEnd
+        if (sched.time && timeStart && timeEnd) {
+          const m = sched.time.match(/(\d{1,2}:\d{2})\s*[-–]\s*(\d{1,2}:\d{2})/);
+          if (m) {
+            timeStart.value = m[1].padStart(5, '0');
+            timeEnd.value = m[2].padStart(5, '0');
+          }
+        }
       }
     } else {
       document.getElementById('sched-title').value = '';
       document.getElementById('sched-sport').value = 'badminton';
       document.getElementById('sched-status').value = 'open';
-      document.getElementById('sched-date').value = '';
-      document.getElementById('sched-time').value = '19:00 - 22:00 WIB';
+
+      // Set tomorrow's date by default
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const yyyy = tomorrow.getFullYear();
+      const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+      const dd = String(tomorrow.getDate()).padStart(2, '0');
+      const isoTomorrow = `${yyyy}-${mm}-${dd}`;
+      if (datePicker) datePicker.value = isoTomorrow;
+      if (dateInput) dateInput.value = formatIndonesianDate(isoTomorrow);
+
+      if (timeStart) timeStart.value = '19:00';
+      if (timeEnd) timeEnd.value = '21:00';
+      if (timeInput) timeInput.value = '19:00 - 21:00 WIB';
+
       document.getElementById('sched-venue').value = 'Royal Sports Arena, Jakarta';
-      document.getElementById('sched-fee').value = 'Rp 65.000 / orang';
+      const courtNamesNew = document.getElementById('sched-court-names');
+      if (courtNamesNew) courtNamesNew.value = 'Court 1, Court 2';
+      
+      if (mapsUrlInput) mapsUrlInput.value = 'https://maps.google.com/?q=Royal+Sports+Arena+Jakarta';
+      if (btnPreviewMaps) btnPreviewMaps.href = 'https://maps.google.com/?q=Royal+Sports+Arena+Jakarta';
+
+      // Default fee
+      if (feeAmount) feeAmount.value = '65000';
+      if (feeUnit) feeUnit.value = '/ orang';
+      if (feeInput) feeInput.value = 'Rp 65.000 / orang';
+
       document.getElementById('sched-slots').value = '6';
       document.getElementById('sched-total-slots').value = '12';
       document.getElementById('sched-notes').value = 'Wajib sepatu non-marking. Kok disediakan panitia.';
@@ -413,10 +925,41 @@
     const title = document.getElementById('sched-title').value.trim();
     const sport = document.getElementById('sched-sport').value;
     const status = document.getElementById('sched-status').value;
-    const date = document.getElementById('sched-date').value.trim();
-    const time = document.getElementById('sched-time').value.trim();
+    const datePicker = document.getElementById('sched-date-picker');
+    // sched-date is now hidden — populated by admin.js event listener on datePicker
+    let date = document.getElementById('sched-date').value.trim();
+    // Fallback: if hidden field still empty, format from datePicker value
+    if (!date && datePicker && datePicker.value) {
+      date = formatIndonesianDate(datePicker.value);
+    }
+    // sched-time is now hidden — populated by admin.js event listener on time pickers
+    let time = document.getElementById('sched-time').value.trim();
+    if (!time) {
+      const ts = document.getElementById('sched-time-start');
+      const te = document.getElementById('sched-time-end');
+      if (ts && te && ts.value && te.value) {
+        time = ts.value + ' - ' + te.value + ' WIB';
+      }
+    }
     const venue = document.getElementById('sched-venue').value.trim();
-    const fee = document.getElementById('sched-fee').value.trim();
+    const mapsUrlInput = document.getElementById('sched-maps-url');
+    let mapsUrl = mapsUrlInput ? mapsUrlInput.value.trim() : '';
+    if (!mapsUrl && venue) {
+      mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(venue);
+    }
+
+    // Build fee from amount + unit directly (sched-fee is now hidden auto-preview)
+    const feeAmount = document.getElementById('sched-fee-amount');
+    const feeUnit = document.getElementById('sched-fee-unit');
+    let fee = '';
+    if (feeAmount && feeAmount.value) {
+      fee = formatRupiah(feeAmount.value, feeUnit ? feeUnit.value : '/ orang');
+    }
+    // Update hidden sched-fee so data layer can read it too
+    const feeHidden = document.getElementById('sched-fee');
+    if (feeHidden) feeHidden.value = fee || 'Rp 50.000 / orang';
+    if (!fee) fee = 'Rp 50.000 / orang';
+
     const slotsLeft = parseInt(document.getElementById('sched-slots').value) || 0;
     const totalSlots = parseInt(document.getElementById('sched-total-slots').value) || 12;
     const notes = document.getElementById('sched-notes').value.trim();
@@ -434,10 +977,15 @@
       title,
       sport,
       status: slotsLeft === 0 ? 'full' : status,
+      isoDate: (datePicker && datePicker.value) || '',
       dateFormatted: date,
       date,
       time,
       venue,
+      courtNames: (document.getElementById('sched-court-names') ? document.getElementById('sched-court-names').value.trim() : ''),
+      court: (document.getElementById('sched-court-names') ? document.getElementById('sched-court-names').value.trim() : ''),
+      mapsUrl,
+      locationUrl: mapsUrl,
       fee,
       slotsLeft,
       totalSlots,
@@ -466,40 +1014,202 @@
 
 
   // ============================================
-  // TAB 2: PLAYERS MANAGEMENT
+  // TAB 2: PLAYERS MANAGEMENT (Search & Filters)
   // ============================================
+
+  function openImageLightbox(src, title) {
+    if (!modalImageLightbox || !src) return;
+    if (lightboxImg) lightboxImg.src = src;
+    if (lightboxCaption) lightboxCaption.textContent = title || 'Preview Foto';
+    modalImageLightbox.classList.add('open');
+  }
+
+  function setupPlayerSearchAndFilters() {
+    const searchInput = document.getElementById('search-player-input');
+    const clearBtn = document.getElementById('btn-clear-player-search');
+    const divSelect = document.getElementById('filter-player-division');
+    const galSelect = document.getElementById('filter-player-gallery');
+
+    if (searchInput) {
+      searchInput.addEventListener('input', function () {
+        playerSearchQuery = this.value.trim().toLowerCase();
+        if (clearBtn) {
+          clearBtn.style.display = playerSearchQuery ? 'flex' : 'none';
+        }
+        renderPlayersTable();
+      });
+    }
+
+    if (clearBtn) {
+      clearBtn.addEventListener('click', function () {
+        if (searchInput) searchInput.value = '';
+        playerSearchQuery = '';
+        clearBtn.style.display = 'none';
+        renderPlayersTable();
+        if (searchInput) searchInput.focus();
+      });
+    }
+
+    if (divSelect) {
+      divSelect.addEventListener('change', function () {
+        playerDivisionFilter = this.value;
+        renderPlayersTable();
+      });
+    }
+
+    if (galSelect) {
+      galSelect.addEventListener('change', function () {
+        playerGalleryFilter = this.value;
+        renderPlayersTable();
+      });
+    }
+  }
+
+  // Setup Segmented Tabs Switcher inside Player Modal
+  function setupPlayerModalTabs() {
+    document.querySelectorAll('.admin-modal-tab-btn[data-modaltab]').forEach(btn => {
+      btn.addEventListener('click', function () {
+        const targetId = this.getAttribute('data-modaltab');
+        document.querySelectorAll('.admin-modal-tab-btn').forEach(b => b.classList.toggle('active', b === this));
+        document.querySelectorAll('.admin-modal-pane').forEach(p => p.classList.toggle('active', p.id === targetId));
+      });
+    });
+  }
 
   function renderPlayersTable() {
     const tbody = document.getElementById('table-players-body');
     if (!tbody) return;
 
-    const players = window.BadcomData.getPlayers();
-    tbody.innerHTML = players.map(player => {
+    const allPlayers = window.BadcomData.getPlayers();
+    const totalCount = allPlayers.length;
+
+    // Filter players according to search query, division, and gallery status
+    const filtered = allPlayers.filter(player => {
+      // Division filter
+      if (playerDivisionFilter !== 'all') {
+        const cat = (player.category || 'men').toLowerCase();
+        if (cat !== playerDivisionFilter) return false;
+      }
+
+      // Gallery status filter
       const momentsCount = (player.gallery && player.gallery.length) || 0;
-      const categoryBadge = player.category === 'women'
-        ? `<span class="schedule-sport-badge badge-padel">Women</span>`
-        : `<span class="schedule-sport-badge badge-badminton">Men</span>`;
+      if (playerGalleryFilter === 'has-photos' && momentsCount === 0) return false;
+      if (playerGalleryFilter === 'empty-photos' && momentsCount > 0) return false;
+
+      // Search keyword
+      if (playerSearchQuery) {
+        const pNum = String(player.number || player.num || '');
+        const pName = String(player.name || '').toLowerCase();
+        const pIg = String(player.instagram || '').toLowerCase();
+        const pCat = String(player.category || '').toLowerCase();
+        const combined = `${pName} ${pNum} #${pNum} ${pIg} ${pCat}`;
+        if (!combined.includes(playerSearchQuery)) return false;
+      }
+
+      return true;
+    });
+
+    // Update count display
+    const countShown = document.getElementById('player-count-shown');
+    const countTotal = document.getElementById('player-count-total');
+    if (countShown) countShown.textContent = filtered.length;
+    if (countTotal) countTotal.textContent = totalCount;
+
+    // Active filter tags indicator
+    const tagsContainer = document.getElementById('player-active-filter-tags');
+    if (tagsContainer) {
+      const activeTags = [];
+      if (playerSearchQuery) {
+        activeTags.push(`Keyword: "${playerSearchQuery}"`);
+      }
+      if (playerDivisionFilter !== 'all') {
+        activeTags.push(`Divisi: ${playerDivisionFilter.toUpperCase()}`);
+      }
+      if (playerGalleryFilter !== 'all') {
+        activeTags.push(playerGalleryFilter === 'has-photos' ? 'Ada Foto Momen' : 'Galeri Kosong');
+      }
+
+      if (activeTags.length > 0) {
+        tagsContainer.innerHTML = activeTags.map(t => `<span class="admin-filter-tag">${escapeHTML(t)}</span>`).join('') +
+          `<button type="button" class="admin-reset-filter-btn" id="btn-reset-player-filters"><i class="fas fa-rotate-left"></i> Reset Filter</button>`;
+        const btnReset = document.getElementById('btn-reset-player-filters');
+        if (btnReset) {
+          btnReset.onclick = () => {
+            playerSearchQuery = '';
+            playerDivisionFilter = 'all';
+            playerGalleryFilter = 'all';
+            const sInp = document.getElementById('search-player-input');
+            const cBtn = document.getElementById('btn-clear-player-search');
+            const dSel = document.getElementById('filter-player-division');
+            const gSel = document.getElementById('filter-player-gallery');
+            if (sInp) sInp.value = '';
+            if (cBtn) cBtn.style.display = 'none';
+            if (dSel) dSel.value = 'all';
+            if (gSel) gSel.value = 'all';
+            renderPlayersTable();
+          };
+        }
+      } else {
+        tagsContainer.innerHTML = '';
+      }
+    }
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" style="text-align:center; padding: 3rem 1rem; color:var(--color-muted);">
+            <i class="fas fa-users-slash" style="font-size:2.2rem; color:rgba(74, 145, 226, 0.35); margin-bottom:0.75rem; display:block;"></i>
+            <strong style="color:var(--color-white); font-size:1rem; display:block; margin-bottom:0.35rem;">Tidak ada pemain yang cocok</strong>
+            <span style="font-size:0.85rem;">Coba sesuaikan kata kunci pencarian atau ganti pilihan filter.</span>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(player => {
+      const pNum = player.number || player.num || '00';
+      const pName = player.name || 'PEMAIN';
+      const momentsCount = (player.gallery && player.gallery.length) || 0;
+      const categoryBadge = (player.category || '').toLowerCase() === 'women'
+        ? `<span class="schedule-sport-badge badge-padel"><i class="fas fa-venus"></i> Women</span>`
+        : `<span class="schedule-sport-badge badge-badminton"><i class="fas fa-mars"></i> Men</span>`;
+      const igClean = (player.instagram || '').replace('@', '');
+
+      const galleryPill = `
+        <button type="button" class="admin-table-gallery-btn ${momentsCount > 0 ? 'has-photos' : ''}" data-manage-gallery="${player.id}" title="Klik untuk kelola galeri foto aksi pemain ini">
+          <i class="fas fa-camera"></i>
+          <span><strong>${momentsCount}</strong> Foto</span>
+          <i class="fas fa-arrow-up-right-from-square" style="font-size:0.65rem; opacity:0.7;"></i>
+        </button>
+      `;
 
       return `
         <tr>
           <td>
-            <img src="${player.image}" alt="${escapeHTML(player.name)}" class="admin-thumb" onerror="this.src='assets/images/players/1.png'">
+            <div class="admin-thumb-wrap" title="Klik untuk perbesar foto" data-preview-img="${player.image || 'assets/images/players/1.png'}" data-preview-title="#${escapeHTML(pNum)} ${escapeHTML(pName)}">
+              <img src="${player.image || 'assets/images/players/1.png'}" alt="${escapeHTML(pName)}" class="admin-thumb" onerror="this.src='assets/images/players/1.png'">
+              <span class="admin-thumb-zoom-icon"><i class="fas fa-magnifying-glass"></i></span>
+            </div>
           </td>
-          <td><strong style="color:var(--color-gold); font-family:var(--font-heading); font-size:1.1rem;">#${escapeHTML(player.num)}</strong></td>
-          <td><strong style="color:var(--color-white);">${escapeHTML(player.name)}</strong></td>
+          <td><strong style="color:var(--color-gold); font-family:var(--font-heading); font-size:1.15rem; letter-spacing:0.04em;">#${escapeHTML(pNum)}</strong></td>
+          <td><strong style="color:var(--color-white); font-size:0.92rem;">${escapeHTML(pName)}</strong></td>
           <td>${categoryBadge}</td>
           <td>
-            ${player.instagram ? `<a href="https://instagram.com/${player.instagram}" target="_blank" style="color:var(--color-blue-light); text-decoration:none;"><i class="fab fa-instagram"></i> @${escapeHTML(player.instagram)}</a>` : '<span style="color:var(--color-muted);">-</span>'}
+            ${igClean ? `<a href="https://instagram.com/${escapeHTML(igClean)}" target="_blank" rel="noopener noreferrer" style="color:var(--color-blue-light); text-decoration:none; font-weight:500;" class="admin-ig-link"><i class="fab fa-instagram"></i> @${escapeHTML(igClean)}</a>` : '<span style="color:var(--color-muted);">-</span>'}
           </td>
           <td>
-            <span class="schedule-status-badge status-open"><i class="fas fa-image"></i> ${momentsCount} Foto</span>
+            ${galleryPill}
           </td>
           <td style="text-align:right; white-space:nowrap;">
-            <button class="admin-btn-action btn-edit-player" data-id="${player.id}">
+            <button class="admin-btn-action btn-edit-player" data-id="${player.id}" title="Edit data profil dan galeri">
               <i class="fas fa-pen"></i> Edit
             </button>
-            <button class="admin-btn-action btn-danger btn-del-player" data-id="${player.id}">
-              <i class="fas fa-trash"></i> Hapus
+            <button class="admin-btn-action btn-gold btn-manage-gallery-player" data-id="${player.id}" title="Kelola foto momen aksi">
+              <i class="fas fa-images"></i> Galeri
+            </button>
+            <button class="admin-btn-action btn-danger btn-del-player" data-id="${player.id}" title="Hapus pemain">
+              <i class="fas fa-trash"></i>
             </button>
           </td>
         </tr>
@@ -513,22 +1223,52 @@
     tbody.querySelectorAll('.btn-del-player').forEach(b => {
       b.addEventListener('click', () => deletePlayer(b.getAttribute('data-id')));
     });
+
+    tbody.querySelectorAll('[data-manage-gallery], .btn-manage-gallery-player').forEach(el => {
+      el.addEventListener('click', () => {
+        const id = el.getAttribute('data-manage-gallery') || el.getAttribute('data-id');
+        openQuickPlayerGalleryModal(id);
+      });
+    });
+
+    tbody.querySelectorAll('.admin-thumb-wrap').forEach(wrap => {
+      wrap.addEventListener('click', () => {
+        const src = wrap.getAttribute('data-preview-img');
+        const title = wrap.getAttribute('data-preview-title');
+        openImageLightbox(src, title);
+      });
+    });
   }
 
+  // ——— Player Edit & Add Modal ———
   function openPlayerModal(id = null) {
     const isEdit = Boolean(id);
-    document.getElementById('modal-player-title').textContent = isEdit ? 'Edit Data Pemain' : 'Tambah Pemain Baru';
+    document.getElementById('modal-player-title').innerHTML = isEdit
+      ? '<i class="fas fa-user-pen" style="color:var(--color-gold); margin-right:0.4rem;"></i> Edit Data &amp; Galeri Pemain'
+      : '<i class="fas fa-user-plus" style="color:var(--color-blue-light); margin-right:0.4rem;"></i> Tambah Pemain Baru';
     document.getElementById('player-id').value = id || '';
+
+    // Reset segmented tabs in modal to profile tab
+    document.querySelectorAll('.admin-modal-tab-btn').forEach(b => {
+      b.classList.toggle('active', b.getAttribute('data-modaltab') === 'tab-modal-profile');
+    });
+    document.querySelectorAll('.admin-modal-pane').forEach(p => {
+      p.classList.toggle('active', p.id === 'tab-modal-profile');
+    });
 
     const preview = document.getElementById('player-preview-img');
     document.getElementById('file-player-photo').value = '';
+    const fileMultiInput = document.getElementById('file-player-gallery-multi');
+    if (fileMultiInput) fileMultiInput.value = '';
+    const momentUrlInput = document.getElementById('player-modal-moment-url');
+    if (momentUrlInput) momentUrlInput.value = '';
 
     if (isEdit) {
       const players = window.BadcomData.getPlayers();
       const p = players.find(item => item.id === id);
       if (p) {
         document.getElementById('player-name').value = p.name || '';
-        document.getElementById('player-num').value = p.num || '';
+        document.getElementById('player-num').value = p.number || p.num || '';
         document.getElementById('player-category').value = p.category || 'men';
         document.getElementById('player-ig').value = p.instagram || '';
         document.getElementById('player-photo-url').value = p.image || '';
@@ -538,6 +1278,9 @@
         } else {
           preview.style.display = 'none';
         }
+
+        // Clone moments array for editing
+        currentModalEditingMoments = Array.isArray(p.gallery) ? [...p.gallery] : [];
       }
     } else {
       document.getElementById('player-name').value = '';
@@ -547,9 +1290,64 @@
       document.getElementById('player-photo-url').value = 'assets/images/players/1.png';
       preview.src = 'assets/images/players/1.png';
       preview.style.display = 'inline-block';
+
+      currentModalEditingMoments = [];
     }
 
+    renderModalMomentsGrid();
     modalPlayer.classList.add('open');
+  }
+
+  function renderModalMomentsGrid() {
+    const grid = document.getElementById('modal-player-moments-grid');
+    const tabCounter = document.getElementById('modal-tab-gallery-count');
+    const sectionCounter = document.getElementById('modal-moments-counter');
+    const btnClearAll = document.getElementById('btn-clear-all-modal-moments');
+
+    const count = currentModalEditingMoments.length;
+    if (tabCounter) tabCounter.textContent = count;
+    if (sectionCounter) sectionCounter.textContent = count;
+    if (btnClearAll) btnClearAll.style.display = count > 0 ? 'inline-flex' : 'none';
+
+    if (!grid) return;
+
+    if (count === 0) {
+      grid.innerHTML = `
+        <div class="admin-modal-moments-empty">
+          <i class="fas fa-images"></i>
+          <p>Belum ada foto momen. Tarik &amp; lepas beberapa file gambar ke area di atas, atau klik kotak untuk memilih foto.</p>
+        </div>
+      `;
+      return;
+    }
+
+    grid.innerHTML = currentModalEditingMoments.map((src, idx) => `
+      <div class="admin-modal-moment-card" data-idx="${idx}">
+        <img src="${src}" alt="Momen #${idx + 1}" class="admin-modal-moment-thumb" onerror="this.src='assets/images/gallery/1.JPG'">
+        <span class="admin-modal-moment-badge">#${idx + 1}</span>
+        <button type="button" class="admin-modal-moment-del" data-del-idx="${idx}" title="Hapus foto ini dari galeri">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    `).join('');
+
+    // Attach delete events
+    grid.querySelectorAll('.admin-modal-moment-del').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = parseInt(btn.getAttribute('data-del-idx'), 10);
+        currentModalEditingMoments.splice(idx, 1);
+        renderModalMomentsGrid();
+      });
+    });
+
+    // Attach click to preview in lightbox
+    grid.querySelectorAll('.admin-modal-moment-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const img = card.querySelector('img');
+        if (img) openImageLightbox(img.src, 'Preview Foto Momen');
+      });
+    });
   }
 
   function savePlayer() {
@@ -568,19 +1366,17 @@
     const players = window.BadcomData.getPlayers();
     const existingIndex = players.findIndex(p => p.id === id);
 
-    let gallery = [];
-    if (existingIndex >= 0 && players[existingIndex].gallery) {
-      gallery = players[existingIndex].gallery;
-    }
-
+    const pNum = String(num).padStart(2, '0');
     const playerData = {
       id,
-      num: String(num).padStart(2, '0'),
+      number: pNum,
+      num: pNum,
       name: name.toUpperCase(),
-      category,
-      instagram,
-      image,
-      gallery
+      category: (category || 'men').toLowerCase(),
+      instagram: instagram || '',
+      image: image,
+      hasImage: Boolean(image),
+      gallery: [...currentModalEditingMoments]
     };
 
     if (existingIndex >= 0) {
@@ -592,8 +1388,7 @@
     window.BadcomData.savePlayers(players);
     modalPlayer.classList.remove('open');
     renderPlayersTable();
-    initPlayerGalleryManager();
-    showToast('Data pemain berhasil disimpan!', 'success');
+    showToast(`Data dan ${playerData.gallery.length} foto momen pemain berhasil disimpan!`, 'success');
   }
 
   function deletePlayer(id) {
@@ -606,132 +1401,111 @@
     const filtered = players.filter(item => item.id !== id);
     window.BadcomData.savePlayers(filtered);
     renderPlayersTable();
-    initPlayerGalleryManager();
     showToast(`Pemain ${p.name} berhasil dihapus.`, 'success');
   }
 
-
-  // ============================================
-  // TAB 3: PLAYER PERSONAL GALLERY
-  // ============================================
-
-  function initPlayerGalleryManager() {
-    const select = document.getElementById('select-gallery-player');
-    if (!select) return;
-
-    const players = window.BadcomData.getPlayers();
-    select.innerHTML = players.map(p => `
-      <option value="${p.id}">#${p.num} ${escapeHTML(p.name)} (${p.category.toUpperCase()}) - ${p.gallery ? p.gallery.length : 0} Foto</option>
-    `).join('');
-
-    if (!currentSelectedPlayerId && players.length > 0) {
-      currentSelectedPlayerId = players[0].id;
-    } else if (players.length > 0 && !players.find(p => p.id === currentSelectedPlayerId)) {
-      currentSelectedPlayerId = players[0].id;
-    }
-
-    if (currentSelectedPlayerId) {
-      select.value = currentSelectedPlayerId;
-      renderPlayerGalleryGrid(currentSelectedPlayerId);
-    }
-
-    select.onchange = function () {
-      currentSelectedPlayerId = this.value;
-      renderPlayerGalleryGrid(currentSelectedPlayerId);
-    };
-  }
-
-  function renderPlayerGalleryGrid(playerId) {
-    const grid = document.getElementById('player-gallery-grid');
-    const headerName = document.getElementById('gallery-player-name');
-    if (!grid) return;
-
+  // ——— Quick Manage Player Gallery Modal (From Table Button) ———
+  function openQuickPlayerGalleryModal(playerId) {
     const players = window.BadcomData.getPlayers();
     const player = players.find(p => p.id === playerId);
-    if (!player) return;
+    if (!player) {
+      alert('Pemain tidak ditemukan.');
+      return;
+    }
 
-    headerName.textContent = `Foto Momen Aksi: #${player.num} ${player.name}`;
+    currentQuickGalleryPlayerId = playerId;
 
-    const gallery = player.gallery || [];
-    if (gallery.length === 0) {
+    const pNum = player.number || player.num || '00';
+    const pName = player.name || 'PEMAIN';
+    const pCat = (player.category || 'men').toLowerCase();
+    const pIg = (player.instagram || '').replace(/^@/, '');
+
+    const avatar = document.getElementById('quick-modal-player-avatar');
+    const numEl = document.getElementById('quick-modal-player-num');
+    const catEl = document.getElementById('quick-modal-player-cat');
+    const igEl = document.getElementById('quick-modal-player-ig');
+    const nameEl = document.getElementById('quick-modal-player-name');
+
+    if (avatar) avatar.src = player.image || 'assets/images/players/1.png';
+    if (numEl) numEl.textContent = `#${pNum}`;
+    if (catEl) {
+      catEl.className = pCat === 'women' ? 'schedule-sport-badge badge-padel' : 'schedule-sport-badge badge-badminton';
+      catEl.innerHTML = pCat === 'women' ? '<i class="fas fa-venus"></i> Women\'s Squad' : '<i class="fas fa-mars"></i> Men\'s Squad';
+    }
+    if (igEl) {
+      igEl.innerHTML = pIg ? `<i class="fab fa-instagram"></i> @${escapeHTML(pIg)}` : '';
+    }
+    if (nameEl) nameEl.textContent = pName;
+
+    // Reset inputs
+    const fileInput = document.getElementById('file-quick-gallery-multi');
+    if (fileInput) fileInput.value = '';
+    const urlInput = document.getElementById('quick-moment-url-input');
+    if (urlInput) urlInput.value = '';
+
+    renderQuickModalMomentsGrid(player);
+    modalPlayerGallery.classList.add('open');
+  }
+
+  function renderQuickModalMomentsGrid(player) {
+    const grid = document.getElementById('quick-modal-moments-grid');
+    const counterBadge = document.getElementById('quick-modal-count-badge');
+    const sectionCounter = document.getElementById('quick-moments-counter');
+
+    const gallery = Array.isArray(player.gallery) ? player.gallery : [];
+    const count = gallery.length;
+
+    if (counterBadge) counterBadge.innerHTML = `<strong>${count}</strong> Foto Momen`;
+    if (sectionCounter) sectionCounter.textContent = count;
+
+    if (!grid) return;
+
+    if (count === 0) {
       grid.innerHTML = `
-        <div style="grid-column: 1 / -1; padding: 2rem; text-align: center; color: var(--color-muted); border: 1px dashed rgba(74, 145, 226, 0.2); border-radius: 6px;">
-          Belum ada foto momen aksi untuk pemain ini. Klik tombol "Upload Foto Momen" di atas.
+        <div class="admin-modal-moments-empty">
+          <i class="fas fa-camera"></i>
+          <p>Galeri momen aksi untuk ${escapeHTML(player.name)} masih kosong.<br>Tarik &amp; lepas beberapa foto ke kotak di atas untuk mengunggah langsung!</p>
         </div>
       `;
       return;
     }
 
-    grid.innerHTML = gallery.map((imgSrc, idx) => `
-      <div class="admin-gallery-card">
-        <img src="${imgSrc}" alt="Momen ${player.name}" onerror="this.src='assets/images/gallery/1.JPG'">
-        <button class="admin-gallery-card-del" title="Hapus foto ini" data-idx="${idx}">
-          <i class="fas fa-trash"></i>
+    grid.innerHTML = gallery.map((src, idx) => `
+      <div class="admin-modal-moment-card" data-idx="${idx}">
+        <img src="${src}" alt="Momen ${escapeHTML(player.name)} #${idx + 1}" class="admin-modal-moment-thumb" onerror="this.src='assets/images/gallery/1.JPG'">
+        <span class="admin-modal-moment-badge">#${idx + 1}</span>
+        <button type="button" class="admin-modal-moment-del" data-quick-del-idx="${idx}" title="Hapus foto ini dari galeri">
+          <i class="fas fa-times"></i>
         </button>
       </div>
     `).join('');
 
-    grid.querySelectorAll('.admin-gallery-card-del').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const idx = parseInt(btn.getAttribute('data-idx'));
-        deletePlayerMoment(playerId, idx);
+    // Attach delete events
+    grid.querySelectorAll('.admin-modal-moment-del').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = parseInt(btn.getAttribute('data-quick-del-idx'), 10);
+        if (confirm('Hapus foto momen ini dari galeri pemain?')) {
+          player.gallery.splice(idx, 1);
+          const players = window.BadcomData.getPlayers();
+          const target = players.find(x => x.id === player.id);
+          if (target) target.gallery = player.gallery;
+          window.BadcomData.savePlayers(players);
+
+          renderQuickModalMomentsGrid(player);
+          renderPlayersTable();
+          showToast('Foto momen berhasil dihapus.', 'success');
+        }
       });
     });
-  }
 
-  function openPlayerGalleryModal() {
-    const players = window.BadcomData.getPlayers();
-    const player = players.find(p => p.id === currentSelectedPlayerId);
-    if (!player) {
-      alert('Pilih pemain terlebih dahulu.');
-      return;
-    }
-
-    document.getElementById('modal-gallery-player-name').textContent = `Target: #${player.num} ${player.name}`;
-    document.getElementById('player-moment-url').value = '';
-    document.getElementById('file-player-moment').value = '';
-    const preview = document.getElementById('player-moment-preview');
-    preview.src = '';
-    preview.style.display = 'none';
-
-    modalPlayerGallery.classList.add('open');
-  }
-
-  function savePlayerMoment() {
-    const url = document.getElementById('player-moment-url').value.trim();
-    if (!url) {
-      alert('Silakan pilih file foto atau isi URL gambar.');
-      return;
-    }
-
-    const players = window.BadcomData.getPlayers();
-    const player = players.find(p => p.id === currentSelectedPlayerId);
-    if (!player) return;
-
-    if (!player.gallery) player.gallery = [];
-    player.gallery.push(url);
-
-    window.BadcomData.savePlayers(players);
-    modalPlayerGallery.classList.remove('open');
-    renderPlayerGalleryGrid(currentSelectedPlayerId);
-    initPlayerGalleryManager();
-    renderPlayersTable();
-    showToast(`Foto momen berhasil ditambahkan ke profil ${player.name}!`, 'success');
-  }
-
-  function deletePlayerMoment(playerId, index) {
-    if (!confirm('Hapus foto momen ini dari galeri pemain?')) return;
-
-    const players = window.BadcomData.getPlayers();
-    const player = players.find(p => p.id === playerId);
-    if (!player || !player.gallery) return;
-
-    player.gallery.splice(index, 1);
-    window.BadcomData.savePlayers(players);
-    renderPlayerGalleryGrid(playerId);
-    initPlayerGalleryManager();
-    renderPlayersTable();
-    showToast('Foto momen berhasil dihapus.', 'success');
+    // Attach click to preview in lightbox
+    grid.querySelectorAll('.admin-modal-moment-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const img = card.querySelector('img');
+        if (img) openImageLightbox(img.src, `Momen ${player.name}`);
+      });
+    });
   }
 
 
@@ -755,23 +1529,27 @@
       return;
     }
 
-    tbody.innerHTML = items.map(item => `
-      <tr>
-        <td>
-          <img src="${item.image}" alt="${escapeHTML(item.title)}" class="admin-thumb" onerror="this.src='assets/images/gallery/1.JPG'">
-        </td>
-        <td><strong style="color:var(--color-white);">${escapeHTML(item.title)}</strong></td>
-        <td><span style="color:var(--color-gold);">${escapeHTML(item.subtitle)}</span></td>
-        <td style="text-align:right; white-space:nowrap;">
-          <button class="admin-btn-action btn-edit-comm" data-id="${item.id}">
-            <i class="fas fa-pen"></i> Edit
-          </button>
-          <button class="admin-btn-action btn-danger btn-del-comm" data-id="${item.id}">
-            <i class="fas fa-trash"></i> Hapus
-          </button>
-        </td>
-      </tr>
-    `).join('');
+    tbody.innerHTML = items.map(item => {
+      const titleText = item.title || 'BADDEL MOMENT';
+      const subText = item.subtitle || item.sub || 'ROYAL SPORTS — 2026';
+      return `
+        <tr>
+          <td>
+            <img src="${item.image || 'assets/images/gallery/1.JPG'}" alt="${escapeHTML(titleText)}" class="admin-thumb" onerror="this.src='assets/images/gallery/1.JPG'">
+          </td>
+          <td><strong style="color:var(--color-white);">${escapeHTML(titleText)}</strong></td>
+          <td><span style="color:var(--color-gold);">${escapeHTML(subText)}</span></td>
+          <td style="text-align:right; white-space:nowrap;">
+            <button class="admin-btn-action btn-edit-comm" data-id="${item.id}">
+              <i class="fas fa-pen"></i> Edit
+            </button>
+            <button class="admin-btn-action btn-danger btn-del-comm" data-id="${item.id}">
+              <i class="fas fa-trash"></i> Hapus
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
 
     tbody.querySelectorAll('.btn-edit-comm').forEach(b => {
       b.addEventListener('click', () => openCommunityModal(b.getAttribute('data-id')));
@@ -795,7 +1573,7 @@
       const item = list.find(x => x.id === id);
       if (item) {
         document.getElementById('comm-title').value = item.title || '';
-        document.getElementById('comm-subtitle').value = item.subtitle || '';
+        document.getElementById('comm-subtitle').value = item.subtitle || item.sub || '';
         document.getElementById('comm-image-url').value = item.image || '';
         if (item.image) {
           preview.src = item.image;
@@ -833,6 +1611,7 @@
       id,
       title: title.toUpperCase(),
       subtitle: subtitle.toUpperCase(),
+      sub: subtitle.toUpperCase(),
       image
     };
 

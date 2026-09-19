@@ -200,17 +200,15 @@ var BadcomPlayers = (function () {
     var cat = (player.category || 'men').toLowerCase();
     var catLabel = cat === 'women' ? 'WOMEN' : 'MEN';
     var galleryCount = (player.gallery && player.gallery.length) || (hasImage ? 1 : 0);
+    var playerNum = player.number || player.num || '00';
+    var playerName = player.name || 'PEMAIN';
 
     var imageHTML = hasImage
-      ? '<img class="player-card__img" src="' + player.image + '" alt="' + player.name + '" loading="lazy" decoding="async" onerror="this.parentElement.innerHTML=\'<div class=\\\'player-card__placeholder\\\'><span class=\\\'player-card__placeholder-num\\\'>' + player.number + '</span></div>\'">'
-      : '<div class="player-card__placeholder" style="background:linear-gradient(160deg,' + color.from + ',' + color.to + ')"><span class="player-card__placeholder-num">' + player.number + '</span></div>';
+      ? '<img class="player-card__img" src="' + player.image + '" alt="' + escapeHTML(playerName) + '" loading="lazy" decoding="async" onerror="this.parentElement.innerHTML=\'<div class=\\\'player-card__placeholder\\\'><span class=\\\'player-card__placeholder-num\\\'>' + escapeHTML(playerNum) + '</span></div>\'">'
+      : '<div class="player-card__placeholder" style="background:linear-gradient(160deg,' + color.from + ',' + color.to + ')"><span class="player-card__placeholder-num">' + escapeHTML(playerNum) + '</span></div>';
 
     var instagramHTML = player.instagram
       ? '    <div class="player-card__instagram">' + escapeHTML(player.instagram) + '</div>'
-      : '';
-
-    var galleryBadgeHTML = galleryCount > 1
-      ? '  <div class="player-card__gallery-badge" title="' + galleryCount + ' moments">📷 ' + galleryCount + '</div>'
       : '';
 
     return [
@@ -220,7 +218,7 @@ var BadcomPlayers = (function () {
       '  data-category="' + cat + '"',
       '  role="button"',
       '  tabindex="0"',
-      '  aria-label="View ' + player.name + ' profile"',
+      '  aria-label="View ' + escapeHTML(playerName) + ' profile"',
       '>',
       '  <div class="player-card__image">',
       '    ' + imageHTML,
@@ -228,10 +226,9 @@ var BadcomPlayers = (function () {
       '  <div class="player-card__overlay"></div>',
       '  <div class="player-card__gold-border"></div>',
       '  <div class="player-card__badge-cat player-card__badge-cat--' + cat + '">' + catLabel + '</div>',
-      galleryBadgeHTML,
       '  <div class="player-card__content">',
-      '    <div class="player-card__number">' + player.number + '</div>',
-      '    <div class="player-card__name">' + player.name + '</div>',
+      '    <div class="player-card__number">' + escapeHTML(playerNum) + '</div>',
+      '    <div class="player-card__name">' + escapeHTML(playerName) + '</div>',
       instagramHTML,
       '  </div>',
       '  <div class="player-card__arrow" aria-hidden="true">↗</div>',
@@ -347,6 +344,49 @@ var BadcomPlayers = (function () {
         }
       });
     });
+
+    /* Search input handler for players.html */
+    var searchInput = document.getElementById('squad-search-input');
+    var clearBtn = document.getElementById('squad-search-clear');
+    var searchQuery = '';
+
+    function applySquadSearch() {
+      var query = searchQuery.trim().toLowerCase();
+      var cards = document.querySelectorAll('.players-grid .player-card');
+
+      cards.forEach(function (card) {
+        if (card.classList.contains('player-card--join')) {
+          card.style.display = query ? 'none' : '';
+          return;
+        }
+        var name = (card.querySelector('.player-card__name') || {}).textContent || '';
+        var num = (card.querySelector('.player-card__number') || {}).textContent || '';
+        var ig = (card.querySelector('.player-card__ig') || {}).textContent || '';
+        var combined = (name + ' ' + num + ' ' + ig).toLowerCase();
+        var matches = !query || combined.indexOf(query) !== -1;
+        card.style.display = matches ? '' : 'none';
+      });
+
+      if (clearBtn) {
+        clearBtn.style.display = query ? 'flex' : 'none';
+      }
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', function () {
+        searchQuery = this.value;
+        applySquadSearch();
+      });
+    }
+
+    if (clearBtn) {
+      clearBtn.addEventListener('click', function () {
+        if (searchInput) searchInput.value = '';
+        searchQuery = '';
+        applySquadSearch();
+        if (searchInput) searchInput.focus();
+      });
+    }
   }
 
   /* ——— Drag on Carousels (Optimized: Event listeners only active during drag) ——— */

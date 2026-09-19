@@ -37,11 +37,7 @@ var BadcomData = (function () {
       instagram: "@basz76",
       image: "assets/images/players/basz.jpg",
       hasImage: true,
-      gallery: [
-        "assets/images/players/basz.jpg",
-        "assets/images/gallery/1.JPG",
-        "assets/images/gallery/3.JPG"
-      ]
+      gallery: []
     },
     {
       id: "nio",
@@ -50,11 +46,7 @@ var BadcomData = (function () {
       instagram: "@nio",
       image: "assets/images/players/nio.jpg",
       hasImage: true,
-      gallery: [
-        "assets/images/players/nio.jpg",
-        "assets/images/gallery/2.JPG",
-        "assets/images/gallery/5.JPG"
-      ]
+      gallery: []
     },
     {
       id: "glenn",
@@ -63,11 +55,7 @@ var BadcomData = (function () {
       instagram: "@gsh2206",
       image: "assets/images/players/glenn.jpg",
       hasImage: true,
-      gallery: [
-        "assets/images/players/glenn.jpg",
-        "assets/images/gallery/1.JPG",
-        "assets/images/gallery/3.JPG"
-      ]
+      gallery: []
     },
     {
       id: "albert",
@@ -76,11 +64,7 @@ var BadcomData = (function () {
       instagram: "@albertvsimatupang",
       image: "assets/images/players/albert.jpg",
       hasImage: true,
-      gallery: [
-        "assets/images/players/albert.jpg",
-        "assets/images/gallery/3.JPG",
-        "assets/images/gallery/6.jpeg"
-      ]
+      gallery: []
     },
     {
       id: "damz",
@@ -89,11 +73,7 @@ var BadcomData = (function () {
       instagram: "@damzskut",
       image: "assets/images/players/damai.jpg",
       hasImage: true,
-      gallery: [
-        "assets/images/players/damai.jpg",
-        "assets/images/gallery/1.JPG",
-        "assets/images/gallery/5.JPG"
-      ]
+      gallery: []
     },
     {
       id: "yoga",
@@ -102,11 +82,7 @@ var BadcomData = (function () {
       instagram: "@yoga",
       image: "assets/images/players/yoga.jpg",
       hasImage: true,
-      gallery: [
-        "assets/images/players/yoga.jpg",
-        "assets/images/gallery/culture-padel.jpg",
-        "assets/images/gallery/5.JPG"
-      ]
+      gallery: []
     },
     {
       id: "gerald",
@@ -115,11 +91,7 @@ var BadcomData = (function () {
       instagram: "@gelskyy",
       image: "assets/images/players/gerald.jpg",
       hasImage: true,
-      gallery: [
-        "assets/images/players/gerald.jpg",
-        "assets/images/gallery/3.JPG",
-        "assets/images/gallery/6.jpeg"
-      ]
+      gallery: []
     },
     {
       id: "vq",
@@ -128,11 +100,7 @@ var BadcomData = (function () {
       instagram: "@vqpvtra",
       image: "assets/images/players/vq.jpg",
       hasImage: true,
-      gallery: [
-        "assets/images/players/vq.jpg",
-        "assets/images/gallery/2.JPG",
-        "assets/images/gallery/5.JPG"
-      ]
+      gallery: []
     },
     {
       id: "ikrom",
@@ -141,11 +109,7 @@ var BadcomData = (function () {
       instagram: "@ikromsalam",
       image: "assets/images/players/ikrom.jpg",
       hasImage: true,
-      gallery: [
-        "assets/images/players/ikrom.jpg",
-        "assets/images/gallery/culture-smash.jpeg",
-        "assets/images/gallery/1.JPG"
-      ]
+      gallery: []
     },
     {
       id: "zayn",
@@ -154,11 +118,7 @@ var BadcomData = (function () {
       instagram: "@zayn",
       image: "assets/images/players/zayn.jpeg",
       hasImage: true,
-      gallery: [
-        "assets/images/players/zayn.jpeg",
-        "assets/images/gallery/3.JPG",
-        "assets/images/gallery/6.jpeg"
-      ]
+      gallery: []
     },
     {
       id: "rey",
@@ -167,11 +127,7 @@ var BadcomData = (function () {
       instagram: "@805.hans",
       image: "assets/images/players/rey.jpeg",
       hasImage: true,
-      gallery: [
-        "assets/images/players/rey.jpeg",
-        "assets/images/gallery/culture-padel.jpg",
-        "assets/images/gallery/5.JPG"
-      ]
+      gallery: []
     },
     {
       id: "reza",
@@ -180,11 +136,7 @@ var BadcomData = (function () {
       instagram: "@rezafajriadi",
       image: "assets/images/players/reza.jpeg",
       hasImage: true,
-      gallery: [
-        "assets/images/players/reza.jpeg",
-        "assets/images/gallery/1.JPG",
-        "assets/images/gallery/5.JPG"
-      ]
+      gallery: []
     },
     {
       id: "irsan",
@@ -193,11 +145,7 @@ var BadcomData = (function () {
       instagram: "@irsan_sanusi",
       image: "assets/images/players/irsan.jpeg",
       hasImage: true,
-      gallery: [
-        "assets/images/players/irsan.jpeg",
-        "assets/images/gallery/1.JPG",
-        "assets/images/gallery/3.JPG"
-      ]
+      gallery: []
     },
     {
       id: "fandhi",
@@ -206,11 +154,7 @@ var BadcomData = (function () {
       instagram: "@fandi.nh",
       image: "assets/images/players/fandhi.jpeg",
       hasImage: true,
-      gallery: [
-        "assets/images/players/fandhi.jpeg",
-        "assets/images/gallery/culture-smash.jpeg",
-        "assets/images/gallery/2.JPG"
-      ]
+      gallery: []
     },
     {
       id: "luthfi",
@@ -219,11 +163,7 @@ var BadcomData = (function () {
       instagram: "@luthfi",
       image: "assets/images/players/lutfhi.jpeg",
       hasImage: true,
-      gallery: [
-        "assets/images/players/lutfhi.jpeg",
-        "assets/images/gallery/1.JPG",
-        "assets/images/gallery/3.JPG"
-      ]
+      gallery: []
     }
   ];
 
@@ -240,11 +180,7 @@ var BadcomData = (function () {
       instagram: "@margareth_ayeq",
       image: "assets/images/players/ayeq.jpg",
       hasImage: true,
-      gallery: [
-        "assets/images/players/ayeq.jpg",
-        "assets/images/gallery/4.JPG",
-        "assets/images/gallery/7.JPG"
-      ]
+      gallery: []
     },
     {
       id: "lia",
@@ -253,11 +189,7 @@ var BadcomData = (function () {
       instagram: "@tellia.silalahi",
       image: "assets/images/players/lia.jpg",
       hasImage: true,
-      gallery: [
-        "assets/images/players/lia.jpg",
-        "assets/images/gallery/4.JPG",
-        "assets/images/gallery/8.JPG"
-      ]
+      gallery: []
     },
     {
       id: "novi",
@@ -266,11 +198,7 @@ var BadcomData = (function () {
       instagram: "@nyimas_novianti",
       image: "assets/images/players/novi.jpg",
       hasImage: true,
-      gallery: [
-        "assets/images/players/novi.jpg",
-        "assets/images/gallery/4.JPG",
-        "assets/images/gallery/7.JPG"
-      ]
+      gallery: []
     },
     {
       id: "cita",
@@ -279,11 +207,7 @@ var BadcomData = (function () {
       instagram: "@citaoncourt",
       image: "assets/images/players/cita.jpg",
       hasImage: true,
-      gallery: [
-        "assets/images/players/cita.jpg",
-        "assets/images/gallery/4.JPG",
-        "assets/images/gallery/culture-padel.jpg"
-      ]
+      gallery: []
     },
     {
       id: "sanny",
@@ -292,11 +216,7 @@ var BadcomData = (function () {
       instagram: "@kimmyalodia",
       image: "assets/images/players/sanny.jpg",
       hasImage: true,
-      gallery: [
-        "assets/images/players/sanny.jpg",
-        "assets/images/gallery/4.JPG",
-        "assets/images/gallery/7.JPG"
-      ]
+      gallery: []
     },
     {
       id: "silvi",
@@ -305,11 +225,7 @@ var BadcomData = (function () {
       instagram: "@silvi",
       image: "assets/images/players/silvi.jpeg",
       hasImage: true,
-      gallery: [
-        "assets/images/players/silvi.jpeg",
-        "assets/images/gallery/4.JPG",
-        "assets/images/gallery/7.JPG"
-      ]
+      gallery: []
     }
   ];
 
@@ -319,47 +235,68 @@ var BadcomData = (function () {
   var defaultSchedules = [
     {
       id: "sch-01",
-      sport: "BADMINTON",
-      day: "RABU",
-      date: "24 Sep 2026",
+      title: "BADDEL WEEKEND SMASH #001",
+      sport: "badminton",
+      day: "SABTU",
+      isoDate: "2026-09-20",
+      dateFormatted: "Sabtu, 20 Sep 2026",
+      date: "20 Sep 2026",
       time: "19:00 - 21:00 WIB",
       venue: "Royal Sports Arena Jakarta",
       court: "Court 2 & 3",
+      courtNames: "Court 2, Court 3",
+      mapsUrl: "https://maps.google.com/?q=Royal+Sports+Arena+Jakarta",
       locationUrl: "https://maps.google.com/?q=Royal+Sports+Arena+Jakarta",
-      status: "available",
+      status: "open",
+      slotsLeft: 4,
+      totalSlots: 12,
       slotsTotal: 12,
       slotsFilled: 8,
-      fee: "Rp 50.000 / org",
+      fee: "Rp 50.000 / orang",
       notes: "Shuttlecock & Lapangan Karpet disediakan"
     },
     {
       id: "sch-02",
-      sport: "PADEL",
-      day: "JUMAT",
-      date: "26 Sep 2026",
+      title: "JAKARTA PADEL NIGHT RALLY",
+      sport: "padel",
+      day: "SENIN",
+      isoDate: "2026-09-22",
+      dateFormatted: "Senin, 22 Sep 2026",
+      date: "22 Sep 2026",
       time: "19:00 - 21:00 WIB",
       venue: "Padel Pro Jakarta Arena",
       court: "Panoramic Glass Court 1",
+      courtNames: "Panoramic Glass Court 1",
+      mapsUrl: "https://maps.google.com/?q=Padel+Pro+Jakarta",
       locationUrl: "https://maps.google.com/?q=Padel+Pro+Jakarta",
-      status: "almost_full",
+      status: "full",
+      slotsLeft: 0,
+      totalSlots: 8,
       slotsTotal: 8,
-      slotsFilled: 6,
-      fee: "Rp 125.000 / org",
+      slotsFilled: 8,
+      fee: "Rp 125.000 / orang",
       notes: "Bola Padel & Raket sewa tersedia"
     },
     {
       id: "sch-03",
-      sport: "BADMINTON",
+      title: "SUNDAY MORNING BULUTANGKIS",
+      sport: "badminton",
       day: "MINGGU",
-      date: "28 Sep 2026",
+      isoDate: "2026-09-21",
+      dateFormatted: "Minggu, 21 Sep 2026",
+      date: "21 Sep 2026",
       time: "08:00 - 11:00 WIB",
       venue: "GOR Bulutangkis Gelora",
       court: "Court 1, 2 & 3",
+      courtNames: "Court 1, Court 2, Court 3",
+      mapsUrl: "https://maps.google.com/?q=GOR+Bulutangkis+Jakarta",
       locationUrl: "https://maps.google.com/?q=GOR+Bulutangkis+Jakarta",
-      status: "available",
+      status: "open",
+      slotsLeft: 6,
+      totalSlots: 16,
       slotsTotal: 16,
       slotsFilled: 10,
-      fee: "Rp 45.000 / org",
+      fee: "Rp 45.000 / orang",
       notes: "Sesi Pagi + Coffee & Breakfast Nongkrong"
     }
   ];
@@ -372,6 +309,7 @@ var BadcomData = (function () {
       id: "cg-1",
       image: "assets/images/gallery/1.JPG",
       title: "BADDEL COMMUNITY SESSION #001",
+      subtitle: "ROYAL SPORTS — 2026",
       sub: "ROYAL SPORTS — 2026",
       tag: "COMMUNITY"
     },
@@ -379,6 +317,7 @@ var BadcomData = (function () {
       id: "cg-2",
       image: "assets/images/gallery/2.JPG",
       title: "THE YOUNGEST PLAYER",
+      subtitle: "ROYAL SPORTS — 2026",
       sub: "ROYAL SPORTS — 2026",
       tag: "RALLY"
     },
@@ -386,6 +325,7 @@ var BadcomData = (function () {
       id: "cg-3",
       image: "assets/images/gallery/3.JPG",
       title: "THE MEN INTENSE",
+      subtitle: "ROYAL SPORTS — 2026",
       sub: "ROYAL SPORTS — 2026",
       tag: "MATCH"
     },
@@ -393,6 +333,7 @@ var BadcomData = (function () {
       id: "cg-4",
       image: "assets/images/gallery/4.JPG",
       title: "THE QUEENS",
+      subtitle: "ROYAL SPORTS — 2026",
       sub: "ROYAL SPORTS — 2026",
       tag: "SQUAD"
     },
@@ -400,6 +341,7 @@ var BadcomData = (function () {
       id: "cg-5",
       image: "assets/images/gallery/5.JPG",
       title: "MATCH WIN FOCUS",
+      subtitle: "ROYAL SPORTS — 2026",
       sub: "ROYAL SPORTS — 2026",
       tag: "CHAMPIONSHIP"
     },
@@ -407,6 +349,7 @@ var BadcomData = (function () {
       id: "cg-6",
       image: "assets/images/gallery/6.jpeg",
       title: "CRITICAL POINTS",
+      subtitle: "ROYAL SPORTS — 2026",
       sub: "ROYAL SPORTS — 2026",
       tag: "TOURNAMENT"
     },
@@ -414,6 +357,7 @@ var BadcomData = (function () {
       id: "cg-7",
       image: "assets/images/gallery/7.JPG",
       title: "THE LADIES",
+      subtitle: "ROYAL SPORTS — 2026",
       sub: "ROYAL SPORTS — 2026",
       tag: "SQUAD"
     },
@@ -421,6 +365,7 @@ var BadcomData = (function () {
       id: "cg-8",
       image: "assets/images/gallery/8.JPG",
       title: "THE COUPLE",
+      subtitle: "ROYAL SPORTS — 2026",
       sub: "ROYAL SPORTS — 2026",
       tag: "NIGHT LIGHTS"
     }
@@ -431,12 +376,12 @@ var BadcomData = (function () {
      ============================================================ */
   menPlayers.forEach(function (player) {
     player.category = player.category || "men";
-    player.gallery = player.gallery && player.gallery.length ? player.gallery : (player.image ? [player.image] : []);
+    player.gallery = Array.isArray(player.gallery) ? player.gallery : [];
   });
 
   womenPlayers.forEach(function (player) {
     player.category = player.category || "women";
-    player.gallery = player.gallery && player.gallery.length ? player.gallery : (player.image ? [player.image] : []);
+    player.gallery = Array.isArray(player.gallery) ? player.gallery : [];
   });
 
   var initialAllPlayers = menPlayers.concat(womenPlayers);
@@ -475,16 +420,94 @@ var BadcomData = (function () {
      ============================================================ */
   var STORAGE_KEY = 'baddel_cms_db_v1';
 
+  function normalizePlayer(p, idx) {
+    if (!p || typeof p !== 'object') p = {};
+    var fallbackNum = idx != null ? (idx + 1 < 10 ? '0' + (idx + 1) : String(idx + 1)) : '00';
+    var num = p.number || p.num || fallbackNum;
+    var name = p.name || 'PEMAIN';
+    var cat = (p.category || 'men').toLowerCase();
+    var img = p.image || 'assets/images/players/avatar-placeholder.png';
+    var gal = Array.isArray(p.gallery) ? p.gallery.filter(Boolean) : [];
+
+    return {
+      id: p.id || 'player_' + (idx != null ? idx : Date.now()),
+      number: String(num),
+      num: String(num),
+      name: String(name),
+      category: cat,
+      instagram: p.instagram || '',
+      image: img,
+      hasImage: Boolean(img),
+      gallery: gal
+    };
+  }
+
+  function normalizeSchedule(s, idx) {
+    if (!s || typeof s !== 'object') s = {};
+    var sport = (s.sport || 'badminton').toLowerCase();
+    var defaultTitle = sport === 'padel' ? 'BADDEL PADEL SESSION' : 'BADDEL WEEKEND SMASH';
+    var title = s.title || (s.day ? 'BADDEL ' + sport.toUpperCase() + ' — ' + s.day : defaultTitle);
+    var dateStr = s.dateFormatted || s.date || 'Sabtu, 26 Sep 2026';
+    var totalSlots = parseInt(s.totalSlots || s.slotsTotal) || 12;
+    var slotsFilled = parseInt(s.slotsFilled) || 0;
+    var slotsLeft = s.slotsLeft != null ? parseInt(s.slotsLeft) : Math.max(0, totalSlots - slotsFilled);
+
+    var venue = s.venue || 'Royal Sports Arena Jakarta';
+    var mapsUrl = s.mapsUrl || s.locationUrl || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(venue));
+
+    return {
+      id: s.id || 'sch_' + (idx != null ? idx : Date.now()),
+      title: String(title),
+      sport: sport,
+      dateFormatted: String(dateStr),
+      date: String(dateStr),
+      isoDate: s.isoDate || '',
+      day: s.day || '',
+      time: s.time || '19:00 - 21:00 WIB',
+      venue: venue,
+      court: s.courtNames || s.court || '',
+      courtNames: s.courtNames || s.court || '',
+      mapsUrl: String(mapsUrl),
+      locationUrl: String(mapsUrl),
+      fee: s.fee || 'Rp 50.000 / org',
+      status: slotsLeft === 0 ? 'full' : (s.status === 'full' ? 'full' : 'open'),
+      slotsLeft: slotsLeft,
+      totalSlots: totalSlots,
+      slotsTotal: totalSlots,
+      slotsFilled: slotsFilled,
+      notes: s.notes || 'Shuttlecock & Lapangan Karpet disediakan'
+    };
+  }
+
+  function normalizeCommunity(item, idx) {
+    if (!item || typeof item !== 'object') item = {};
+    var title = item.title || ('BADDEL MOMENT #' + (idx != null ? (idx + 1 < 10 ? '00' + (idx + 1) : '0' + (idx + 1)) : '001'));
+    var sub = item.subtitle || item.sub || 'ROYAL SPORTS — 2026';
+    return {
+      id: item.id || 'cg_' + (idx != null ? idx : Date.now()),
+      image: item.image || 'assets/images/gallery/1.JPG',
+      title: String(title),
+      subtitle: String(sub),
+      sub: String(sub),
+      tag: item.tag || 'MOMENT'
+    };
+  }
+
   function loadDB() {
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         var parsed = JSON.parse(raw);
         if (parsed && Array.isArray(parsed.players) && parsed.players.length > 0) {
+          if (!parsed._v3_empty_gal_init) {
+            parsed.players.forEach(function (p) { p.gallery = []; });
+            parsed._v3_empty_gal_init = true;
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed)); } catch (e) {}
+          }
           return {
-            players: parsed.players,
-            schedules: Array.isArray(parsed.schedules) ? parsed.schedules : defaultSchedules,
-            communityGallery: Array.isArray(parsed.communityGallery) ? parsed.communityGallery : defaultCommunityGallery
+            players: parsed.players.map(normalizePlayer),
+            schedules: (Array.isArray(parsed.schedules) ? parsed.schedules : defaultSchedules).map(normalizeSchedule),
+            communityGallery: (Array.isArray(parsed.communityGallery) ? parsed.communityGallery : defaultCommunityGallery).map(normalizeCommunity)
           };
         }
       }
@@ -492,9 +515,9 @@ var BadcomData = (function () {
       console.warn('LocalStorage not available, falling back to default data', e);
     }
     return {
-      players: initialAllPlayers,
-      schedules: defaultSchedules,
-      communityGallery: defaultCommunityGallery
+      players: initialAllPlayers.map(normalizePlayer),
+      schedules: defaultSchedules.map(normalizeSchedule),
+      communityGallery: defaultCommunityGallery.map(normalizeCommunity)
     };
   }
 
@@ -524,37 +547,32 @@ var BadcomData = (function () {
 
   /* Public CRUD Methods */
   function getPlayers() {
-    return activeDB.players.slice();
+    return activeDB.players.map(normalizePlayer);
   }
 
   function savePlayers(newPlayers) {
     if (!Array.isArray(newPlayers)) return;
-    activeDB.players = newPlayers.map(function (p, idx) {
-      p.category = p.category || 'men';
-      p.gallery = Array.isArray(p.gallery) && p.gallery.length ? p.gallery : (p.image ? [p.image] : []);
-      p.number = p.number || (idx + 1 < 10 ? '0' + (idx + 1) : String(idx + 1));
-      return p;
-    });
+    activeDB.players = newPlayers.map(normalizePlayer);
     saveDB();
   }
 
   function getSchedules() {
-    return activeDB.schedules.slice();
+    return activeDB.schedules.map(normalizeSchedule);
   }
 
   function saveSchedules(newSchedules) {
     if (!Array.isArray(newSchedules)) return;
-    activeDB.schedules = newSchedules;
+    activeDB.schedules = newSchedules.map(normalizeSchedule);
     saveDB();
   }
 
   function getCommunityGallery() {
-    return activeDB.communityGallery.slice();
+    return activeDB.communityGallery.map(normalizeCommunity);
   }
 
   function saveCommunityGallery(newGallery) {
     if (!Array.isArray(newGallery)) return;
-    activeDB.communityGallery = newGallery;
+    activeDB.communityGallery = newGallery.map(normalizeCommunity);
     saveDB();
   }
 
@@ -623,3 +641,9 @@ var BadcomData = (function () {
   return exportObj;
 
 })();
+
+// Alias for BADDEL naming
+if (typeof window !== 'undefined') {
+  window.BaddelData = BadcomData;
+}
+

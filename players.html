@@ -178,17 +178,26 @@
           25+ players. One community. Jakarta's most active badminton and padel crew.
         </p>
 
-        <!-- Category Filter Tabs (Men / Women) -->
-        <div class="squad-tabs" id="squad-filter-tabs" role="tablist" aria-label="Filter squad category">
-          <button type="button" class="squad-tab is-active" data-filter="all" role="tab" aria-selected="true">
-            ALL SQUAD <span class="squad-tab__count">21</span>
-          </button>
-          <button type="button" class="squad-tab" data-filter="men" role="tab" aria-selected="false">
-            MEN'S SQUAD <span class="squad-tab__count">15</span>
-          </button>
-          <button type="button" class="squad-tab" data-filter="women" role="tab" aria-selected="false">
-            WOMEN'S SQUAD <span class="squad-tab__count">6</span>
-          </button>
+        <!-- Search & Filter Controls -->
+        <div class="squad-controls-bar">
+          <div class="squad-search-box">
+            <i class="fas fa-search squad-search-icon"></i>
+            <input type="text" id="squad-search-input" class="squad-search-input" placeholder="Cari nama pemain atau nomor punggung..." autocomplete="off">
+            <button type="button" id="squad-search-clear" class="squad-search-clear" style="display:none;" title="Hapus pencarian">✕</button>
+          </div>
+
+          <!-- Category Filter Tabs (Men / Women) -->
+          <div class="squad-tabs" id="squad-filter-tabs" role="tablist" aria-label="Filter squad category">
+            <button type="button" class="squad-tab is-active" data-filter="all" role="tab" aria-selected="true">
+              ALL SQUAD <span class="squad-tab__count">21</span>
+            </button>
+            <button type="button" class="squad-tab" data-filter="men" role="tab" aria-selected="false">
+              MEN'S SQUAD <span class="squad-tab__count">15</span>
+            </button>
+            <button type="button" class="squad-tab" data-filter="women" role="tab" aria-selected="false">
+              WOMEN'S SQUAD <span class="squad-tab__count">6</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -277,7 +286,6 @@
         <nav class="footer__social" aria-label="Social media">
           <a href="https://www.instagram.com/baddel_community/" target="_blank" rel="noopener noreferrer" class="footer__social-link">INSTAGRAM ↗</a>
           <a href="https://wa.me/6281270000739" target="_blank" rel="noopener noreferrer" class="footer__social-link">WHATSAPP ↗</a>
-          <a href="admin.html" class="footer__social-link" style="color:var(--color-gold); font-weight:700;">CMS ADMIN ⚙</a>
         </nav>
       </div>
     </div>
@@ -303,7 +311,7 @@
               <a class="modal__ig" id="modal-instagram" href="#" target="_blank" rel="noopener noreferrer">—</a>
             </div>
             <div class="modal__gallery-wrap" id="modal-gallery-wrap">
-              <span class="modal__stat-label">PLAYER MOMENTS</span>
+              <span class="modal__stat-label" id="modal-gallery-label">GALERI PEMAIN</span>
               <div class="modal__gallery-grid" id="modal-gallery-grid"></div>
             </div>
           </div>

@@ -108,14 +108,17 @@ var BadcomModal = (function () {
 
   /* ——— Render player content into modal ——— */
   function render(player) {
+    var playerNum = player.number || player.num || '00';
+    var playerName = player.name || 'PEMAIN';
+
     /* Image side */
     var imgSide = document.getElementById('modal-image-side');
     if (imgSide) {
       if (player.hasImage && player.image) {
         imgSide.innerHTML = [
           '<img class="modal__image" src="' + player.image + '"',
-          '  alt="' + player.name + '"',
-          '  onerror="this.parentElement.innerHTML=\'<div class=\\\"modal__image-placeholder\\\"><span class=\\\"modal__image-num\\\">' + player.number + '</span></div>\'"',
+          '  alt="' + escapeHTML(playerName) + '"',
+          '  onerror="this.parentElement.innerHTML=\'<div class=\\\"modal__image-placeholder\\\"><span class=\\\"modal__image-num\\\">' + escapeHTML(playerNum) + '</span></div>\'"',
           '>',
           '<div class="modal__image-overlay"></div>'
         ].join('');
@@ -125,7 +128,7 @@ var BadcomModal = (function () {
         var color = colors[idx] || colors[0];
         imgSide.innerHTML = [
           '<div class="modal__image-placeholder" style="background:linear-gradient(160deg,' + color.from + ',' + color.to + ')">',
-          '  <span class="modal__image-num">' + player.number + '</span>',
+          '  <span class="modal__image-num">' + escapeHTML(playerNum) + '</span>',
           '</div>',
           '<div class="modal__image-overlay"></div>'
         ].join('');
@@ -133,10 +136,10 @@ var BadcomModal = (function () {
     }
 
     /* Number */
-    setInner('modal-num', 'PLAYER ' + player.number);
+    setInner('modal-num', 'PLAYER ' + playerNum);
 
     /* Name */
-    setInner('modal-name', player.name);
+    setInner('modal-name', playerName);
 
     /* Category / Division badge */
     var sportEl = document.getElementById('modal-sport');
@@ -162,18 +165,39 @@ var BadcomModal = (function () {
     /* Player Gallery */
     var galleryWrap = document.getElementById('modal-gallery-wrap');
     var galleryGrid = document.getElementById('modal-gallery-grid');
-    var playerGallery = (player.gallery && player.gallery.length)
-      ? player.gallery
-      : (player.hasImage && player.image ? [player.image] : []);
+    var galleryLabel = document.getElementById('modal-gallery-label');
+    var playerGallery = Array.isArray(player.gallery) ? player.gallery.filter(Boolean) : [];
 
-    if (galleryGrid) {
+    if (galleryGrid && galleryWrap) {
+      galleryWrap.style.display = '';
+
+      if (galleryLabel) {
+        if (playerGallery.length > 0) {
+          galleryLabel.innerHTML = 'GALERI PEMAIN <span class="modal__gallery-badge">' + playerGallery.length + ' Foto</span>';
+        } else {
+          galleryLabel.innerHTML = 'GALERI PEMAIN <span class="modal__gallery-badge modal__gallery-badge--empty">0</span>';
+        }
+      }
+
       if (playerGallery.length > 0) {
-        if (galleryWrap) galleryWrap.style.display = '';
-        galleryGrid.innerHTML = playerGallery.map(function (imgSrc, idx) {
+        var displayThumbs = [];
+        if (player.hasImage && player.image) {
+          displayThumbs.push({ src: player.image, label: 'Foto Utama', isMain: true });
+        }
+        playerGallery.forEach(function (imgSrc, idx) {
+          if (imgSrc !== player.image) {
+            displayThumbs.push({ src: imgSrc, label: 'Momen ' + (idx + 1), isMain: false });
+          }
+        });
+
+        galleryGrid.className = 'modal__gallery-grid';
+        galleryGrid.innerHTML = displayThumbs.map(function (item, idx) {
           var isActive = (idx === 0) ? ' is-active' : '';
+          var tag = item.isMain ? '<span class="modal__gallery-thumb-tag">Utama</span>' : '';
           return [
-            '<button type="button" class="modal__gallery-thumb' + isActive + '" data-img="' + escapeHTML(imgSrc) + '" aria-label="Photo ' + (idx + 1) + '">',
-            '  <img src="' + escapeHTML(imgSrc) + '" alt="' + escapeHTML(player.name) + ' moment ' + (idx + 1) + '" loading="lazy" decoding="async">',
+            '<button type="button" class="modal__gallery-thumb' + isActive + '" data-img="' + escapeHTML(item.src) + '" aria-label="' + escapeHTML(item.label) + '">',
+            '  <img src="' + escapeHTML(item.src) + '" alt="' + escapeHTML(playerName) + ' ' + escapeHTML(item.label) + '" loading="lazy" decoding="async">',
+            tag,
             '</button>'
           ].join('');
         }).join('');
@@ -193,12 +217,28 @@ var BadcomModal = (function () {
                 mainImg.src = targetSrc;
                 mainImg.style.opacity = '1';
               }, 120);
+            } else if (imgSide && targetSrc) {
+              imgSide.innerHTML = '<img class="modal__image" src="' + escapeHTML(targetSrc) + '" alt="' + escapeHTML(playerName) + '"><div class="modal__image-overlay"></div>';
             }
           });
         });
       } else {
-        if (galleryWrap) galleryWrap.style.display = 'none';
-        galleryGrid.innerHTML = '';
+        galleryGrid.className = 'modal__gallery-grid modal__gallery-grid--empty';
+        galleryGrid.innerHTML = [
+          '<div class="modal__gallery-empty">',
+          '  <div class="modal__gallery-empty-icon">',
+          '    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">',
+          '      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>',
+          '      <circle cx="8.5" cy="8.5" r="1.5"></circle>',
+          '      <polyline points="21 15 16 10 5 21"></polyline>',
+          '    </svg>',
+          '  </div>',
+          '  <div class="modal__gallery-empty-content">',
+          '    <div class="modal__gallery-empty-title">Galeri Kosong</div>',
+          '    <div class="modal__gallery-empty-desc">Belum ada foto momen aksi untuk pemain ini.</div>',
+          '  </div>',
+          '</div>'
+        ].join('');
       }
     }
 
