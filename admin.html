@@ -76,15 +76,16 @@
     </a>
 
     <div class="admin-nav-actions">
-      <button class="btn btn--gold btn--sm admin-nav-btn" id="btn-header-publish" title="Simpan & Publish data ke GitHub & Vercel">
-        <i class="fas fa-cloud-arrow-up"></i> <span class="nav-btn-text">PUBLISH VERCEL</span>
+      <div class="admin-live-sync-indicator" id="header-sync-status-badge" style="display:inline-flex; align-items:center; gap:0.4rem; font-size:0.75rem; font-weight:600; color:#34D399; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); border-radius:999px; padding:0.3rem 0.75rem;">
+        <span style="width:7px; height:7px; border-radius:50%; background:#34D399; display:inline-block; box-shadow:0 0 8px #34D399;"></span>
+        <span id="header-sync-status-text">Live Sync Aktif</span>
+      </div>
+      <button class="btn btn--gold btn--sm admin-nav-btn" id="btn-header-publish" title="Sync perubahan live ke GitHub & Vercel">
+        <i class="fas fa-cloud-arrow-up"></i> <span class="nav-btn-text">SYNC LIVE</span>
       </button>
       <a href="index.html" class="btn btn--secondary btn--sm admin-nav-btn" target="_blank" title="Buka website di tab baru">
         <i class="fas fa-arrow-up-right-from-square"></i> <span class="nav-btn-text">LIHAT WEB</span>
       </a>
-      <button class="btn btn--danger btn--sm admin-nav-btn" id="btn-reset-db" style="border: 1px solid rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.1); color: #F87171;" title="Reset database ke default">
-        <i class="fas fa-rotate-left"></i> <span class="nav-btn-text">RESET</span>
-      </button>
       <button class="btn btn--secondary btn--sm admin-nav-btn" id="btn-admin-logout" style="border-color:rgba(230, 195, 108, 0.4); color:var(--color-gold);" title="Logout dari CMS">
         <i class="fas fa-arrow-right-from-bracket"></i> <span class="nav-btn-text">LOGOUT</span>
       </button>
@@ -110,16 +111,6 @@
         <li>
           <button class="admin-tab-btn" data-tab="tab-community-gallery">
             <i class="fas fa-camera-retro"></i> Galeri Komunitas
-          </button>
-        </li>
-        <li>
-          <button class="admin-tab-btn" data-tab="tab-sync">
-            <i class="fab fa-github"></i> Sync GitHub &amp; Vercel
-          </button>
-        </li>
-        <li>
-          <button class="admin-tab-btn" data-tab="tab-backup">
-            <i class="fas fa-file-export"></i> Ekspor &amp; Backup
           </button>
         </li>
       </ul>
@@ -270,155 +261,6 @@
                 <!-- Rendered by js/admin.js -->
               </tbody>
             </table>
-          </div>
-        </div>
-      </section>
-
-
-      <!-- ============================================
-           TAB 4: SYNC GITHUB & VERCEL
-           ============================================ -->
-      <section class="admin-panel" id="tab-sync">
-        <div class="admin-panel-header">
-          <div>
-            <h1 class="admin-panel-title">Otomatisasi Publikasi GitHub &amp; Vercel</h1>
-            <p style="color:var(--color-muted); font-size:0.85rem;">Hubungkan CMS langsung ke repository GitHub sehingga setiap perubahan otomatis dideploy ke Vercel tanpa perlu commit manual.</p>
-          </div>
-          <button class="btn btn--gold btn--sm" id="btn-trigger-publish">
-            <i class="fas fa-rocket"></i> Publish Sekarang ke Live
-          </button>
-        </div>
-
-        <!-- Status & Action Card -->
-        <div class="admin-card" style="border: 1px solid rgba(230, 195, 108, 0.3); background: rgba(230, 195, 108, 0.04);">
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1rem;">
-            <div>
-              <span id="sync-status-badge" class="schedule-status-badge status-open" style="font-size:0.75rem; padding:0.25rem 0.6rem;">
-                <i class="fas fa-circle-check"></i> Siap Publikasi
-              </span>
-              <div id="sync-status-text" style="color:var(--color-white); font-weight:600; font-size:0.95rem; margin-top:0.35rem;">
-                Data CMS siap dikirim langsung ke GitHub &amp; Vercel
-              </div>
-            </div>
-            <div id="sync-last-time" style="font-size:0.8rem; color:var(--color-muted);">
-              Terakhir dipublish: Belum pernah
-            </div>
-          </div>
-
-          <div style="margin-top:0.75rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
-            <button class="btn btn--gold" id="btn-sync-publish-big">
-              <i class="fas fa-cloud-arrow-up"></i> PUBLISH SEMUA PERUBAHAN KE VERCEL
-            </button>
-            <button class="btn btn--secondary btn--sm" id="btn-sync-test-conn">
-              <i class="fas fa-plug"></i> Tes Koneksi GitHub
-            </button>
-          </div>
-
-          <!-- Progress / Log Output -->
-          <div id="sync-log-box" style="display:none; margin-top:1rem; padding:0.85rem 1rem; border-radius:6px; font-size:0.82rem; font-family:monospace; line-height:1.5; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.4); color:var(--color-white);">
-          </div>
-        </div>
-
-        <!-- Configuration Card -->
-        <div class="admin-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.75rem;">
-            <h3 style="font-family:var(--font-heading); color:var(--color-white); margin:0;">Pengaturan Publikasi GitHub &amp; Vercel</h3>
-            <span style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); color:#34D399; font-size:0.75rem; font-weight:700; padding:0.2rem 0.6rem; border-radius:999px; display:inline-flex; align-items:center; gap:0.35rem;">
-              <i class="fas fa-shield-halved"></i> Server-Side Token Aktif
-            </span>
-          </div>
-          <p style="color:var(--color-muted); font-size:0.85rem; margin-bottom:1.25rem;">
-            Token GitHub Anda telah disimpan secara aman di backend server Vercel (<code>api/publish.js</code>). Pengunjung web tidak dapat melihat atau mengakses token ini. Anda dapat langsung mengklik <strong>PUBLISH VERCEL</strong> dari perangkat mana pun.
-          </p>
-
-          <div class="admin-form-row">
-            <div class="admin-form-group">
-              <label>Repository GitHub *</label>
-              <input type="text" id="sync-gh-repo" class="admin-input" value="abuhuud/baddel" placeholder="username/repository">
-            </div>
-            <div class="admin-form-group">
-              <label>Target Branch *</label>
-              <input type="text" id="sync-gh-branch" class="admin-input" value="main" placeholder="main">
-            </div>
-          </div>
-
-          <div class="admin-form-group">
-            <label>GitHub Personal Access Token <span style="color:var(--color-muted); font-weight:400;">(Opsional — Server token sudah aktif)</span></label>
-            <div style="display:flex; gap:0.5rem;">
-              <input type="password" id="sync-gh-token" class="admin-input" placeholder="●●●●●●●● (Terkonfigurasi aman di Server)" style="flex:1;">
-              <button type="button" class="btn btn--secondary btn--sm" id="btn-toggle-sync-token" style="flex-shrink:0;">
-                <i class="far fa-eye" id="icon-toggle-sync-token"></i>
-              </button>
-            </div>
-            <small style="font-size:0.72rem; color:var(--color-muted); margin-top:0.35rem; display:block;">
-              Kosongkan jika menggunakan token bawaan server Vercel. Isi hanya jika Anda ingin mengganti dengan token baru.
-            </small>
-          </div>
-
-          <div class="admin-form-group" style="margin-top:0.75rem;">
-            <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; font-weight:500;">
-              <input type="checkbox" id="sync-auto-publish" style="accent-color:var(--color-gold); width:16px; height:16px;">
-              <span>Otomatis Publish ke Vercel setiap kali menyimpan jadwal / pemain / momen</span>
-            </label>
-          </div>
-
-          <div style="display:flex; justify-content:flex-end; margin-top:1.25rem;">
-            <button class="btn btn--primary btn--sm" id="btn-save-sync-config">
-              <i class="fas fa-save"></i> Simpan Pengaturan
-            </button>
-          </div>
-        </div>
-
-        <!-- Guide Card -->
-        <div class="admin-card">
-          <h3 style="font-family:var(--font-heading); color:var(--color-gold); margin-bottom:0.75rem;">
-            <i class="fas fa-circle-question"></i> Cara Membuat GitHub Personal Access Token (1 Menit)
-          </h3>
-          <ol style="color:var(--color-muted); font-size:0.85rem; line-height:1.7; padding-left:1.2rem; margin:0;">
-            <li>Buka <a href="https://github.com/settings/tokens" target="_blank" rel="noopener noreferrer" style="color:var(--color-gold); font-weight:600;">GitHub Settings Tokens ↗</a> di tab baru.</li>
-            <li>Klik <strong>Generate new token (classic)</strong>.</li>
-            <li>Beri Note: <code>Baddel CMS Publish</code>, lalu centang scope <strong>repo</strong> (Full control of private repositories).</li>
-            <li>Scroll ke bawah dan klik tombol hijau <strong>Generate token</strong>.</li>
-            <li>Salin token (dimulai dengan <code>ghp_...</code>) lalu tempel ke kolom token di atas dan klik <strong>Simpan Pengaturan</strong>.</li>
-          </ol>
-        </div>
-      </section>
-
-
-      <!-- ============================================
-           TAB 5: EKSPOR & BACKUP
-           ============================================ -->
-      <section class="admin-panel" id="tab-backup">
-        <div class="admin-panel-header">
-          <div>
-            <h1 class="admin-panel-title">Ekspor & Backup Database</h1>
-            <p style="color:var(--color-muted); font-size:0.85rem;">Simpan backup data atau download file <code>data.js</code> terbaru untuk disimpan langsung ke repo GitHub.</p>
-          </div>
-        </div>
-
-        <div class="admin-card">
-          <h3 style="font-family:var(--font-heading); color:var(--color-white); margin-bottom:0.75rem;">Download updated data.js</h3>
-          <p style="color:var(--color-muted); font-size:0.85rem; margin-bottom:1.25rem;">
-            Karena situs ini bersifat statis di GitHub Pages, Anda dapat mendownload file <code>data.js</code> yang sudah diperbarui dan menaruhnya di folder <code>js/data.js</code> untuk dijadikan commit permanen di repository GitHub.
-          </p>
-          <button class="btn btn--gold" id="btn-download-data-js">
-            <i class="fas fa-download"></i> DOWNLOAD DATA.JS
-          </button>
-        </div>
-
-        <div class="admin-card">
-          <h3 style="font-family:var(--font-heading); color:var(--color-white); margin-bottom:0.75rem;">JSON Backup / Restore</h3>
-          <p style="color:var(--color-muted); font-size:0.85rem; margin-bottom:1rem;">Salin data JSON lengkap atau tempel JSON untuk merestore data ke browser ini.</p>
-          <div class="admin-form-group">
-            <textarea id="raw-json-data" class="admin-textarea" rows="8" placeholder="Data JSON akan tampil di sini..."></textarea>
-          </div>
-          <div style="display:flex; gap:0.75rem; margin-top:1rem;">
-            <button class="btn btn--secondary btn--sm" id="btn-copy-json">
-              <i class="fas fa-copy"></i> Salin JSON
-            </button>
-            <button class="btn btn--primary btn--sm" id="btn-restore-json">
-              <i class="fas fa-upload"></i> Restore dari JSON
-            </button>
           </div>
         </div>
       </section>
