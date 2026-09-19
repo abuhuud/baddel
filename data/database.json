@@ -1,6 +1,6 @@
 {
   "version": "2026.09.19-v4",
-  "lastUpdated": "2026-09-19T14:59:58.948Z",
+  "lastUpdated": "2026-09-19T15:09:27.357Z",
   "players": [
     {
       "id": "basz",
@@ -251,6 +251,8 @@
       "locationUrl": "https://maps.app.goo.gl/G88Qu9pKyHpmKrvL9",
       "fee": "Rp 30.000 / orang",
       "status": "open",
+      "eventStatus": "upcoming",
+      "eventStatusText": "Upcoming",
       "slotsLeft": 22,
       "totalSlots": 22,
       "slotsTotal": 22,
@@ -273,6 +275,8 @@
       "locationUrl": "https://maps.google.com/?q=Royal+Sports+Arena+Jakarta",
       "fee": "Rp 50.000 / orang",
       "status": "full",
+      "eventStatus": "completed",
+      "eventStatusText": "Completed",
       "slotsLeft": 0,
       "totalSlots": 22,
       "slotsTotal": 22,
