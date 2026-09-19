@@ -416,9 +416,42 @@ var BadcomData = (function () {
   };
 
   /* ============================================================
-     CMS STORAGE & PERSISTENCE LAYER (LocalStorage + API)
+     CMS STORAGE & GITHUB AUTO-SYNC PERSISTENCE LAYER
      ============================================================ */
   var STORAGE_KEY = 'baddel_cms_db_v1';
+  var REPO_DATA_VERSION = '2026.09.19-v4';
+
+  /**
+   * Menghitung fingerprint unik dari data default di repository GitHub.
+   * Setiap kali file data.js diperbarui dan di-push ke GitHub, fingerprint
+   * ini otomatis berubah, sehingga browser pengunjung langsung memuat data
+   * terupdate dari GitHub tanpa terblokir data lama di localStorage.
+   */
+  function computeDefaultDataHash() {
+    try {
+      var rawStr = JSON.stringify({
+        v: REPO_DATA_VERSION,
+        p: initialAllPlayers.map(function (p) {
+          return [p.id, p.number, p.name, p.category, p.instagram, p.image, (p.gallery || []).length];
+        }),
+        s: defaultSchedules.map(function (s) {
+          return [s.id, s.title, s.sport, s.date, s.isoDate, s.time, s.venue, s.courtNames || s.court, s.fee, s.status, s.slotsLeft, s.totalSlots, s.notes];
+        }),
+        c: defaultCommunityGallery.map(function (c) {
+          return [c.id, c.title, c.subtitle, c.image, c.tag];
+        })
+      });
+
+      var hash = 5381;
+      for (var i = 0; i < rawStr.length; i++) {
+        hash = ((hash << 5) + hash) + rawStr.charCodeAt(i);
+        hash = hash & hash;
+      }
+      return 'baddel_' + Math.abs(hash).toString(36);
+    } catch (e) {
+      return 'baddel_fb_' + Date.now();
+    }
+  }
 
   function normalizePlayer(p, idx) {
     if (!p || typeof p !== 'object') p = {};
@@ -494,11 +527,13 @@ var BadcomData = (function () {
   }
 
   function loadDB() {
+    var currentHash = computeDefaultDataHash();
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         var parsed = JSON.parse(raw);
-        if (parsed && Array.isArray(parsed.players) && parsed.players.length > 0) {
+        // Jika hash cocok, data repository GitHub belum berubah -> gunakan localStorage
+        if (parsed && parsed._dataHash === currentHash && Array.isArray(parsed.players) && parsed.players.length > 0) {
           if (!parsed._v3_empty_gal_init) {
             parsed.players.forEach(function (p) { p.gallery = []; });
             parsed._v3_empty_gal_init = true;
@@ -507,18 +542,36 @@ var BadcomData = (function () {
           return {
             players: parsed.players.map(normalizePlayer),
             schedules: (Array.isArray(parsed.schedules) ? parsed.schedules : defaultSchedules).map(normalizeSchedule),
-            communityGallery: (Array.isArray(parsed.communityGallery) ? parsed.communityGallery : defaultCommunityGallery).map(normalizeCommunity)
+            communityGallery: (Array.isArray(parsed.communityGallery) ? parsed.communityGallery : defaultCommunityGallery).map(normalizeCommunity),
+            _dataHash: currentHash
           };
+        } else {
+          console.info('[Baddel] Perubahan data dari GitHub terdeteksi (' + currentHash + '). Menyinkronkan data...');
         }
       }
     } catch (e) {
-      console.warn('LocalStorage not available, falling back to default data', e);
+      console.warn('LocalStorage not available, falling back to repository data', e);
     }
-    return {
+
+    // Default / Auto-sync: muat data langsung dari file GitHub repository
+    var freshDB = {
       players: initialAllPlayers.map(normalizePlayer),
       schedules: defaultSchedules.map(normalizeSchedule),
-      communityGallery: defaultCommunityGallery.map(normalizeCommunity)
+      communityGallery: defaultCommunityGallery.map(normalizeCommunity),
+      _dataHash: currentHash
     };
+
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        players: freshDB.players,
+        schedules: freshDB.schedules,
+        communityGallery: freshDB.communityGallery,
+        _dataHash: currentHash,
+        lastUpdated: new Date().toISOString()
+      }));
+    } catch (e) {}
+
+    return freshDB;
   }
 
   var activeDB = loadDB();
@@ -529,6 +582,7 @@ var BadcomData = (function () {
         players: activeDB.players,
         schedules: activeDB.schedules,
         communityGallery: activeDB.communityGallery,
+        _dataHash: computeDefaultDataHash(),
         lastUpdated: new Date().toISOString()
       }));
     } catch (e) {
@@ -580,40 +634,37 @@ var BadcomData = (function () {
     try {
       localStorage.removeItem(STORAGE_KEY);
     } catch (e) {}
+    var currentHash = computeDefaultDataHash();
     activeDB = {
-      players: initialAllPlayers.slice(),
-      schedules: defaultSchedules.slice(),
-      communityGallery: defaultCommunityGallery.slice()
+      players: initialAllPlayers.map(normalizePlayer),
+      schedules: defaultSchedules.map(normalizeSchedule),
+      communityGallery: defaultCommunityGallery.map(normalizeCommunity),
+      _dataHash: currentHash
     };
-    saveDB();
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        players: activeDB.players,
+        schedules: activeDB.schedules,
+        communityGallery: activeDB.communityGallery,
+        _dataHash: currentHash,
+        lastUpdated: new Date().toISOString()
+      }));
+    } catch (e) {}
+    syncProperties();
   }
 
   function exportDataJS() {
     var men = activeDB.players.filter(function (p) { return (p.category || 'men') === 'men'; });
     var women = activeDB.players.filter(function (p) { return p.category === 'women'; });
 
-    return [
-      '/* ============================================',
-      '   BADDEL — DATA.JS (Exported from Baddel CMS)',
-      '   Export Date: ' + new Date().toLocaleString(),
-      '   ============================================ */',
-      '',
-      'var BadcomData = (function () {',
-      '',
-      '  var menPlayers = ' + JSON.stringify(men, null, 2) + ';',
-      '',
-      '  var womenPlayers = ' + JSON.stringify(women, null, 2) + ';',
-      '',
-      '  var defaultSchedules = ' + JSON.stringify(activeDB.schedules, null, 2) + ';',
-      '',
-      '  var defaultCommunityGallery = ' + JSON.stringify(activeDB.communityGallery, null, 2) + ';',
-      '',
-      '  /* ... (CMS sync engine) ... */',
-      '  // [Paste into js/data.js for permanent repository commit]',
-      '',
-      '  return { ... };',
-      '})();'
-    ].join('\n');
+    return JSON.stringify({
+      version: REPO_DATA_VERSION,
+      exportedAt: new Date().toISOString(),
+      menPlayers: men,
+      womenPlayers: women,
+      schedules: activeDB.schedules,
+      communityGallery: activeDB.communityGallery
+    }, null, 2);
   }
 
   var exportObj = {
@@ -635,7 +686,8 @@ var BadcomData = (function () {
     getCommunityGallery: getCommunityGallery,
     saveCommunityGallery: saveCommunityGallery,
     resetToDefault: resetToDefault,
-    exportDataJS: exportDataJS
+    exportDataJS: exportDataJS,
+    getDataHash: computeDefaultDataHash
   };
 
   return exportObj;

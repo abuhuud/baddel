@@ -152,6 +152,13 @@
     }
   }
 
+  function refreshAll() {
+    renderSchedulesTable();
+    renderPlayersTable();
+    renderCommunityTable();
+    initBackupSection();
+  }
+
   function initDashboard() {
     initTabs();
     initModals();
@@ -1656,16 +1663,16 @@
     const btnDownload = document.getElementById('btn-download-data-js');
     btnDownload.onclick = function () {
       const code = window.BadcomData.exportDataJS();
-      const blob = new Blob([code], { type: 'application/javascript;charset=utf-8;' });
+      const blob = new Blob([code], { type: 'application/json;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'data.js';
+      a.download = 'baddel-data.json';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      showToast('File data.js berhasil didownload! Simpan di folder js/data.js.', 'success');
+      showToast('File backup baddel-data.json berhasil didownload!', 'success');
     };
 
     // Copy JSON
