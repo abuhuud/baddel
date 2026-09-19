@@ -234,6 +234,29 @@ var BadcomData = (function () {
      ============================================================ */
   var defaultSchedules = [
     {
+      id: "sch-00",
+      title: "BADDEL FRIDAY NIGHT SMASH",
+      sport: "badminton",
+      day: "JUMAT",
+      isoDate: "2026-09-18",
+      dateFormatted: "Jumat, 18 Sep 2026",
+      date: "18 Sep 2026",
+      time: "19:00 - 21:00 WIB",
+      venue: "Royal Sports Arena Jakarta",
+      court: "Court 1 & 2",
+      courtNames: "Court 1, Court 2",
+      mapsUrl: "https://maps.google.com/?q=Royal+Sports+Arena+Jakarta",
+      locationUrl: "https://maps.google.com/?q=Royal+Sports+Arena+Jakarta",
+      eventStatus: "completed",
+      status: "full",
+      slotsLeft: 0,
+      totalSlots: 12,
+      slotsTotal: 12,
+      slotsFilled: 12,
+      fee: "Rp 50.000 / orang",
+      notes: "Sesi main telah sukses diselenggarakan"
+    },
+    {
       id: "sch-01",
       title: "BADDEL WEEKEND SMASH #001",
       sport: "badminton",
@@ -247,6 +270,7 @@ var BadcomData = (function () {
       courtNames: "Court 2, Court 3",
       mapsUrl: "https://maps.google.com/?q=Royal+Sports+Arena+Jakarta",
       locationUrl: "https://maps.google.com/?q=Royal+Sports+Arena+Jakarta",
+      eventStatus: "upcoming",
       status: "open",
       slotsLeft: 4,
       totalSlots: 12,
@@ -269,6 +293,7 @@ var BadcomData = (function () {
       courtNames: "Panoramic Glass Court 1",
       mapsUrl: "https://maps.google.com/?q=Padel+Pro+Jakarta",
       locationUrl: "https://maps.google.com/?q=Padel+Pro+Jakarta",
+      eventStatus: "upcoming",
       status: "full",
       slotsLeft: 0,
       totalSlots: 8,
@@ -291,6 +316,7 @@ var BadcomData = (function () {
       courtNames: "Court 1, Court 2, Court 3",
       mapsUrl: "https://maps.google.com/?q=GOR+Bulutangkis+Jakarta",
       locationUrl: "https://maps.google.com/?q=GOR+Bulutangkis+Jakarta",
+      eventStatus: "upcoming",
       status: "open",
       slotsLeft: 6,
       totalSlots: 16,
@@ -419,7 +445,7 @@ var BadcomData = (function () {
      CMS STORAGE & GITHUB AUTO-SYNC PERSISTENCE LAYER
      ============================================================ */
   var STORAGE_KEY = 'baddel_cms_db_v1';
-  var REPO_DATA_VERSION = '2026.09.19-v4';
+  var REPO_DATA_VERSION = '2026.09.19-v5';
 
   /**
    * Menghitung fingerprint unik dari data default di repository GitHub.
@@ -435,7 +461,7 @@ var BadcomData = (function () {
           return [p.id, p.number, p.name, p.category, p.instagram, p.image, (p.gallery || []).length];
         }),
         s: defaultSchedules.map(function (s) {
-          return [s.id, s.title, s.sport, s.date, s.isoDate, s.time, s.venue, s.courtNames || s.court, s.fee, s.status, s.slotsLeft, s.totalSlots, s.notes];
+          return [s.id, s.title, s.sport, s.date, s.isoDate, s.time, s.venue, s.courtNames || s.court, s.fee, s.status, s.eventStatus, s.slotsLeft, s.totalSlots, s.notes];
         }),
         c: defaultCommunityGallery.map(function (c) {
           return [c.id, c.title, c.subtitle, c.image, c.tag];
@@ -488,6 +514,22 @@ var BadcomData = (function () {
     var venue = s.venue || 'Royal Sports Arena Jakarta';
     var mapsUrl = s.mapsUrl || s.locationUrl || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(venue));
 
+    // Determine eventStatus (upcoming or completed)
+    var eventStatus = s.eventStatus || s.scheduleStatus || '';
+    if (!eventStatus) {
+      if (s.isoDate && /^\d{4}-\d{2}-\d{2}$/.test(s.isoDate)) {
+        var todayStr = new Date().toISOString().slice(0, 10);
+        eventStatus = s.isoDate < todayStr ? 'completed' : 'upcoming';
+      } else {
+        eventStatus = 'upcoming';
+      }
+    } else {
+      eventStatus = eventStatus.toLowerCase().trim();
+      if (eventStatus !== 'completed' && eventStatus !== 'upcoming') {
+        eventStatus = 'upcoming';
+      }
+    }
+
     return {
       id: s.id || 'sch_' + (idx != null ? idx : Date.now()),
       title: String(title),
@@ -504,6 +546,8 @@ var BadcomData = (function () {
       locationUrl: String(mapsUrl),
       fee: s.fee || 'Rp 50.000 / org',
       status: slotsLeft === 0 ? 'full' : (s.status === 'full' ? 'full' : 'open'),
+      eventStatus: eventStatus,
+      eventStatusText: eventStatus === 'completed' ? 'Completed' : 'Upcoming',
       slotsLeft: slotsLeft,
       totalSlots: totalSlots,
       slotsTotal: totalSlots,

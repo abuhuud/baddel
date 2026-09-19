@@ -148,12 +148,13 @@
               <thead>
                 <tr>
                   <th>Sesi / Judul</th>
-                  <th style="width: 110px;">Sport</th>
-                  <th style="width: 170px;">Waktu &amp; Tanggal</th>
-                  <th style="width: 180px;">Lokasi</th>
-                  <th style="width: 140px;">HTM</th>
-                  <th style="width: 120px;">Status Slot</th>
-                  <th style="text-align:right; width: 150px;">Aksi</th>
+                  <th style="width: 100px;">Sport</th>
+                  <th style="width: 120px;">Status Event</th>
+                  <th style="width: 160px;">Waktu &amp; Tanggal</th>
+                  <th style="width: 170px;">Lokasi</th>
+                  <th style="width: 120px;">HTM</th>
+                  <th style="width: 120px;">Ketersediaan</th>
+                  <th style="text-align:right; width: 140px;">Aksi</th>
                 </tr>
               </thead>
               <tbody id="table-schedules-body">
@@ -446,7 +447,7 @@
           <input type="text" id="sched-title" class="admin-input" placeholder="Contoh: Baddel Weekend Smash #014" required>
         </div>
 
-        <!-- Row 2: Olahraga + Status -->
+        <!-- Row 2: Olahraga + Status Event + Ketersediaan -->
         <div class="admin-form-row">
           <div class="admin-form-group">
             <label>Olahraga *</label>
@@ -456,7 +457,14 @@
             </select>
           </div>
           <div class="admin-form-group">
-            <label>Status Sesi</label>
+            <label>Status Jadwal *</label>
+            <select id="sched-event-status" class="admin-select">
+              <option value="upcoming">⚡ Upcoming (Akan Datang)</option>
+              <option value="completed">🏁 Completed (Selesai)</option>
+            </select>
+          </div>
+          <div class="admin-form-group">
+            <label>Ketersediaan Slot</label>
             <select id="sched-status" class="admin-select">
               <option value="open">✅ Tersedia (Open)</option>
               <option value="full">🔒 Full Booked</option>

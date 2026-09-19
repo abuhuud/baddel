@@ -654,7 +654,7 @@
     if (schedules.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="7" style="text-align:center; padding: 2.5rem; color:var(--color-muted);">
+          <td colspan="8" style="text-align:center; padding: 2.5rem; color:var(--color-muted);">
             Belum ada jadwal main yang tersimpan. Klik "Tambah Jadwal Baru" di atas.
           </td>
         </tr>
@@ -667,6 +667,11 @@
         ? `<span class="schedule-sport-badge badge-padel"><i class="fas fa-table-tennis-paddle-ball"></i> Padel</span>`
         : `<span class="schedule-sport-badge badge-badminton"><i class="fas fa-feather"></i> Badminton</span>`;
 
+      const isCompleted = item.eventStatus === 'completed' || (item.eventStatus !== 'upcoming' && adminParseDate(item) && adminParseDate(item) < todayDate);
+      const eventStatusBadge = isCompleted
+        ? `<span class="schedule-status-badge status-completed"><i class="fas fa-circle-check"></i> Completed</span>`
+        : `<span class="schedule-status-badge status-upcoming"><i class="fas fa-calendar-check"></i> Upcoming</span>`;
+
       const statusBadge = item.status === 'full'
         ? `<span class="schedule-status-badge status-full">Full Booked</span>`
         : `<span class="schedule-status-badge status-open">${item.slotsLeft || 0} Tersedia</span>`;
@@ -674,9 +679,10 @@
       const courtStr = item.courtNames || item.court || '';
 
       return `
-        <tr>
+        <tr class="${isCompleted ? 'schedule-row-completed' : ''}">
           <td style="font-weight:600; color:var(--color-white);">${escapeHTML(item.title)}</td>
           <td>${sportBadge}</td>
+          <td>${eventStatusBadge}</td>
           <td>
             <div>${escapeHTML(item.dateFormatted || item.date)}</div>
             <div style="font-size:0.75rem; color:var(--color-muted);">${escapeHTML(item.time)}</div>
@@ -755,6 +761,11 @@
       datePicker.addEventListener('change', function () {
         if (this.value) {
           dateInput.value = formatIndonesianDate(this.value);
+          const evStatusInput = document.getElementById('sched-event-status');
+          if (evStatusInput) {
+            const todayStr = new Date().toISOString().slice(0, 10);
+            evStatusInput.value = this.value < todayStr ? 'completed' : 'upcoming';
+          }
         }
       });
     }
@@ -835,6 +846,7 @@
     const feeInput = document.getElementById('sched-fee');
     const mapsUrlInput = document.getElementById('sched-maps-url');
     const btnPreviewMaps = document.getElementById('btn-preview-maps');
+    const eventStatusInput = document.getElementById('sched-event-status');
 
     if (isEdit) {
       const schedules = window.BadcomData.getSchedules();
@@ -843,6 +855,9 @@
         document.getElementById('sched-title').value = sched.title || '';
         document.getElementById('sched-sport').value = sched.sport || 'badminton';
         document.getElementById('sched-status').value = sched.status || 'open';
+        if (eventStatusInput) {
+          eventStatusInput.value = sched.eventStatus || (sched.isoDate && sched.isoDate < new Date().toISOString().slice(0, 10) ? 'completed' : 'upcoming');
+        }
         if (dateInput) dateInput.value = sched.dateFormatted || sched.date || '';
         if (timeInput) timeInput.value = sched.time || '19:00 - 21:00 WIB';
         document.getElementById('sched-venue').value = sched.venue || '';
@@ -894,6 +909,9 @@
       document.getElementById('sched-title').value = '';
       document.getElementById('sched-sport').value = 'badminton';
       document.getElementById('sched-status').value = 'open';
+      if (eventStatusInput) {
+        eventStatusInput.value = 'upcoming';
+      }
 
       // Set tomorrow's date by default
       const tomorrow = new Date();
@@ -972,6 +990,8 @@
     const slotsLeft = parseInt(document.getElementById('sched-slots').value) || 0;
     const totalSlots = parseInt(document.getElementById('sched-total-slots').value) || 12;
     const notes = document.getElementById('sched-notes').value.trim();
+    const eventStatusInput = document.getElementById('sched-event-status');
+    const eventStatus = (eventStatusInput && eventStatusInput.value) || 'upcoming';
 
     if (!title || !date || !time || !venue) {
       alert('Mohon lengkapi judul, tanggal, waktu, dan lokasi sesi.');
@@ -986,6 +1006,8 @@
       title,
       sport,
       status: slotsLeft === 0 ? 'full' : status,
+      eventStatus: eventStatus,
+      eventStatusText: eventStatus === 'completed' ? 'Completed' : 'Upcoming',
       isoDate: (datePicker && datePicker.value) || '',
       dateFormatted: date,
       date,

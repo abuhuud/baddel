@@ -3146,7 +3146,22 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.25rem;
-  gap: 0.75rem;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.schedule-badges-left {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.schedule-badges-right {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
 }
 
 .schedule-sport-badge {
@@ -3182,6 +3197,25 @@
   font-weight: 600;
   padding: 0.25rem 0.6rem;
   border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+
+.schedule-status-badge.status-upcoming {
+  background: rgba(35, 105, 200, 0.2);
+  color: #60A5FA;
+  border: 1px solid rgba(74, 145, 226, 0.4);
+}
+
+.schedule-status-badge.status-completed {
+  background: rgba(148, 166, 184, 0.15);
+  color: #98A6B8;
+  border: 1px solid rgba(148, 166, 184, 0.3);
+}
+
+.schedule-status-badge.status-ended {
+  background: rgba(100, 116, 139, 0.2);
+  color: #94A3B8;
+  border: 1px solid rgba(100, 116, 139, 0.35);
 }
 
 .schedule-status-badge.status-open {
@@ -3194,6 +3228,17 @@
   background: rgba(239, 68, 68, 0.15);
   color: #F87171;
   border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.schedule-card.is-completed {
+  opacity: 0.75;
+  border-color: rgba(148, 166, 184, 0.25);
+  background: rgba(4, 18, 38, 0.55);
+}
+
+.schedule-card.is-completed:hover {
+  opacity: 0.95;
+  border-color: rgba(148, 166, 184, 0.45);
 }
 
 .schedule-card-title {

@@ -57,45 +57,106 @@
       return null;
     }
 
+    function getItemEventStatus(item, d, today) {
+      if (item && (item.eventStatus === 'completed' || item.eventStatus === 'upcoming')) {
+        return item.eventStatus;
+      }
+      if (d) {
+        return d < today ? 'completed' : 'upcoming';
+      }
+      return 'upcoming';
+    }
+
     function renderSchedules() {
       const all = window.BadcomData ? window.BadcomData.getSchedules() : [];
 
-      // --- H+7 filter ---
+      // --- Current date reference ---
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const cutoff = new Date(today);
       cutoff.setDate(today.getDate() + 7);
+      const pastLimit = new Date(today);
+      pastLimit.setDate(today.getDate() - 7);
 
-      // Apply sport filter + H+7 window
+      // Apply sport & status filter
       const inRange = all.filter(item => {
-        const sportMatch = activeFilter === 'all' ||
-          (item.sport || '').toLowerCase() === activeFilter.toLowerCase();
-        if (!sportMatch) return false;
         const d = parseScheduleDate(item);
-        if (!d) return true; // no parseable date → include (don't hide)
-        d.setHours(0, 0, 0, 0);
-        return d >= today && d <= cutoff;
+        if (d) d.setHours(0, 0, 0, 0);
+
+        const evStatus = getItemEventStatus(item, d, today);
+        const itemSport = (item.sport || '').toLowerCase();
+
+        // 1. Filter tabs logic
+        if (activeFilter === 'upcoming') {
+          if (evStatus !== 'upcoming') return false;
+          if (d && (d < today || d > cutoff)) return false;
+          return true;
+        }
+
+        if (activeFilter === 'completed') {
+          return evStatus === 'completed';
+        }
+
+        if (activeFilter === 'badminton' || activeFilter === 'padel') {
+          if (itemSport !== activeFilter) return false;
+        }
+
+        // 2. Default ('all' or sport): Upcoming H+7 window + Recent Completed
+        if (evStatus === 'upcoming') {
+          if (!d) return true;
+          return d >= today && d <= cutoff;
+        } else {
+          // Completed session
+          if (!d) return true;
+          return d >= pastLimit && d <= today;
+        }
       });
 
-      // --- Sort: open (closest date first) → full (closest date first) ---
+      // --- Sort: Upcoming Open (closest) -> Upcoming Full (closest) -> Completed (newest past first) ---
       inRange.sort((a, b) => {
-        const aFull = a.status === 'full' || (a.slotsLeft != null && a.slotsLeft === 0);
-        const bFull = b.status === 'full' || (b.slotsLeft != null && b.slotsLeft === 0);
-        if (aFull !== bFull) return aFull ? 1 : -1; // open first
         const da = parseScheduleDate(a);
         const db = parseScheduleDate(b);
-        if (da && db) return da - db; // closer date first
+        if (da) da.setHours(0, 0, 0, 0);
+        if (db) db.setHours(0, 0, 0, 0);
+
+        const evA = getItemEventStatus(a, da, today);
+        const evB = getItemEventStatus(b, db, today);
+
+        const aFull = a.status === 'full' || (a.slotsLeft != null && a.slotsLeft === 0);
+        const bFull = b.status === 'full' || (b.slotsLeft != null && b.slotsLeft === 0);
+
+        // Group 1: Upcoming Open (rank 0)
+        // Group 2: Upcoming Full (rank 1)
+        // Group 3: Completed (rank 2)
+        const rankA = evA === 'completed' ? 2 : (aFull ? 1 : 0);
+        const rankB = evB === 'completed' ? 2 : (bFull ? 1 : 0);
+
+        if (rankA !== rankB) return rankA - rankB;
+
+        if (evA === 'completed' && evB === 'completed') {
+          if (da && db) return db - da; // most recent completed first
+          if (da) return -1;
+          if (db) return 1;
+          return 0;
+        }
+
+        // Both upcoming
+        if (da && db) return da - db; // closest date first
         if (da) return -1;
         if (db) return 1;
         return 0;
       });
 
       if (inRange.length === 0) {
+        const emptyMsg = activeFilter === 'completed'
+          ? 'Belum ada sesi main yang ditandai Selesai (Completed).'
+          : 'Jadwal main untuk periode ini akan segera diperbarui. Stay tuned!';
+
         container.innerHTML = `
           <div class="schedule-empty">
             <div class="schedule-empty-icon">🏸</div>
-            <h3>Tidak Ada Jadwal 7 Hari Ke Depan</h3>
-            <p>Jadwal main untuk periode ini akan segera diperbarui. Stay tuned!</p>
+            <h3>Tidak Ada Jadwal Ditemukan</h3>
+            <p>${emptyMsg}</p>
           </div>
         `;
         return;
@@ -113,11 +174,25 @@
           : [];
         const feeStr = item.fee || 'Rp 50.000 / org';
         const slotsCount = item.slotsLeft != null ? item.slotsLeft : 4;
-        const isFull = item.status === 'full' || slotsCount === 0;
 
-        const statusBadge = isFull 
-          ? `<span class="schedule-status-badge status-full"><i class="fas fa-lock"></i> Full Booked</span>`
-          : `<span class="schedule-status-badge status-open"><i class="fas fa-circle-check"></i> ${slotsCount} Slot Tersedia</span>`;
+        const d = parseScheduleDate(item);
+        if (d) d.setHours(0, 0, 0, 0);
+        const evStatus = getItemEventStatus(item, d, today);
+        const isCompleted = evStatus === 'completed';
+        const isFull = isCompleted || item.status === 'full' || slotsCount === 0;
+
+        // Lifecycle Badge (Upcoming vs Completed in English)
+        const eventStatusBadge = isCompleted
+          ? `<span class="schedule-status-badge status-completed"><i class="fas fa-circle-check"></i> Completed</span>`
+          : `<span class="schedule-status-badge status-upcoming"><i class="fas fa-calendar-check"></i> Upcoming</span>`;
+
+        // Capacity / State Badge
+        const slotBadge = isCompleted
+          ? `<span class="schedule-status-badge status-ended"><i class="fas fa-flag-checkered"></i> Selesai</span>`
+          : (isFull 
+            ? `<span class="schedule-status-badge status-full"><i class="fas fa-lock"></i> Full Booked</span>`
+            : `<span class="schedule-status-badge status-open"><i class="fas fa-circle-check"></i> ${slotsCount} Slot Tersedia</span>`
+          );
 
         const sportBadge = sport === 'padel'
           ? `<span class="schedule-sport-badge badge-padel"><i class="fas fa-table-tennis-paddle-ball"></i> Padel</span>`
@@ -131,10 +206,15 @@
         const waLink = `https://wa.me/6281270000739?text=${waText}`;
 
         return `
-          <div class="schedule-card ${isFull ? 'is-full' : ''}" data-sport="${sport}">
+          <div class="schedule-card ${isFull ? 'is-full' : ''} ${isCompleted ? 'is-completed' : ''}" data-sport="${sport}">
             <div class="schedule-card-header">
-              ${sportBadge}
-              ${statusBadge}
+              <div class="schedule-badges-left">
+                ${sportBadge}
+                ${eventStatusBadge}
+              </div>
+              <div class="schedule-badges-right">
+                ${slotBadge}
+              </div>
             </div>
 
             <div class="schedule-card-body">
@@ -204,7 +284,12 @@
                   <span>Lokasi</span>
                   <span class="schedule-btn-arrow">↗</span>
                 </a>
-                ${isFull ? `
+                ${isCompleted ? `
+                  <button class="schedule-btn-rsvp is-disabled" disabled style="opacity:0.7; cursor:not-allowed;">
+                    <i class="fas fa-circle-check"></i>
+                    <span>Sesi Selesai (Completed)</span>
+                  </button>
+                ` : (isFull ? `
                   <button class="schedule-btn-rsvp is-disabled" disabled>
                     <i class="fas fa-ban"></i>
                     <span>Slot Penuh</span>
@@ -214,7 +299,7 @@
                     <span>Daftar / Join Sesi</span>
                     <i class="fab fa-whatsapp"></i>
                   </a>
-                `}
+                `)}
               </div>
             </div>
           </div>
