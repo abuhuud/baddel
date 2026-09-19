@@ -687,8 +687,48 @@ var BadcomData = (function () {
     saveCommunityGallery: saveCommunityGallery,
     resetToDefault: resetToDefault,
     exportDataJS: exportDataJS,
-    getDataHash: computeDefaultDataHash
+    getDataHash: computeDefaultDataHash,
+    initRemoteSync: initRemoteSync
   };
+
+  function initRemoteSync() {
+    if (typeof fetch === 'undefined') return;
+    fetch('data/database.json?t=' + Date.now())
+      .then(function (res) {
+        if (!res.ok) return null;
+        return res.json();
+      })
+      .then(function (remoteData) {
+        if (remoteData && Array.isArray(remoteData.players) && remoteData.players.length > 0) {
+          var remoteUpdated = remoteData.lastUpdated || '';
+          var localUpdated = (activeDB && activeDB.lastUpdated) || '';
+          if (remoteUpdated > localUpdated || !localUpdated) {
+            console.info('[Baddel Remote Sync] Data terbaru ditemukan di server (' + remoteUpdated + '). Menyinkronkan data...');
+            activeDB.players = remoteData.players.map(normalizePlayer);
+            activeDB.schedules = (remoteData.schedules || defaultSchedules).map(normalizeSchedule);
+            activeDB.communityGallery = (remoteData.communityGallery || defaultCommunityGallery).map(normalizeCommunity);
+            activeDB.lastUpdated = remoteUpdated;
+            activeDB._dataHash = computeDefaultDataHash();
+            saveDB();
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('baddel:data-synced', { detail: activeDB }));
+            }
+          }
+        }
+      })
+      .catch(function () {
+        // Silently continue with local/embedded data
+      });
+  }
+
+  // Trigger remote sync on startup
+  if (typeof window !== 'undefined') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initRemoteSync);
+    } else {
+      initRemoteSync();
+    }
+  }
 
   return exportObj;
 

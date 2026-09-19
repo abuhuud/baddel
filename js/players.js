@@ -387,6 +387,11 @@ var BadcomPlayers = (function () {
         if (searchInput) searchInput.focus();
       });
     }
+
+    /* Listen for remote server database sync events */
+    window.addEventListener('baddel:data-synced', function () {
+      renderGroupedSquads();
+    });
   }
 
   /* ——— Drag on Carousels (Optimized: Event listeners only active during drag) ——— */

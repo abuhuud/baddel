@@ -250,6 +250,11 @@
         renderSchedules();
       }
     });
+
+    // Listen for remote server database sync events
+    window.addEventListener('baddel:data-synced', () => {
+      renderSchedules();
+    });
   }
 
   if (document.readyState === 'loading') {

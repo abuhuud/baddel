@@ -157,6 +157,7 @@
     renderPlayersTable();
     renderCommunityTable();
     initBackupSection();
+    initGitHubSync();
   }
 
   function initDashboard() {
@@ -167,6 +168,7 @@
     renderPlayersTable();
     renderCommunityTable();
     initBackupSection();
+    initGitHubSync();
 
     // Reset button
     const btnReset = document.getElementById('btn-reset-db');
@@ -1009,6 +1011,7 @@
     modalSchedule.classList.remove('open');
     renderSchedulesTable();
     showToast('Jadwal main berhasil disimpan!', 'success');
+    autoPublishIfEnabled();
   }
 
   function deleteSchedule(id) {
@@ -1017,6 +1020,7 @@
     window.BadcomData.saveSchedules(schedules);
     renderSchedulesTable();
     showToast('Jadwal berhasil dihapus.', 'success');
+    autoPublishIfEnabled();
   }
 
 
@@ -1396,6 +1400,7 @@
     modalPlayer.classList.remove('open');
     renderPlayersTable();
     showToast(`Data dan ${playerData.gallery.length} foto momen pemain berhasil disimpan!`, 'success');
+    autoPublishIfEnabled();
   }
 
   function deletePlayer(id) {
@@ -1409,6 +1414,7 @@
     window.BadcomData.savePlayers(filtered);
     renderPlayersTable();
     showToast(`Pemain ${p.name} berhasil dihapus.`, 'success');
+    autoPublishIfEnabled();
   }
 
   // ——— Quick Manage Player Gallery Modal (From Table Button) ———
@@ -1632,6 +1638,7 @@
     modalCommunity.classList.remove('open');
     renderCommunityTable();
     showToast('Momen komunitas berhasil disimpan!', 'success');
+    autoPublishIfEnabled();
   }
 
   function deleteCommunityMoment(id) {
@@ -1640,6 +1647,7 @@
     window.BadcomData.saveCommunityGallery(list);
     renderCommunityTable();
     showToast('Momen komunitas berhasil dihapus.', 'success');
+    autoPublishIfEnabled();
   }
 
 
@@ -1696,6 +1704,304 @@
         alert('Gagal memulihkan: Format JSON tidak valid (' + err.message + ')');
       }
     };
+  }
+
+  // ============================================
+  // TAB 6: GITHUB & VERCEL AUTO-SYNC ENGINE
+  // ============================================
+  const GITHUB_CONFIG_KEY = 'baddel_github_sync_config_v1';
+
+  function getGitHubConfig() {
+    try {
+      const raw = localStorage.getItem(GITHUB_CONFIG_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return {
+      repo: 'abuhuud/baddel',
+      branch: 'main',
+      token: '',
+      autoSync: false,
+      lastPublished: null,
+      lastCommitSha: null
+    };
+  }
+
+  function saveGitHubConfig(cfg) {
+    try {
+      localStorage.setItem(GITHUB_CONFIG_KEY, JSON.stringify(cfg));
+    } catch (e) {}
+  }
+
+  async function triggerPublishToVercel(isAuto = false) {
+    const cfg = getGitHubConfig();
+    const token = (cfg.token || '').trim();
+    const repo = (cfg.repo || 'abuhuud/baddel').trim();
+    const branch = (cfg.branch || 'main').trim();
+
+    if (!token) {
+      if (!isAuto) {
+        const syncTabBtn = document.querySelector('[data-tab="tab-sync"]');
+        if (syncTabBtn) syncTabBtn.click();
+        const tokenInput = document.getElementById('sync-gh-token');
+        if (tokenInput) {
+          tokenInput.focus();
+          tokenInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        showToast('Masukkan GitHub Token terlebih dahulu untuk publish ke Vercel.', 'error');
+      }
+      return;
+    }
+
+    const btnHeader = document.getElementById('btn-header-publish');
+    const btnTab = document.getElementById('btn-trigger-publish');
+    const btnBig = document.getElementById('btn-sync-publish-big');
+    const logBox = document.getElementById('sync-log-box');
+    const statusBadge = document.getElementById('sync-status-badge');
+    const statusText = document.getElementById('sync-status-text');
+    const lastTimeText = document.getElementById('sync-last-time');
+
+    const setButtonsLoading = (isLoading) => {
+      const loadingHTML = '<i class="fas fa-spinner fa-spin"></i> <span>PUBLISHING...</span>';
+      if (btnHeader) {
+        btnHeader.disabled = isLoading;
+        if (isLoading) btnHeader.innerHTML = loadingHTML;
+        else btnHeader.innerHTML = '<i class="fas fa-cloud-arrow-up"></i> <span class="nav-btn-text">PUBLISH VERCEL</span>';
+      }
+      if (btnTab) {
+        btnTab.disabled = isLoading;
+        if (isLoading) btnTab.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+        else btnTab.innerHTML = '<i class="fas fa-rocket"></i> Publish Sekarang ke Live';
+      }
+      if (btnBig) {
+        btnBig.disabled = isLoading;
+        if (isLoading) btnBig.innerHTML = '<i class="fas fa-spinner fa-spin"></i> MENYIMPAN KE GITHUB & VERCEL...';
+        else btnBig.innerHTML = '<i class="fas fa-cloud-arrow-up"></i> PUBLISH SEMUA PERUBAHAN KE VERCEL';
+      }
+    };
+
+    const addLog = (msg) => {
+      if (!logBox) return;
+      logBox.style.display = 'block';
+      const time = new Date().toLocaleTimeString('id-ID');
+      logBox.innerHTML += `<div>[${time}] ${msg}</div>`;
+      logBox.scrollTop = logBox.scrollHeight;
+    };
+
+    try {
+      setButtonsLoading(true);
+      if (logBox) {
+        logBox.innerHTML = '';
+        logBox.style.display = 'block';
+      }
+      if (statusBadge) {
+        statusBadge.className = 'schedule-status-badge';
+        statusBadge.style.background = 'rgba(230,195,108,0.2)';
+        statusBadge.style.color = 'var(--color-gold)';
+        statusBadge.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim ke GitHub...';
+      }
+
+      addLog(`Mempersiapkan data lengkap dari CMS Baddel...`);
+      const fullDB = {
+        version: '2026.09.19-v4',
+        lastUpdated: new Date().toISOString(),
+        players: window.BadcomData.getPlayers(),
+        schedules: window.BadcomData.getSchedules(),
+        communityGallery: window.BadcomData.getCommunityGallery()
+      };
+
+      addLog(`Menghubungkan ke GitHub repository: ${repo} (branch: ${branch})...`);
+      const filePath = 'data/database.json';
+      const apiUrl = `https://api.github.com/repos/${repo}/contents/${filePath}`;
+
+      // 1. Get current SHA if file exists
+      let sha = null;
+      const getRes = await fetch(`${apiUrl}?ref=${branch}&_=${Date.now()}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/vnd.github.v3+json'
+        }
+      });
+      if (getRes.ok) {
+        const fileData = await getRes.json();
+        sha = fileData.sha;
+        addLog(`File ${filePath} ditemukan di repository (SHA: ${sha.slice(0, 7)}).`);
+      } else if (getRes.status === 404) {
+        addLog(`File ${filePath} belum ada di repository, akan dibuat baru.`);
+      } else {
+        const errJson = await getRes.json().catch(() => ({}));
+        throw new Error(errJson.message || `Gagal memeriksa status file di GitHub (HTTP ${getRes.status})`);
+      }
+
+      // 2. Commit update to GitHub
+      addLog(`Mengirim commit pembaruan data ke ${repo}...`);
+      const jsonStr = JSON.stringify(fullDB, null, 2);
+      const b64 = btoa(unescape(encodeURIComponent(jsonStr)));
+      const nowStr = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
+
+      const commitBody = {
+        message: `feat(cms): update data jadwal & pemain via Baddel CMS [${nowStr} WIB]`,
+        content: b64,
+        branch: branch
+      };
+      if (sha) commitBody.sha = sha;
+
+      const putRes = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/vnd.github.v3+json'
+        },
+        body: JSON.stringify(commitBody)
+      });
+
+      if (!putRes.ok) {
+        const errJson = await putRes.json().catch(() => ({}));
+        throw new Error(errJson.message || `Gagal melakukan commit ke GitHub (HTTP ${putRes.status})`);
+      }
+
+      const commitResult = await putRes.json();
+      const commitSha = commitResult.commit ? commitResult.commit.sha.slice(0, 7) : 'latest';
+      const commitUrl = commitResult.commit ? commitResult.commit.html_url : `https://github.com/${repo}/commits/${branch}`;
+
+      addLog(`✅ Commit berhasil dibuat di GitHub! (SHA: <a href="${commitUrl}" target="_blank" style="color:var(--color-gold); text-decoration:underline;">${commitSha}</a>)`);
+      addLog(`🚀 Vercel webhook aktif: Vercel sedang otomatis merebuild dan mendeploy website.`);
+      addLog(`⏱ Perubahan akan live untuk semua pengunjung dalam ~20-30 detik!`);
+
+      // Update state
+      cfg.lastPublished = new Date().toISOString();
+      cfg.lastCommitSha = commitSha;
+      saveGitHubConfig(cfg);
+
+      if (statusBadge) {
+        statusBadge.className = 'schedule-status-badge status-open';
+        statusBadge.style.background = '';
+        statusBadge.style.color = '';
+        statusBadge.innerHTML = '<i class="fas fa-circle-check"></i> Berhasil Diterbitkan!';
+      }
+      if (statusText) {
+        statusText.innerHTML = `Terakhir dipublish ke commit <a href="${commitUrl}" target="_blank" style="color:var(--color-gold); text-decoration:underline;">${commitSha}</a>. Vercel sedang mendeploy.`;
+      }
+      if (lastTimeText) {
+        lastTimeText.textContent = `Terakhir dipublish: ${nowStr} WIB`;
+      }
+
+      showToast(`Data berhasil di-publish ke GitHub (commit ${commitSha})! Vercel otomatis mendeploy.`, 'success');
+
+    } catch (err) {
+      console.error('[Baddel Publish Error]', err);
+      addLog(`❌ ERROR: ${err.message}`);
+      if (statusBadge) {
+        statusBadge.className = 'schedule-status-badge status-full';
+        statusBadge.innerHTML = '<i class="fas fa-triangle-exclamation"></i> Gagal Publish';
+      }
+      if (statusText) {
+        statusText.textContent = `Gagal: ${err.message}. Periksa token GitHub Anda.`;
+      }
+      showToast(`Gagal publish: ${err.message}`, 'error');
+    } finally {
+      setButtonsLoading(false);
+    }
+  }
+
+  function autoPublishIfEnabled() {
+    const cfg = getGitHubConfig();
+    if (cfg && cfg.autoSync && cfg.token) {
+      triggerPublishToVercel(true);
+    }
+  }
+
+  function initGitHubSync() {
+    const cfg = getGitHubConfig();
+    const repoInput = document.getElementById('sync-gh-repo');
+    const branchInput = document.getElementById('sync-gh-branch');
+    const tokenInput = document.getElementById('sync-gh-token');
+    const autoSyncCb = document.getElementById('sync-auto-publish');
+    const btnSaveCfg = document.getElementById('btn-save-sync-config');
+    const btnToggleTok = document.getElementById('btn-toggle-sync-token');
+    const iconToggleTok = document.getElementById('icon-toggle-sync-token');
+    const btnTest = document.getElementById('btn-sync-test-conn');
+    const btnHeader = document.getElementById('btn-header-publish');
+    const btnTab = document.getElementById('btn-trigger-publish');
+    const btnBig = document.getElementById('btn-sync-publish-big');
+    const lastTimeText = document.getElementById('sync-last-time');
+    const statusText = document.getElementById('sync-status-text');
+
+    if (repoInput) repoInput.value = cfg.repo || 'abuhuud/baddel';
+    if (branchInput) branchInput.value = cfg.branch || 'main';
+    if (tokenInput) tokenInput.value = cfg.token || '';
+    if (autoSyncCb) autoSyncCb.checked = Boolean(cfg.autoSync);
+    if (lastTimeText && cfg.lastPublished) {
+      const dt = new Date(cfg.lastPublished).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
+      lastTimeText.textContent = `Terakhir dipublish: ${dt} WIB`;
+    }
+    if (statusText && cfg.lastCommitSha) {
+      statusText.innerHTML = `Terakhir dipublish (commit <code>${cfg.lastCommitSha}</code>). Siap untuk update berikutnya.`;
+    }
+
+    if (btnToggleTok && tokenInput && iconToggleTok) {
+      btnToggleTok.addEventListener('click', () => {
+        const isPw = tokenInput.type === 'password';
+        tokenInput.type = isPw ? 'text' : 'password';
+        iconToggleTok.className = isPw ? 'far fa-eye-slash' : 'far fa-eye';
+      });
+    }
+
+    if (btnSaveCfg) {
+      btnSaveCfg.addEventListener('click', () => {
+        const newCfg = {
+          ...getGitHubConfig(),
+          repo: (repoInput ? repoInput.value.trim() : 'abuhuud/baddel') || 'abuhuud/baddel',
+          branch: (branchInput ? branchInput.value.trim() : 'main') || 'main',
+          token: tokenInput ? tokenInput.value.trim() : '',
+          autoSync: autoSyncCb ? autoSyncCb.checked : false
+        };
+        saveGitHubConfig(newCfg);
+        showToast('Pengaturan GitHub Sync berhasil disimpan!', 'success');
+      });
+    }
+
+    if (btnTest) {
+      btnTest.addEventListener('click', async () => {
+        const token = tokenInput ? tokenInput.value.trim() : '';
+        const repo = repoInput ? repoInput.value.trim() : 'abuhuud/baddel';
+        if (!token) {
+          showToast('Masukkan GitHub Token terlebih dahulu untuk tes koneksi.', 'error');
+          return;
+        }
+        btnTest.disabled = true;
+        btnTest.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menghubungkan...';
+        try {
+          const res = await fetch(`https://api.github.com/repos/${repo}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Accept': 'application/vnd.github.v3+json'
+            }
+          });
+          if (!res.ok) {
+            const errJson = await res.json().catch(() => ({}));
+            throw new Error(errJson.message || `HTTP ${res.status}`);
+          }
+          const repoData = await res.json();
+          showToast(`Koneksi berhasil terhubung ke repository ${repoData.full_name}!`, 'success');
+          const badge = document.getElementById('sync-status-badge');
+          if (badge) {
+            badge.className = 'schedule-status-badge status-open';
+            badge.innerHTML = '<i class="fas fa-circle-check"></i> Terhubung ke GitHub';
+          }
+        } catch (e) {
+          showToast(`Gagal terhubung: ${e.message}`, 'error');
+        } finally {
+          btnTest.disabled = false;
+          btnTest.innerHTML = '<i class="fas fa-plug"></i> Tes Koneksi GitHub';
+        }
+      });
+    }
+
+    // Publish triggers
+    if (btnHeader) btnHeader.addEventListener('click', () => triggerPublishToVercel(false));
+    if (btnTab) btnTab.addEventListener('click', () => triggerPublishToVercel(false));
+    if (btnBig) btnBig.addEventListener('click', () => triggerPublishToVercel(false));
   }
 
   function escapeHTML(str) {
