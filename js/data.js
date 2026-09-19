@@ -743,25 +743,38 @@ var BadcomData = (function () {
   function initRemoteSync() {
     if (typeof fetch === 'undefined') return;
 
-    var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
-    var timerId = controller ? setTimeout(function () {
-      try { controller.abort(); } catch (e) {}
-    }, 3500) : null;
+    var PRIMARY_TIMEOUT = 3500;
+    var FALLBACK_TIMEOUT = 4000;
 
-    fetch('data/database.json?t=' + Date.now(), {
-      cache: 'no-cache',
-      signal: controller ? controller.signal : undefined
-    })
-      .then(function (res) {
+    function fetchWithTimeout(url, options, timeoutMs) {
+      var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      var timerId = ctrl ? setTimeout(function () {
+        try { ctrl.abort(); } catch (e) {}
+      }, timeoutMs) : null;
+
+      var req = fetch(url, Object.assign({}, options, { signal: ctrl ? ctrl.signal : undefined }));
+
+      return req.then(function (res) {
         if (timerId) clearTimeout(timerId);
+        return res;
+      }, function (err) {
+        if (timerId) clearTimeout(timerId);
+        throw err;
+      });
+    }
+
+    fetchWithTimeout('data/database.json?t=' + Date.now(), { cache: 'no-cache' }, PRIMARY_TIMEOUT)
+      .then(function (res) {
         if (!res.ok) throw new Error('Local database.json status: ' + res.status);
         return res.json();
       })
       .catch(function () {
-        // Fallback to GitHub raw
-        return fetch('https://raw.githubusercontent.com/abuhuud/baddel/main/data/database.json?t=' + Date.now(), {
-          cache: 'no-cache'
-        })
+        // Fallback to GitHub raw with its own independent timeout
+        return fetchWithTimeout(
+          'https://raw.githubusercontent.com/abuhuud/baddel/main/data/database.json?t=' + Date.now(),
+          { cache: 'no-cache' },
+          FALLBACK_TIMEOUT
+        )
           .then(function (res) {
             if (!res.ok) return null;
             return res.json();

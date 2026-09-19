@@ -1824,29 +1824,33 @@
       btnHeader.addEventListener('click', () => triggerPublishToVercel(false));
     }
 
-    // Auto-check serverless API status on load with timeout to prevent hung refresh
-    const checkCtrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
-    const checkTimer = checkCtrl ? setTimeout(() => {
-      try { checkCtrl.abort(); } catch (e) {}
-    }, 2800) : null;
+    // Defer status-check until AFTER the browser marks the page as fully loaded.
+    // This prevents the browser refresh button from spinning indefinitely due to
+    // an in-flight fetch request at page load time (common with Vercel cold starts).
+    setTimeout(() => {
+      const checkCtrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      const checkTimer = checkCtrl ? setTimeout(() => {
+        try { checkCtrl.abort(); } catch (e) {}
+      }, 2500) : null;
 
-    fetch('/api/publish', { signal: checkCtrl ? checkCtrl.signal : undefined })
-      .then(r => {
-        if (checkTimer) clearTimeout(checkTimer);
-        return r.json();
-      })
-      .then(data => {
-        const headerBadge = document.getElementById('header-sync-status-badge');
-        if (data && data.hasServerToken && headerBadge) {
-          headerBadge.style.color = '#34D399';
-          headerBadge.style.background = 'rgba(16, 185, 129, 0.12)';
-          headerBadge.style.borderColor = 'rgba(16, 185, 129, 0.3)';
-          headerBadge.innerHTML = '<span style="width:7px; height:7px; border-radius:50%; background:#34D399; display:inline-block; box-shadow:0 0 8px #34D399;"></span> <span id="header-sync-status-text">Live Sync Aktif</span>';
-        }
-      })
-      .catch(() => {
-        if (checkTimer) clearTimeout(checkTimer);
-      });
+      fetch('/api/publish', { signal: checkCtrl ? checkCtrl.signal : undefined })
+        .then(r => {
+          if (checkTimer) clearTimeout(checkTimer);
+          return r.json();
+        })
+        .then(data => {
+          const headerBadge = document.getElementById('header-sync-status-badge');
+          if (data && data.hasServerToken && headerBadge) {
+            headerBadge.style.color = '#34D399';
+            headerBadge.style.background = 'rgba(16, 185, 129, 0.12)';
+            headerBadge.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+            headerBadge.innerHTML = '<span style="width:7px; height:7px; border-radius:50%; background:#34D399; display:inline-block; box-shadow:0 0 8px #34D399;"></span> <span id="header-sync-status-text">Live Sync Aktif</span>';
+          }
+        })
+        .catch(() => {
+          if (checkTimer) clearTimeout(checkTimer);
+        });
+    }, 800);
   }
 
   function escapeHTML(str) {
