@@ -1,6 +1,6 @@
 {
   "version": "2026.09.19-v4",
-  "lastUpdated": "2026-09-19T14:47:38.410Z",
+  "lastUpdated": "2026-09-19T14:55:53.479Z",
   "players": [
     {
       "id": "basz",
@@ -235,6 +235,28 @@
     }
   ],
   "schedules": [
+    {
+      "id": "sched_1789829714284",
+      "title": "Mabar Rutin Sabtu - GOR Cempaka Putih",
+      "sport": "badminton",
+      "dateFormatted": "Sabtu, 3 Oktober 2026",
+      "date": "Sabtu, 3 Oktober 2026",
+      "isoDate": "2026-10-03",
+      "day": "",
+      "time": "18:08 - 22:00 WIB",
+      "venue": "GOR Cempaka Putih",
+      "court": "Court 2, Court 3, Court 4",
+      "courtNames": "Court 2, Court 3, Court 4",
+      "mapsUrl": "https://maps.app.goo.gl/G88Qu9pKyHpmKrvL9",
+      "locationUrl": "https://maps.app.goo.gl/G88Qu9pKyHpmKrvL9",
+      "fee": "Rp 30.000 / orang",
+      "status": "open",
+      "slotsLeft": 22,
+      "totalSlots": 22,
+      "slotsTotal": 22,
+      "slotsFilled": 0,
+      "notes": "3 Lapangan masing-masing 4 Jam"
+    },
     {
       "id": "sched_1789829229343",
       "title": "Mabar Rutin Sabtu - ZSC Badminton, Kemayoran",
