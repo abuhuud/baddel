@@ -285,18 +285,18 @@
                   <span class="schedule-btn-arrow">↗</span>
                 </a>
                 ${isCompleted ? `
-                  <button class="schedule-btn-rsvp is-disabled" disabled style="opacity:0.7; cursor:not-allowed;">
+                  <button type="button" class="schedule-btn-rsvp is-disabled is-completed" disabled title="Sesi Main Telah Selesai (Completed)">
                     <i class="fas fa-circle-check"></i>
-                    <span>Sesi Selesai (Completed)</span>
+                    <span>Completed</span>
                   </button>
                 ` : (isFull ? `
-                  <button class="schedule-btn-rsvp is-disabled" disabled>
+                  <button type="button" class="schedule-btn-rsvp is-disabled" disabled title="Slot Sesi Telah Penuh">
                     <i class="fas fa-ban"></i>
                     <span>Slot Penuh</span>
                   </button>
                 ` : `
                   <a href="${waLink}" target="_blank" rel="noopener noreferrer" class="schedule-btn-rsvp" title="Daftar & Booking Slot via WhatsApp">
-                    <span>Daftar / Join Sesi</span>
+                    <span>Daftar / Join</span>
                     <i class="fab fa-whatsapp"></i>
                   </a>
                 `)}
