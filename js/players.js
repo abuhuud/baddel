@@ -28,18 +28,27 @@ var BadcomPlayers = (function () {
       staggerCardsInGroup(document.getElementById('squad-group-men'));
       staggerCardsInGroup(document.getElementById('squad-group-women'));
     });
+
+    /* Live update if changes happen in CMS tab */
+    window.addEventListener('storage', function (e) {
+      if (e.key === 'baddel_cms_db_v1') {
+        renderGroupedSquads();
+      }
+    });
   }
 
   /* ——— Render Grouped Squads (Supports Carousels & Grids) ——— */
   function renderGroupedSquads() {
-    var allPlayers = BadcomData.players || [];
+    var allPlayers = (window.BadcomData && typeof window.BadcomData.getPlayers === 'function')
+      ? window.BadcomData.getPlayers()
+      : (BadcomData.players || []);
     var colors     = BadcomData.playerColors || [];
 
-    var menPlayers = BadcomData.menPlayers || allPlayers.filter(function (p) {
+    var menPlayers = allPlayers.filter(function (p) {
       return (p.category || 'men').toLowerCase() === 'men';
     });
 
-    var womenPlayers = BadcomData.womenPlayers || allPlayers.filter(function (p) {
+    var womenPlayers = allPlayers.filter(function (p) {
       return (p.category || '').toLowerCase() === 'women';
     });
 

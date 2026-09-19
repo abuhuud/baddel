@@ -89,6 +89,7 @@
 
       <!-- Desktop links -->
       <ul class="navbar__links" role="list">
+        <li><a href="#schedule" class="navbar__link">Schedule</a></li>
         <li><a href="#about" class="navbar__link">About</a></li>
         <li><a href="#players" class="navbar__link">Players</a></li>
         <li><a href="#gallery" class="navbar__link">Gallery</a></li>
@@ -118,6 +119,7 @@
   <div class="mobile-menu" id="mobile-menu" aria-hidden="true" role="dialog" aria-label="Navigation menu">
     <nav>
       <ul class="mobile-menu__links" role="list">
+        <li><a href="#schedule" class="mobile-menu__link">Schedule</a></li>
         <li><a href="#about" class="mobile-menu__link">About</a></li>
         <li><a href="#players" class="mobile-menu__link">Players</a></li>
         <li><a href="#gallery" class="mobile-menu__link">Gallery</a></li>
@@ -237,13 +239,53 @@
 
 
     <!-- ========================================
-         SECTION 02 — ABOUT / WHO WE ARE
+         SECTION 02 — JADWAL MAIN / SCHEDULE
+    ========================================= -->
+    <section class="schedule-section section" id="schedule" aria-labelledby="schedule-heading">
+      <div class="container">
+        
+        <div class="schedule-header-wrapper">
+          <div>
+            <div class="section-label reveal">01 / JADWAL MAIN</div>
+            <h2 class="heading-display reveal reveal-delay-1" id="schedule-heading">
+              COURT<br>SCHEDULE.
+            </h2>
+            <p class="schedule-intro reveal reveal-delay-2">
+              Pilih sesi main badminton atau padel mingguan Baddel. Slot terbatas setiap sesinya, booking via WhatsApp sekarang!
+            </p>
+          </div>
+
+          <!-- Sport Filter Tabs -->
+          <div class="schedule-filters reveal reveal-delay-2">
+            <button class="schedule-filter-btn active" data-filter="all">
+              <i class="fas fa-layer-group"></i> SEMUA SESI
+            </button>
+            <button class="schedule-filter-btn" data-filter="badminton">
+              <i class="fas fa-feather"></i> BADMINTON
+            </button>
+            <button class="schedule-filter-btn" data-filter="padel">
+              <i class="fas fa-table-tennis-paddle-ball"></i> PADEL
+            </button>
+          </div>
+        </div>
+
+        <!-- Schedule Cards Grid -->
+        <div class="schedule-grid reveal reveal-delay-3" id="schedule-grid">
+          <!-- Populated dynamically by js/schedule.js -->
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ========================================
+         SECTION 03 — ABOUT / WHO WE ARE
     ========================================= -->
     <section class="about section" id="about" aria-labelledby="about-heading">
       <div class="container">
 
         <!-- Section Label -->
-        <div class="section-label reveal">01 / WHO WE ARE</div>
+        <div class="section-label reveal">02 / WHO WE ARE</div>
 
         <div class="about__grid">
 
@@ -511,7 +553,7 @@
         </h2>
 
         <!-- Masonry Grid -->
-        <div class="gallery__masonry reveal reveal-delay-2">
+        <div class="gallery__masonry reveal reveal-delay-2" id="gallery-masonry">
 
           <!-- Item 1 — Large landscape -->
           <div class="gallery-item">
@@ -869,6 +911,7 @@
         <!-- Nav -->
         <nav aria-label="Footer navigation">
           <ul class="footer__nav" role="list">
+            <li><a href="#schedule" class="footer__nav-link">Schedule</a></li>
             <li><a href="#about" class="footer__nav-link">About</a></li>
             <li><a href="#players" class="footer__nav-link">Players</a></li>
             <li><a href="#gallery" class="footer__nav-link">Gallery</a></li>
@@ -888,6 +931,7 @@
             class="footer__social-link" id="footer-instagram">INSTAGRAM ↗</a>
           <a href="https://wa.me/6281270000739" target="_blank" rel="noopener noreferrer" class="footer__social-link"
             id="footer-whatsapp">WHATSAPP ↗</a>
+          <a href="admin.html" class="footer__social-link" style="color:var(--color-gold); font-weight:700;">CMS ADMIN ⚙</a>
         </nav>
       </div>
 
@@ -965,6 +1009,7 @@
        SCRIPTS (order matters)
   =========================================== -->
   <script src="js/data.js"></script>
+  <script src="js/schedule.js"></script>
   <script src="js/modal.js"></script>
   <script src="js/players.js"></script>
   <script src="js/navigation.js"></script>

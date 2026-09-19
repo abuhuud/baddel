@@ -13,8 +13,43 @@
     BadcomModal.init();
     BadcomPlayers.init();
     BadcomAnimations.init();
+    initCommunityGallery();
     initMisc();
   });
+
+  /* ——— Dynamic Community Gallery ——— */
+  function initCommunityGallery() {
+    var container = document.getElementById('gallery-masonry');
+    if (!container || !window.BadcomData || typeof window.BadcomData.getCommunityGallery !== 'function') return;
+
+    function renderGallery() {
+      var items = window.BadcomData.getCommunityGallery();
+      if (!items || items.length === 0) return;
+
+      container.innerHTML = items.map(function (item) {
+        return [
+          '<div class="gallery-item">',
+          '  <img class="gallery-item__img" src="' + item.image + '" alt="' + (item.title || 'Baddel Moment') + '" loading="lazy" decoding="async">',
+          '  <div class="gallery-item__overlay">',
+          '    <div class="gallery-item__caption">',
+          '      <div class="gallery-item__caption-title">' + (item.title || '') + '</div>',
+          '      <div class="gallery-item__caption-sub">' + (item.subtitle || '') + '</div>',
+          '    </div>',
+          '  </div>',
+          '</div>'
+        ].join('\n');
+      }).join('\n');
+      initImageReveal();
+    }
+
+    renderGallery();
+
+    window.addEventListener('storage', function (e) {
+      if (e.key === 'baddel_cms_db_v1') {
+        renderGallery();
+      }
+    });
+  }
 
   /* ——— Misc interactions ——— */
   function initMisc() {

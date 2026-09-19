@@ -44,6 +44,12 @@ var BadcomModal = (function () {
 
   /* ——— Open by player id ——— */
   function open(playerId) {
+    if (window.BadcomData && typeof window.BadcomData.getPlayers === 'function') {
+      players = window.BadcomData.getPlayers();
+    } else if (window.BadcomData && window.BadcomData.players) {
+      players = window.BadcomData.players;
+    }
+
     if (!overlay || !modal || !players || players.length === 0) {
       init();
     }

@@ -314,8 +314,120 @@ var BadcomData = (function () {
   ];
 
   /* ============================================================
+     3. JADWAL MAIN / SCHEDULES (DEFAULT DATA)
+     ============================================================ */
+  var defaultSchedules = [
+    {
+      id: "sch-01",
+      sport: "BADMINTON",
+      day: "RABU",
+      date: "24 Sep 2026",
+      time: "19:00 - 21:00 WIB",
+      venue: "Royal Sports Arena Jakarta",
+      court: "Court 2 & 3",
+      locationUrl: "https://maps.google.com/?q=Royal+Sports+Arena+Jakarta",
+      status: "available",
+      slotsTotal: 12,
+      slotsFilled: 8,
+      fee: "Rp 50.000 / org",
+      notes: "Shuttlecock & Lapangan Karpet disediakan"
+    },
+    {
+      id: "sch-02",
+      sport: "PADEL",
+      day: "JUMAT",
+      date: "26 Sep 2026",
+      time: "19:00 - 21:00 WIB",
+      venue: "Padel Pro Jakarta Arena",
+      court: "Panoramic Glass Court 1",
+      locationUrl: "https://maps.google.com/?q=Padel+Pro+Jakarta",
+      status: "almost_full",
+      slotsTotal: 8,
+      slotsFilled: 6,
+      fee: "Rp 125.000 / org",
+      notes: "Bola Padel & Raket sewa tersedia"
+    },
+    {
+      id: "sch-03",
+      sport: "BADMINTON",
+      day: "MINGGU",
+      date: "28 Sep 2026",
+      time: "08:00 - 11:00 WIB",
+      venue: "GOR Bulutangkis Gelora",
+      court: "Court 1, 2 & 3",
+      locationUrl: "https://maps.google.com/?q=GOR+Bulutangkis+Jakarta",
+      status: "available",
+      slotsTotal: 16,
+      slotsFilled: 10,
+      fee: "Rp 45.000 / org",
+      notes: "Sesi Pagi + Coffee & Breakfast Nongkrong"
+    }
+  ];
+
+  /* ============================================================
+     4. GALERI KOMUNITAS (DEFAULT DATA)
+     ============================================================ */
+  var defaultCommunityGallery = [
+    {
+      id: "cg-1",
+      image: "assets/images/gallery/1.JPG",
+      title: "BADDEL COMMUNITY SESSION #001",
+      sub: "ROYAL SPORTS — 2026",
+      tag: "COMMUNITY"
+    },
+    {
+      id: "cg-2",
+      image: "assets/images/gallery/2.JPG",
+      title: "THE YOUNGEST PLAYER",
+      sub: "ROYAL SPORTS — 2026",
+      tag: "RALLY"
+    },
+    {
+      id: "cg-3",
+      image: "assets/images/gallery/3.JPG",
+      title: "THE MEN INTENSE",
+      sub: "ROYAL SPORTS — 2026",
+      tag: "MATCH"
+    },
+    {
+      id: "cg-4",
+      image: "assets/images/gallery/4.JPG",
+      title: "THE QUEENS",
+      sub: "ROYAL SPORTS — 2026",
+      tag: "SQUAD"
+    },
+    {
+      id: "cg-5",
+      image: "assets/images/gallery/5.JPG",
+      title: "MATCH WIN FOCUS",
+      sub: "ROYAL SPORTS — 2026",
+      tag: "CHAMPIONSHIP"
+    },
+    {
+      id: "cg-6",
+      image: "assets/images/gallery/6.jpeg",
+      title: "CRITICAL POINTS",
+      sub: "ROYAL SPORTS — 2026",
+      tag: "TOURNAMENT"
+    },
+    {
+      id: "cg-7",
+      image: "assets/images/gallery/7.JPG",
+      title: "THE LADIES",
+      sub: "ROYAL SPORTS — 2026",
+      tag: "SQUAD"
+    },
+    {
+      id: "cg-8",
+      image: "assets/images/gallery/8.JPG",
+      title: "THE COUPLE",
+      sub: "ROYAL SPORTS — 2026",
+      tag: "NIGHT LIGHTS"
+    }
+  ];
+
+  /* ============================================================
      OTOMATISASI KATEGORI & PENGGABUNGAN DATA
-     (Jangan ubah bagian di bawah ini)
      ============================================================ */
   menPlayers.forEach(function (player) {
     player.category = player.category || "men";
@@ -327,8 +439,7 @@ var BadcomData = (function () {
     player.gallery = player.gallery && player.gallery.length ? player.gallery : (player.image ? [player.image] : []);
   });
 
-  // Gabungan semua pemain untuk modal profil, navigasi prev/next & pencarian
-  var players = menPlayers.concat(womenPlayers);
+  var initialAllPlayers = menPlayers.concat(womenPlayers);
 
   /* Placeholder gradient colors per player (when no image) */
   var playerColors = [
@@ -359,13 +470,156 @@ var BadcomData = (function () {
     playDays: "ALMOST EVERYDAY"
   };
 
-  return {
-    menPlayers: menPlayers,
-    womenPlayers: womenPlayers,
-    players: players,
+  /* ============================================================
+     CMS STORAGE & PERSISTENCE LAYER (LocalStorage + API)
+     ============================================================ */
+  var STORAGE_KEY = 'baddel_cms_db_v1';
+
+  function loadDB() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (parsed && Array.isArray(parsed.players) && parsed.players.length > 0) {
+          return {
+            players: parsed.players,
+            schedules: Array.isArray(parsed.schedules) ? parsed.schedules : defaultSchedules,
+            communityGallery: Array.isArray(parsed.communityGallery) ? parsed.communityGallery : defaultCommunityGallery
+          };
+        }
+      }
+    } catch (e) {
+      console.warn('LocalStorage not available, falling back to default data', e);
+    }
+    return {
+      players: initialAllPlayers,
+      schedules: defaultSchedules,
+      communityGallery: defaultCommunityGallery
+    };
+  }
+
+  var activeDB = loadDB();
+
+  function saveDB() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        players: activeDB.players,
+        schedules: activeDB.schedules,
+        communityGallery: activeDB.communityGallery,
+        lastUpdated: new Date().toISOString()
+      }));
+    } catch (e) {
+      console.error('Failed to save to localStorage', e);
+    }
+    syncProperties();
+  }
+
+  function syncProperties() {
+    exportObj.players = activeDB.players;
+    exportObj.menPlayers = activeDB.players.filter(function (p) { return (p.category || 'men') === 'men'; });
+    exportObj.womenPlayers = activeDB.players.filter(function (p) { return p.category === 'women'; });
+    exportObj.schedules = activeDB.schedules;
+    exportObj.communityGallery = activeDB.communityGallery;
+  }
+
+  /* Public CRUD Methods */
+  function getPlayers() {
+    return activeDB.players.slice();
+  }
+
+  function savePlayers(newPlayers) {
+    if (!Array.isArray(newPlayers)) return;
+    activeDB.players = newPlayers.map(function (p, idx) {
+      p.category = p.category || 'men';
+      p.gallery = Array.isArray(p.gallery) && p.gallery.length ? p.gallery : (p.image ? [p.image] : []);
+      p.number = p.number || (idx + 1 < 10 ? '0' + (idx + 1) : String(idx + 1));
+      return p;
+    });
+    saveDB();
+  }
+
+  function getSchedules() {
+    return activeDB.schedules.slice();
+  }
+
+  function saveSchedules(newSchedules) {
+    if (!Array.isArray(newSchedules)) return;
+    activeDB.schedules = newSchedules;
+    saveDB();
+  }
+
+  function getCommunityGallery() {
+    return activeDB.communityGallery.slice();
+  }
+
+  function saveCommunityGallery(newGallery) {
+    if (!Array.isArray(newGallery)) return;
+    activeDB.communityGallery = newGallery;
+    saveDB();
+  }
+
+  function resetToDefault() {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (e) {}
+    activeDB = {
+      players: initialAllPlayers.slice(),
+      schedules: defaultSchedules.slice(),
+      communityGallery: defaultCommunityGallery.slice()
+    };
+    saveDB();
+  }
+
+  function exportDataJS() {
+    var men = activeDB.players.filter(function (p) { return (p.category || 'men') === 'men'; });
+    var women = activeDB.players.filter(function (p) { return p.category === 'women'; });
+
+    return [
+      '/* ============================================',
+      '   BADDEL — DATA.JS (Exported from Baddel CMS)',
+      '   Export Date: ' + new Date().toLocaleString(),
+      '   ============================================ */',
+      '',
+      'var BadcomData = (function () {',
+      '',
+      '  var menPlayers = ' + JSON.stringify(men, null, 2) + ';',
+      '',
+      '  var womenPlayers = ' + JSON.stringify(women, null, 2) + ';',
+      '',
+      '  var defaultSchedules = ' + JSON.stringify(activeDB.schedules, null, 2) + ';',
+      '',
+      '  var defaultCommunityGallery = ' + JSON.stringify(activeDB.communityGallery, null, 2) + ';',
+      '',
+      '  /* ... (CMS sync engine) ... */',
+      '  // [Paste into js/data.js for permanent repository commit]',
+      '',
+      '  return { ... };',
+      '})();'
+    ].join('\n');
+  }
+
+  var exportObj = {
+    /* Legacy and direct props */
+    menPlayers: activeDB.players.filter(function (p) { return (p.category || 'men') === 'men'; }),
+    womenPlayers: activeDB.players.filter(function (p) { return p.category === 'women'; }),
+    players: activeDB.players,
     playerColors: playerColors,
     social: social,
-    community: community
+    community: community,
+    schedules: activeDB.schedules,
+    communityGallery: activeDB.communityGallery,
+
+    /* Modern CMS API */
+    getPlayers: getPlayers,
+    savePlayers: savePlayers,
+    getSchedules: getSchedules,
+    saveSchedules: saveSchedules,
+    getCommunityGallery: getCommunityGallery,
+    saveCommunityGallery: saveCommunityGallery,
+    resetToDefault: resetToDefault,
+    exportDataJS: exportDataJS
   };
+
+  return exportObj;
 
 })();
