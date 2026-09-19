@@ -129,30 +129,71 @@ var BadcomModal = (function () {
     /* Number */
     setInner('modal-num', 'PLAYER ' + player.number);
 
-    /* Name & nickname */
+    /* Name */
     setInner('modal-name', player.name);
-    setInner('modal-nickname', '"' + player.nickname + '"');
 
-    /* Category & Sport badges */
+    /* Category / Division badge */
     var sportEl = document.getElementById('modal-sport');
     if (sportEl) {
       var cat = (player.category || 'men').toLowerCase();
       var catLabel = cat === 'women' ? "WOMEN'S SQUAD" : "MEN'S SQUAD";
-      var catBadge = '<span class="sport-badge sport-badge--cat sport-badge--' + cat + '">' + catLabel + '</span>';
-      var sportBadges = player.sports.map(function (s) {
-        return '<span class="sport-badge">' + s + '</span>';
-      }).join('');
-      sportEl.innerHTML = catBadge + sportBadges;
+      sportEl.innerHTML = '<span class="sport-badge sport-badge--cat sport-badge--' + cat + '">' + catLabel + '</span>';
     }
-
-    /* Racket */
-    setInner('modal-racket', player.racket);
 
     /* Instagram */
     var igEl = document.getElementById('modal-instagram');
+    var igStat = igEl ? igEl.closest('.modal__stat') : null;
     if (igEl) {
-      igEl.textContent = player.instagram + ' ↗';
-      igEl.href = 'https://instagram.com/' + player.instagram.replace('@', '');
+      if (player.instagram) {
+        igEl.textContent = player.instagram + ' ↗';
+        igEl.href = 'https://instagram.com/' + player.instagram.replace('@', '');
+        if (igStat) igStat.style.display = '';
+      } else {
+        if (igStat) igStat.style.display = 'none';
+      }
+    }
+
+    /* Player Gallery */
+    var galleryWrap = document.getElementById('modal-gallery-wrap');
+    var galleryGrid = document.getElementById('modal-gallery-grid');
+    var playerGallery = (player.gallery && player.gallery.length)
+      ? player.gallery
+      : (player.hasImage && player.image ? [player.image] : []);
+
+    if (galleryGrid) {
+      if (playerGallery.length > 0) {
+        if (galleryWrap) galleryWrap.style.display = '';
+        galleryGrid.innerHTML = playerGallery.map(function (imgSrc, idx) {
+          var isActive = (idx === 0) ? ' is-active' : '';
+          return [
+            '<button type="button" class="modal__gallery-thumb' + isActive + '" data-img="' + escapeHTML(imgSrc) + '" aria-label="Photo ' + (idx + 1) + '">',
+            '  <img src="' + escapeHTML(imgSrc) + '" alt="' + escapeHTML(player.name) + ' moment ' + (idx + 1) + '" loading="lazy" decoding="async">',
+            '</button>'
+          ].join('');
+        }).join('');
+
+        /* Bind thumbnail click to swap main photo */
+        var thumbs = galleryGrid.querySelectorAll('.modal__gallery-thumb');
+        thumbs.forEach(function (thumb) {
+          thumb.addEventListener('click', function () {
+            thumbs.forEach(function (t) { t.classList.remove('is-active'); });
+            thumb.classList.add('is-active');
+            var targetSrc = thumb.getAttribute('data-img');
+            var mainImg = imgSide ? imgSide.querySelector('.modal__image') : null;
+            if (mainImg && targetSrc) {
+              mainImg.style.transition = 'opacity 0.2s ease';
+              mainImg.style.opacity = '0';
+              setTimeout(function () {
+                mainImg.src = targetSrc;
+                mainImg.style.opacity = '1';
+              }, 120);
+            }
+          });
+        });
+      } else {
+        if (galleryWrap) galleryWrap.style.display = 'none';
+        galleryGrid.innerHTML = '';
+      }
     }
 
     /* Nav labels */

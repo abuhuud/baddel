@@ -27,161 +27,203 @@ var BadcomData = (function () {
      12. Reza
      13. Captain Charisma (Irsan)
      14. Fandhi
+     15. Luthfi
      ============================================================ */
   var menPlayers = [
     {
       id: "basz",
       number: "01",
       name: "Om Basz",
-      nickname: "Bastian Tobing",
-      sports: ["BADMINTON", "PADEL"],
-      racket: "Yonex Astrox 88D Pro",
       instagram: "@basz76",
       image: "assets/images/players/basz.jpg",
-      hasImage: true
+      hasImage: true,
+      gallery: [
+        "assets/images/players/basz.jpg",
+        "assets/images/gallery/1.JPG",
+        "assets/images/gallery/3.JPG"
+      ]
     },
     {
       id: "nio",
       number: "02",
       name: "Nio",
-      nickname: "Nio",
-      sports: ["BADMINTON", "PADEL"],
-      racket: "Victor Thruster Ryuga II",
       instagram: "@nio",
       image: "assets/images/players/nio.jpg",
-      hasImage: true
+      hasImage: true,
+      gallery: [
+        "assets/images/players/nio.jpg",
+        "assets/images/gallery/2.JPG",
+        "assets/images/gallery/5.JPG"
+      ]
     },
     {
       id: "glenn",
       number: "03",
       name: "Glenn",
-      nickname: "Surya Halim",
-      sports: ["BADMINTON", "PADEL"],
-      racket: "Fly Power Tornado 800",
       instagram: "@gsh2206",
       image: "assets/images/players/glenn.jpg",
-      hasImage: true
+      hasImage: true,
+      gallery: [
+        "assets/images/players/glenn.jpg",
+        "assets/images/gallery/1.JPG",
+        "assets/images/gallery/3.JPG"
+      ]
     },
     {
       id: "albert",
       number: "04",
       name: "Albert",
-      nickname: "Valentino",
-      sports: ["BADMINTON"],
-      racket: "Yonex Astrox 88D Pro",
       instagram: "@albertvsimatupang",
       image: "assets/images/players/albert.jpg",
-      hasImage: true
+      hasImage: true,
+      gallery: [
+        "assets/images/players/albert.jpg",
+        "assets/images/gallery/3.JPG",
+        "assets/images/gallery/6.jpeg"
+      ]
     },
     {
       id: "damz",
       number: "05",
       name: "Damz",
-      nickname: "Damai",
-      sports: ["BADMINTON"],
-      racket: "Victor Thruster Ryuga II",
       instagram: "@damzskut",
       image: "assets/images/players/damai.jpg",
-      hasImage: true
+      hasImage: true,
+      gallery: [
+        "assets/images/players/damai.jpg",
+        "assets/images/gallery/1.JPG",
+        "assets/images/gallery/5.JPG"
+      ]
     },
     {
       id: "yoga",
       number: "06",
       name: "Yoga",
-      nickname: "Yoga",
-      sports: ["BADMINTON", "PADEL"],
-      racket: "Li-Ning Axforce 90 Max",
       instagram: "@yoga",
       image: "assets/images/players/yoga.jpg",
-      hasImage: true
+      hasImage: true,
+      gallery: [
+        "assets/images/players/yoga.jpg",
+        "assets/images/gallery/culture-padel.jpg",
+        "assets/images/gallery/5.JPG"
+      ]
     },
     {
       id: "gerald",
       number: "07",
       name: "Gerald",
-      nickname: "Valensky Simatupang",
-      sports: ["BADMINTON", "PADEL"],
-      racket: "Li-Ning Axforce 90 Max / Head Speed Pro",
       instagram: "@gelskyy",
       image: "assets/images/players/gerald.jpg",
-      hasImage: true
+      hasImage: true,
+      gallery: [
+        "assets/images/players/gerald.jpg",
+        "assets/images/gallery/3.JPG",
+        "assets/images/gallery/6.jpeg"
+      ]
     },
     {
       id: "vq",
       number: "08",
       name: "Vq",
-      nickname: "Putra",
-      sports: ["BADMINTON", "PADEL"],
-      racket: "Yonex Nanoflare 1000Z ",
       instagram: "@vqpvtra",
       image: "assets/images/players/vq.jpg",
-      hasImage: true
+      hasImage: true,
+      gallery: [
+        "assets/images/players/vq.jpg",
+        "assets/images/gallery/2.JPG",
+        "assets/images/gallery/5.JPG"
+      ]
     },
     {
       id: "ikrom",
       number: "09",
       name: "Huudzm",
-      nickname: "Ikrom Mauludin Salam",
-      sports: ["BADMINTON"],
-      racket: "Hundred Rock R8",
       instagram: "@ikromsalam",
       image: "assets/images/players/ikrom.jpg",
-      hasImage: true
+      hasImage: true,
+      gallery: [
+        "assets/images/players/ikrom.jpg",
+        "assets/images/gallery/culture-smash.jpeg",
+        "assets/images/gallery/1.JPG"
+      ]
     },
     {
       id: "zayn",
       number: "10",
       name: "Zayn",
-      nickname: "Zayn",
-      sports: ["BADMINTON"],
-      racket: "Victor Auraspeed 100X",
       instagram: "@zayn",
       image: "assets/images/players/zayn.jpeg",
-      hasImage: true
+      hasImage: true,
+      gallery: [
+        "assets/images/players/zayn.jpeg",
+        "assets/images/gallery/3.JPG",
+        "assets/images/gallery/6.jpeg"
+      ]
     },
     {
       id: "rey",
       number: "11",
       name: "Rey",
-      nickname: "Hans",
-      sports: ["BADMINTON", "PADEL"],
-      racket: "Li-Ning Halbertec 8000",
       instagram: "@805.hans",
       image: "assets/images/players/rey.jpeg",
-      hasImage: true
+      hasImage: true,
+      gallery: [
+        "assets/images/players/rey.jpeg",
+        "assets/images/gallery/culture-padel.jpg",
+        "assets/images/gallery/5.JPG"
+      ]
     },
     {
       id: "reza",
       number: "12",
       name: "Reza",
-      nickname: "Fajriadi",
-      sports: ["BADMINTON", "PADEL"],
-      racket: "Yonex Astrox 100ZZ ",
       instagram: "@rezafajriadi",
       image: "assets/images/players/reza.jpeg",
-      hasImage: true
+      hasImage: true,
+      gallery: [
+        "assets/images/players/reza.jpeg",
+        "assets/images/gallery/1.JPG",
+        "assets/images/gallery/5.JPG"
+      ]
     },
     {
       id: "irsan",
       number: "13",
       name: "Captain Charisma",
-      nickname: "Irsan Sanusi",
-      sports: ["BADMINTON"],
-      racket: "Mizuno Fortius 11 Quick",
       instagram: "@irsan_sanusi",
       image: "assets/images/players/irsan.jpeg",
-      hasImage: true
+      hasImage: true,
+      gallery: [
+        "assets/images/players/irsan.jpeg",
+        "assets/images/gallery/1.JPG",
+        "assets/images/gallery/3.JPG"
+      ]
     },
     {
       id: "fandhi",
       number: "14",
       name: "Fandhi",
-      nickname: "Nur Hidayat",
-      sports: ["BADMINTON"],
-      racket: "Yonex Astrox 77 Pro",
       instagram: "@fandi.nh",
       image: "assets/images/players/fandhi.jpeg",
-      hasImage: true
+      hasImage: true,
+      gallery: [
+        "assets/images/players/fandhi.jpeg",
+        "assets/images/gallery/culture-smash.jpeg",
+        "assets/images/gallery/2.JPG"
+      ]
+    },
+    {
+      id: "luthfi",
+      number: "15",
+      name: "Luthfi",
+      instagram: "@luthfi",
+      image: "assets/images/players/lutfhi.jpeg",
+      hasImage: true,
+      gallery: [
+        "assets/images/players/lutfhi.jpeg",
+        "assets/images/gallery/1.JPG",
+        "assets/images/gallery/3.JPG"
+      ]
     }
   ];
 
@@ -195,59 +237,81 @@ var BadcomData = (function () {
       id: "ayeq",
       number: "01",
       name: "Ayeq",
-      nickname: "Margareth Sitepu",
-      sports: ["BADMINTON"],
-      racket: "Yonex Nanoflare 700",
       instagram: "@margareth_ayeq",
       image: "assets/images/players/ayeq.jpg",
-      hasImage: true
+      hasImage: true,
+      gallery: [
+        "assets/images/players/ayeq.jpg",
+        "assets/images/gallery/4.JPG",
+        "assets/images/gallery/7.JPG"
+      ]
     },
     {
       id: "lia",
       number: "02",
       name: "Tellia",
-      nickname: "Silalahi",
-      sports: ["BADMINTON"],
-      racket: "Victor DriveX 9X",
       instagram: "@tellia.silalahi",
       image: "assets/images/players/lia.jpg",
-      hasImage: true
+      hasImage: true,
+      gallery: [
+        "assets/images/players/lia.jpg",
+        "assets/images/gallery/4.JPG",
+        "assets/images/gallery/8.JPG"
+      ]
     },
     {
       id: "novi",
       number: "03",
       name: "V",
-      nickname: "Novianti",
-      sports: ["BADMINTON"],
-      racket: "Li-Ning Windstorm 72",
       instagram: "@nyimas_novianti",
       image: "assets/images/players/novi.jpg",
-      hasImage: true
+      hasImage: true,
+      gallery: [
+        "assets/images/players/novi.jpg",
+        "assets/images/gallery/4.JPG",
+        "assets/images/gallery/7.JPG"
+      ]
     },
     {
       id: "cita",
       number: "04",
       name: "Cita",
-      nickname: "Cita",
-      sports: ["BADMINTON", "PADEL"],
-      racket: "Yonex Astrox 66 / Nox MJ10 Luxury",
       instagram: "@citaoncourt",
       image: "assets/images/players/cita.jpg",
-      hasImage: true
+      hasImage: true,
+      gallery: [
+        "assets/images/players/cita.jpg",
+        "assets/images/gallery/4.JPG",
+        "assets/images/gallery/culture-padel.jpg"
+      ]
     },
     {
       id: "sanny",
       number: "05",
       name: "Sanny",
-      nickname: "Ana Yusran",
-      sports: ["BADMINTON"],
-      racket: "Victor Thruster K BXR",
       instagram: "@kimmyalodia",
       image: "assets/images/players/sanny.jpg",
-      hasImage: true
+      hasImage: true,
+      gallery: [
+        "assets/images/players/sanny.jpg",
+        "assets/images/gallery/4.JPG",
+        "assets/images/gallery/7.JPG"
+      ]
+    },
+    {
+      id: "silvi",
+      number: "06",
+      name: "Silvi",
+      instagram: "@silvi",
+      image: "assets/images/players/silvi.jpeg",
+      hasImage: true,
+      gallery: [
+        "assets/images/players/silvi.jpeg",
+        "assets/images/gallery/4.JPG",
+        "assets/images/gallery/7.JPG"
+      ]
     }
   ];
-
 
   /* ============================================================
      OTOMATISASI KATEGORI & PENGGABUNGAN DATA
@@ -255,10 +319,12 @@ var BadcomData = (function () {
      ============================================================ */
   menPlayers.forEach(function (player) {
     player.category = player.category || "men";
+    player.gallery = player.gallery && player.gallery.length ? player.gallery : (player.image ? [player.image] : []);
   });
 
   womenPlayers.forEach(function (player) {
     player.category = player.category || "women";
+    player.gallery = player.gallery && player.gallery.length ? player.gallery : (player.image ? [player.image] : []);
   });
 
   // Gabungan semua pemain untuk modal profil, navigasi prev/next & pencarian
@@ -284,7 +350,7 @@ var BadcomData = (function () {
 
   var community = {
     name: "BADDEL COMMUNITY",
-    shortName: "BADCOM",
+    shortName: "BADDEL",
     tagline: ["PLAY LOUD.", "SMASH PROUD."],
     sports: ["BADMINTON", "PADEL"],
     location: "JAKARTA, INDONESIA",

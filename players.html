@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Players — Baddel Community</title>
-  <meta name="description" content="Meet all players of Baddel Community — Badcom. The people behind the rallies.">
+  <meta name="description" content="Meet all players of Baddel Community. The people behind the rallies.">
 
   <!-- Open Graph -->
   <meta property="og:title"       content="The Players — Baddel Community">
@@ -130,7 +130,6 @@
       <ul class="navbar__links" role="list">
         <li><a href="index.html#about"      class="navbar__link">About</a></li>
         <li><a href="index.html#players"    class="navbar__link active">Players</a></li>
-        <li><a href="index.html#playground" class="navbar__link">Playground</a></li>
         <li><a href="index.html#gallery"    class="navbar__link">Gallery</a></li>
         <li><a href="index.html#partners"   class="navbar__link">Partners</a></li>
       </ul>
@@ -149,14 +148,13 @@
       <ul class="mobile-menu__links" role="list">
         <li><a href="index.html#about"      class="mobile-menu__link">About</a></li>
         <li><a href="index.html#players"    class="mobile-menu__link">Players</a></li>
-        <li><a href="index.html#playground" class="mobile-menu__link">Playground</a></li>
         <li><a href="index.html#gallery"    class="mobile-menu__link">Gallery</a></li>
         <li><a href="index.html#partners"   class="mobile-menu__link">Partners</a></li>
         <li><a href="index.html#connect"    class="mobile-menu__link text-gold">Let's Collab</a></li>
       </ul>
     </nav>
     <div class="mobile-menu__footer">
-      <span class="label">BADCOM © 2026</span>
+      <span class="label">BADDEL © 2026</span>
       <span class="label label--blue">JKT, ID</span>
     </div>
   </div>
@@ -181,13 +179,13 @@
         <!-- Category Filter Tabs (Men / Women) -->
         <div class="squad-tabs" id="squad-filter-tabs" role="tablist" aria-label="Filter squad category">
           <button type="button" class="squad-tab is-active" data-filter="all" role="tab" aria-selected="true">
-            ALL SQUAD <span class="squad-tab__count">19</span>
+            ALL SQUAD <span class="squad-tab__count">21</span>
           </button>
           <button type="button" class="squad-tab" data-filter="men" role="tab" aria-selected="false">
-            MEN'S SQUAD <span class="squad-tab__count">14</span>
+            MEN'S SQUAD <span class="squad-tab__count">15</span>
           </button>
           <button type="button" class="squad-tab" data-filter="women" role="tab" aria-selected="false">
-            WOMEN'S SQUAD <span class="squad-tab__count">5</span>
+            WOMEN'S SQUAD <span class="squad-tab__count">6</span>
           </button>
         </div>
       </div>
@@ -204,7 +202,7 @@
               <span class="squad-group__pill squad-group__pill--men">MEN'S DIVISION</span>
               <h2 class="squad-group__title" style="font-size:2.2rem;">MEN'S SQUAD</h2>
             </div>
-            <span class="squad-group__count">14 PLAYERS ACTIVE</span>
+            <span class="squad-group__count">15 PLAYERS ACTIVE</span>
           </div>
           <div class="players-grid" id="grid-men" role="list"></div>
         </div>
@@ -216,7 +214,7 @@
               <span class="squad-group__pill squad-group__pill--women">WOMEN'S DIVISION</span>
               <h2 class="squad-group__title" style="font-size:2.2rem;">WOMEN'S SQUAD</h2>
             </div>
-            <span class="squad-group__count" style="color:var(--color-gold);">RECRUITING MORE BADCOM QUEENS</span>
+            <span class="squad-group__count" style="color:var(--color-gold);">RECRUITING MORE BADDEL QUEENS</span>
           </div>
           <div class="players-grid" id="grid-women" role="list"></div>
         </div>
@@ -266,7 +264,6 @@
           <ul class="footer__nav" role="list">
             <li><a href="index.html#about"      class="footer__nav-link">About</a></li>
             <li><a href="index.html#players"    class="footer__nav-link">Players</a></li>
-            <li><a href="index.html#playground" class="footer__nav-link">Playground</a></li>
             <li><a href="index.html#gallery"    class="footer__nav-link">Gallery</a></li>
             <li><a href="index.html#partners"   class="footer__nav-link">Partners</a></li>
           </ul>
@@ -291,20 +288,19 @@
         <div class="modal__content-side">
           <div id="modal-num" class="modal__num">PLAYER 00</div>
           <h2 id="modal-name" class="modal__name">—</h2>
-          <p id="modal-nickname" class="modal__nickname">—</p>
           <div class="modal__divider"></div>
           <div class="modal__stats">
             <div class="modal__stat">
-              <span class="modal__stat-label">SPORT</span>
+              <span class="modal__stat-label">DIVISION</span>
               <div class="modal__stat-value modal__stat-value--sport" id="modal-sport"></div>
-            </div>
-            <div class="modal__stat">
-              <span class="modal__stat-label">RACKET / EQUIPMENT</span>
-              <span class="modal__stat-value" id="modal-racket">—</span>
             </div>
             <div class="modal__stat">
               <span class="modal__stat-label">INSTAGRAM</span>
               <a class="modal__ig" id="modal-instagram" href="#" target="_blank" rel="noopener noreferrer">—</a>
+            </div>
+            <div class="modal__gallery-wrap" id="modal-gallery-wrap">
+              <span class="modal__stat-label">PLAYER MOMENTS</span>
+              <div class="modal__gallery-grid" id="modal-gallery-grid"></div>
             </div>
           </div>
           <div class="modal__nav">

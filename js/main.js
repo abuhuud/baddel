@@ -18,18 +18,9 @@
 
   /* ——— Misc interactions ——— */
   function initMisc() {
-    initPlaygroundHover();
     initButtonMagnetic();
     initImageReveal();
     initLogoFallback();
-  }
-
-  /* ——— Playground panel: block text for mobile ——— */
-  function initPlaygroundHover() {
-    var panels = document.querySelectorAll('.playground__panel');
-    panels.forEach(function (panel) {
-      /* Already handled by CSS :hover, no extra JS needed */
-    });
   }
 
   /* ——— Subtle magnetic button effect (desktop only) ——— */

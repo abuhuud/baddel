@@ -48,7 +48,7 @@ var BadcomPlayers = (function () {
       '<article class="player-card player-card--join player-card--join-king no-select" role="link" tabindex="0" onclick="window.location.href=\'index.html#connect\'">',
       '  <div class="join-icon">👑</div>',
       '  <div class="join-title">BE OUR NEXT KING</div>',
-      '  <p class="join-desc">Badcom Men\'s Squad is actively welcoming new badminton & padel players.</p>',
+      '  <p class="join-desc">Baddel Men\'s Squad is actively welcoming new badminton & padel players.</p>',
       '  <span class="btn btn--primary btn--sm" style="pointer-events:auto;">JOIN MEN\'S SQUAD ↗</span>',
       '</article>'
     ].join('\n');
@@ -58,7 +58,7 @@ var BadcomPlayers = (function () {
       '<article class="player-card player-card--join player-card--join-queen no-select" role="link" tabindex="0" onclick="window.location.href=\'index.html#connect\'">',
       '  <div class="join-icon">👑</div>',
       '  <div class="join-title">BE OUR NEXT QUEEN</div>',
-      '  <p class="join-desc">Badcom Women\'s Squad is actively welcoming new badminton & padel players.</p>',
+      '  <p class="join-desc">Baddel Women\'s Squad is actively welcoming new badminton & padel players.</p>',
       '  <span class="btn btn--gold btn--sm" style="pointer-events:auto;">JOIN WOMEN\'S SQUAD ↗</span>',
       '</article>'
     ].join('\n');
@@ -187,14 +187,22 @@ var BadcomPlayers = (function () {
 
   /* ——— Build single card HTML (Optimized with decoding="async") ——— */
   function buildCard(player, color) {
-    var sportsStr = player.sports.join(' / ');
     var hasImage = player.hasImage && player.image;
     var cat = (player.category || 'men').toLowerCase();
     var catLabel = cat === 'women' ? 'WOMEN' : 'MEN';
+    var galleryCount = (player.gallery && player.gallery.length) || (hasImage ? 1 : 0);
 
     var imageHTML = hasImage
       ? '<img class="player-card__img" src="' + player.image + '" alt="' + player.name + '" loading="lazy" decoding="async" onerror="this.parentElement.innerHTML=\'<div class=\\\'player-card__placeholder\\\'><span class=\\\'player-card__placeholder-num\\\'>' + player.number + '</span></div>\'">'
       : '<div class="player-card__placeholder" style="background:linear-gradient(160deg,' + color.from + ',' + color.to + ')"><span class="player-card__placeholder-num">' + player.number + '</span></div>';
+
+    var instagramHTML = player.instagram
+      ? '    <div class="player-card__instagram">' + escapeHTML(player.instagram) + '</div>'
+      : '';
+
+    var galleryBadgeHTML = galleryCount > 1
+      ? '  <div class="player-card__gallery-badge" title="' + galleryCount + ' moments">📷 ' + galleryCount + '</div>'
+      : '';
 
     return [
       '<article',
@@ -211,15 +219,22 @@ var BadcomPlayers = (function () {
       '  <div class="player-card__overlay"></div>',
       '  <div class="player-card__gold-border"></div>',
       '  <div class="player-card__badge-cat player-card__badge-cat--' + cat + '">' + catLabel + '</div>',
+      galleryBadgeHTML,
       '  <div class="player-card__content">',
       '    <div class="player-card__number">' + player.number + '</div>',
       '    <div class="player-card__name">' + player.name + '</div>',
-      '    <div class="player-card__nickname">' + player.nickname + '</div>',
-      '    <div class="player-card__sport">' + sportsStr + '</div>',
+      instagramHTML,
       '  </div>',
       '  <div class="player-card__arrow" aria-hidden="true">↗</div>',
       '</article>'
-    ].join('\n');
+    ].filter(Boolean).join('\n');
+  }
+
+  function escapeHTML(str) {
+    if (typeof str !== 'string') return '';
+    return str.replace(/[&<>"']/g, function (m) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+    });
   }
 
   /* ——— Stagger cards in group (Optimized: Zero layout thrashing) ——— */

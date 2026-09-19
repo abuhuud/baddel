@@ -146,17 +146,6 @@
   }
 }
 
-/* Playground */
-@media (max-width: 768px) {
-  .playground__split {
-    grid-template-columns: 1fr;
-  }
-
-  .playground__panel {
-    min-height: 55vw;
-  }
-}
-
 /* Players */
 @media (max-width: 640px) {
   :root {
@@ -216,7 +205,7 @@
   }
 }
 
-/* Why Badcom */
+/* Why Baddel */
 @media (max-width: 1023px) {
   .why__grid {
     grid-template-columns: repeat(2, 1fr);
