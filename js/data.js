@@ -587,7 +587,8 @@ var BadcomData = (function () {
             players: parsed.players.map(normalizePlayer),
             schedules: (Array.isArray(parsed.schedules) ? parsed.schedules : defaultSchedules).map(normalizeSchedule),
             communityGallery: (Array.isArray(parsed.communityGallery) ? parsed.communityGallery : defaultCommunityGallery).map(normalizeCommunity),
-            _dataHash: currentHash
+            _dataHash: currentHash,
+            lastUpdated: parsed.lastUpdated || ''
           };
         } else {
           console.info('[Baddel] Perubahan data dari GitHub terdeteksi (' + currentHash + '). Menyinkronkan data...');
@@ -602,7 +603,8 @@ var BadcomData = (function () {
       players: initialAllPlayers.map(normalizePlayer),
       schedules: defaultSchedules.map(normalizeSchedule),
       communityGallery: defaultCommunityGallery.map(normalizeCommunity),
-      _dataHash: currentHash
+      _dataHash: currentHash,
+      lastUpdated: ''
     };
 
     try {
@@ -611,7 +613,7 @@ var BadcomData = (function () {
         schedules: freshDB.schedules,
         communityGallery: freshDB.communityGallery,
         _dataHash: currentHash,
-        lastUpdated: new Date().toISOString()
+        lastUpdated: ''
       }));
     } catch (e) {}
 
@@ -627,7 +629,7 @@ var BadcomData = (function () {
         schedules: activeDB.schedules,
         communityGallery: activeDB.communityGallery,
         _dataHash: computeDefaultDataHash(),
-        lastUpdated: new Date().toISOString()
+        lastUpdated: activeDB.lastUpdated || new Date().toISOString()
       }));
     } catch (e) {
       console.error('Failed to save to localStorage', e);
@@ -651,6 +653,7 @@ var BadcomData = (function () {
   function savePlayers(newPlayers) {
     if (!Array.isArray(newPlayers)) return;
     activeDB.players = newPlayers.map(normalizePlayer);
+    activeDB.lastUpdated = new Date().toISOString();
     saveDB();
   }
 
@@ -661,6 +664,7 @@ var BadcomData = (function () {
   function saveSchedules(newSchedules) {
     if (!Array.isArray(newSchedules)) return;
     activeDB.schedules = newSchedules.map(normalizeSchedule);
+    activeDB.lastUpdated = new Date().toISOString();
     saveDB();
   }
 
@@ -671,6 +675,7 @@ var BadcomData = (function () {
   function saveCommunityGallery(newGallery) {
     if (!Array.isArray(newGallery)) return;
     activeDB.communityGallery = newGallery.map(normalizeCommunity);
+    activeDB.lastUpdated = new Date().toISOString();
     saveDB();
   }
 
@@ -737,17 +742,40 @@ var BadcomData = (function () {
 
   function initRemoteSync() {
     if (typeof fetch === 'undefined') return;
-    fetch('data/database.json?t=' + Date.now())
+
+    var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    var timerId = controller ? setTimeout(function () {
+      try { controller.abort(); } catch (e) {}
+    }, 3500) : null;
+
+    fetch('data/database.json?t=' + Date.now(), {
+      cache: 'no-cache',
+      signal: controller ? controller.signal : undefined
+    })
       .then(function (res) {
-        if (!res.ok) return null;
+        if (timerId) clearTimeout(timerId);
+        if (!res.ok) throw new Error('Local database.json status: ' + res.status);
         return res.json();
+      })
+      .catch(function () {
+        // Fallback to GitHub raw
+        return fetch('https://raw.githubusercontent.com/abuhuud/baddel/main/data/database.json?t=' + Date.now(), {
+          cache: 'no-cache'
+        })
+          .then(function (res) {
+            if (!res.ok) return null;
+            return res.json();
+          })
+          .catch(function () { return null; });
       })
       .then(function (remoteData) {
         if (remoteData && Array.isArray(remoteData.players) && remoteData.players.length > 0) {
           var remoteUpdated = remoteData.lastUpdated || '';
           var localUpdated = (activeDB && activeDB.lastUpdated) || '';
-          if (remoteUpdated > localUpdated || !localUpdated) {
-            console.info('[Baddel Remote Sync] Data terbaru ditemukan di server (' + remoteUpdated + '). Menyinkronkan data...');
+
+          // Sync if remote data timestamp is different or local data is uninitialized
+          if (remoteUpdated && (remoteUpdated !== localUpdated || !localUpdated)) {
+            console.info('[Baddel Remote Sync] Data terbaru disinkronkan dari server (' + remoteUpdated + ').');
             activeDB.players = remoteData.players.map(normalizePlayer);
             activeDB.schedules = (remoteData.schedules || defaultSchedules).map(normalizeSchedule);
             activeDB.communityGallery = (remoteData.communityGallery || defaultCommunityGallery).map(normalizeCommunity);

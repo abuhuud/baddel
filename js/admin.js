@@ -91,7 +91,11 @@
   }
 
   // ——— Auth Gate Initialization ———
+  let isAuthGateInitialized = false;
   function initAuthGate() {
+    if (isAuthGateInitialized) return;
+    isAuthGateInitialized = true;
+
     // Password visibility toggle
     if (btnTogglePw && loginPass && pwEyeIcon) {
       btnTogglePw.addEventListener('click', () => {
@@ -178,6 +182,7 @@
           window.BadcomData.resetToDefault();
           showToast('Database berhasil direset ke pengaturan default.', 'success');
           refreshAll();
+          autoPublishIfEnabled();
         }
       };
     }
@@ -254,6 +259,7 @@
       renderQuickModalMomentsGrid(p);
       renderPlayersTable();
       showToast(`${newImages.length} foto momen berhasil diupload ke galeri ${p.name}!`, 'success');
+      autoPublishIfEnabled();
     });
 
     // Quick Gallery Manual URL Add
@@ -279,6 +285,7 @@
         renderQuickModalMomentsGrid(p);
         renderPlayersTable();
         showToast('Foto momen berhasil ditambahkan ke galeri!', 'success');
+        autoPublishIfEnabled();
       };
       btnQuickAddUrl.addEventListener('click', handleQuickAdd);
       inputQuickUrl.addEventListener('keydown', (e) => {
@@ -1530,6 +1537,7 @@
           renderQuickModalMomentsGrid(player);
           renderPlayersTable();
           showToast('Foto momen berhasil dihapus.', 'success');
+          autoPublishIfEnabled();
         }
       });
     });
@@ -1722,6 +1730,7 @@
         if (parsed.communityGallery) window.BadcomData.saveCommunityGallery(parsed.communityGallery);
         showToast('Database berhasil dipulihkan dari JSON!', 'success');
         refreshAll();
+        autoPublishIfEnabled();
       } catch (err) {
         alert('Gagal memulihkan: Format JSON tidak valid (' + err.message + ')');
       }
@@ -1736,13 +1745,17 @@
   function getGitHubConfig() {
     try {
       const raw = localStorage.getItem(GITHUB_CONFIG_KEY);
-      if (raw) return JSON.parse(raw);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (typeof parsed.autoSync === 'undefined') parsed.autoSync = true;
+        return parsed;
+      }
     } catch (e) {}
     return {
       repo: 'abuhuud/baddel',
       branch: 'main',
       token: '',
-      autoSync: false,
+      autoSync: true,
       lastPublished: null,
       lastCommitSha: null
     };
@@ -1945,11 +1958,19 @@
     }
   }
 
-  function autoPublishIfEnabled() {
+  let autoPublishDebounceTimer = null;
+  function autoPublishIfEnabled(delayMs = 1200) {
     const cfg = getGitHubConfig();
-    if (cfg && cfg.autoSync) {
-      triggerPublishToVercel(true);
+    if (cfg && cfg.autoSync === false) return; // Only skip if explicitly disabled
+
+    if (autoPublishDebounceTimer) {
+      clearTimeout(autoPublishDebounceTimer);
     }
+
+    autoPublishDebounceTimer = setTimeout(() => {
+      autoPublishDebounceTimer = null;
+      triggerPublishToVercel(true);
+    }, delayMs);
   }
 
   function initGitHubSync() {
@@ -1971,7 +1992,7 @@
     if (repoInput) repoInput.value = cfg.repo || 'abuhuud/baddel';
     if (branchInput) branchInput.value = cfg.branch || 'main';
     if (tokenInput) tokenInput.value = cfg.token || '';
-    if (autoSyncCb) autoSyncCb.checked = Boolean(cfg.autoSync);
+    if (autoSyncCb) autoSyncCb.checked = Boolean(cfg.autoSync !== false);
     if (lastTimeText && cfg.lastPublished) {
       const dt = new Date(cfg.lastPublished).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
       lastTimeText.textContent = `Terakhir dipublish: ${dt} WIB`;
@@ -1980,9 +2001,17 @@
       statusText.innerHTML = `Terakhir dipublish (commit <code>${cfg.lastCommitSha}</code>). Siap untuk update berikutnya.`;
     }
 
-    // Auto-check serverless API status on load
-    fetch('/api/publish')
-      .then(r => r.json())
+    // Auto-check serverless API status on load with timeout to prevent hung refresh
+    const checkCtrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const checkTimer = checkCtrl ? setTimeout(() => {
+      try { checkCtrl.abort(); } catch (e) {}
+    }, 2800) : null;
+
+    fetch('/api/publish', { signal: checkCtrl ? checkCtrl.signal : undefined })
+      .then(r => {
+        if (checkTimer) clearTimeout(checkTimer);
+        return r.json();
+      })
       .then(data => {
         if (data && data.hasServerToken) {
           const badge = document.getElementById('sync-status-badge');
@@ -1991,11 +2020,13 @@
             badge.innerHTML = '<i class="fas fa-shield-halved"></i> Server Vercel Siap';
           }
           if (statusText && !cfg.lastCommitSha) {
-            statusText.innerHTML = 'Token GitHub terhubung di server Vercel. Klik <strong>PUBLISH VERCEL</strong> untuk sync live.';
+            statusText.innerHTML = 'Token GitHub terhubung di server Vercel. Sinkronisasi live otomatis aktif saat ada update.';
           }
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        if (checkTimer) clearTimeout(checkTimer);
+      });
 
     if (btnToggleTok && tokenInput && iconToggleTok) {
       btnToggleTok.addEventListener('click', () => {
@@ -2087,6 +2118,14 @@
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;');
   }
+
+  // Listen to background remote data synchronization
+  window.addEventListener('baddel:data-synced', () => {
+    const activeModal = document.querySelector('.admin-modal-overlay.open');
+    if (!activeModal) {
+      refreshAll();
+    }
+  });
 
   // Init Auth Gate when DOM ready
   if (document.readyState === 'loading') {

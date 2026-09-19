@@ -130,6 +130,11 @@
       });
     }
 
+    // Listen for remote data synchronization
+    window.addEventListener('baddel:data-synced', function () {
+      renderGallery();
+    });
+
     // Play / Pause Stream Controller
     var isPaused = false;
     if (toggleBtn && streamContainer) {
