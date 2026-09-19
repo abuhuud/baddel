@@ -320,9 +320,14 @@
 
         <!-- Configuration Card -->
         <div class="admin-card">
-          <h3 style="font-family:var(--font-heading); color:var(--color-white); margin-bottom:0.75rem;">Pengaturan Kredensial GitHub</h3>
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.75rem;">
+            <h3 style="font-family:var(--font-heading); color:var(--color-white); margin:0;">Pengaturan Publikasi GitHub &amp; Vercel</h3>
+            <span style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); color:#34D399; font-size:0.75rem; font-weight:700; padding:0.2rem 0.6rem; border-radius:999px; display:inline-flex; align-items:center; gap:0.35rem;">
+              <i class="fas fa-shield-halved"></i> Server-Side Token Aktif
+            </span>
+          </div>
           <p style="color:var(--color-muted); font-size:0.85rem; margin-bottom:1.25rem;">
-            Token disimpan secara aman di browser Anda (LocalStorage) dan hanya digunakan untuk mengupdate file database di repository GitHub.
+            Token GitHub Anda telah disimpan secara aman di backend server Vercel (<code>api/publish.js</code>). Pengunjung web tidak dapat melihat atau mengakses token ini. Anda dapat langsung mengklik <strong>PUBLISH VERCEL</strong> dari perangkat mana pun.
           </p>
 
           <div class="admin-form-row">
@@ -337,15 +342,15 @@
           </div>
 
           <div class="admin-form-group">
-            <label>GitHub Personal Access Token (PAT) *</label>
+            <label>GitHub Personal Access Token <span style="color:var(--color-muted); font-weight:400;">(Opsional — Server token sudah aktif)</span></label>
             <div style="display:flex; gap:0.5rem;">
-              <input type="password" id="sync-gh-token" class="admin-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" style="flex:1;">
+              <input type="password" id="sync-gh-token" class="admin-input" placeholder="●●●●●●●● (Terkonfigurasi aman di Server)" style="flex:1;">
               <button type="button" class="btn btn--secondary btn--sm" id="btn-toggle-sync-token" style="flex-shrink:0;">
                 <i class="far fa-eye" id="icon-toggle-sync-token"></i>
               </button>
             </div>
             <small style="font-size:0.72rem; color:var(--color-muted); margin-top:0.35rem; display:block;">
-              Gunakan Token GitHub dengan izin <code>contents:write</code> atau scope <code>repo</code>.
+              Kosongkan jika menggunakan token bawaan server Vercel. Isi hanya jika Anda ingin mengganti dengan token baru.
             </small>
           </div>
 

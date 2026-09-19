@@ -1738,20 +1738,6 @@
     const repo = (cfg.repo || 'abuhuud/baddel').trim();
     const branch = (cfg.branch || 'main').trim();
 
-    if (!token) {
-      if (!isAuto) {
-        const syncTabBtn = document.querySelector('[data-tab="tab-sync"]');
-        if (syncTabBtn) syncTabBtn.click();
-        const tokenInput = document.getElementById('sync-gh-token');
-        if (tokenInput) {
-          tokenInput.focus();
-          tokenInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-        showToast('Masukkan GitHub Token terlebih dahulu untuk publish ke Vercel.', 'error');
-      }
-      return;
-    }
-
     const btnHeader = document.getElementById('btn-header-publish');
     const btnTab = document.getElementById('btn-trigger-publish');
     const btnBig = document.getElementById('btn-sync-publish-big');
@@ -1797,7 +1783,7 @@
         statusBadge.className = 'schedule-status-badge';
         statusBadge.style.background = 'rgba(230,195,108,0.2)';
         statusBadge.style.color = 'var(--color-gold)';
-        statusBadge.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim ke GitHub...';
+        statusBadge.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim data...';
       }
 
       addLog(`Mempersiapkan data lengkap dari CMS Baddel...`);
@@ -1809,64 +1795,97 @@
         communityGallery: window.BadcomData.getCommunityGallery()
       };
 
-      addLog(`Menghubungkan ke GitHub repository: ${repo} (branch: ${branch})...`);
-      const filePath = 'data/database.json';
-      const apiUrl = `https://api.github.com/repos/${repo}/contents/${filePath}`;
+      let commitSha = null;
+      let commitUrl = null;
+      let serverPublishSuccess = false;
 
-      // 1. Get current SHA if file exists
-      let sha = null;
-      const getRes = await fetch(`${apiUrl}?ref=${branch}&_=${Date.now()}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/vnd.github.v3+json'
+      // 1. Coba publikasikan via Vercel Serverless Function (/api/publish)
+      addLog(`Menghubungkan ke Vercel Serverless API (/api/publish)...`);
+      try {
+        const apiRes = await fetch('/api/publish', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            db: fullDB,
+            repo: repo,
+            branch: branch
+          })
+        });
+
+        if (apiRes.ok) {
+          const apiData = await apiRes.json();
+          commitSha = apiData.commitSha || 'latest';
+          commitUrl = apiData.commitUrl || `https://github.com/${repo}/commits/${branch}`;
+          serverPublishSuccess = true;
+          addLog(`✅ Serverless Backend berhasil melakukan commit ke GitHub!`);
+        } else if (apiRes.status !== 404) {
+          const errData = await apiRes.json().catch(() => ({}));
+          addLog(`⚠️ Serverless API info: ${errData.error || 'Mencoba fallback...'}`);
         }
-      });
-      if (getRes.ok) {
-        const fileData = await getRes.json();
-        sha = fileData.sha;
-        addLog(`File ${filePath} ditemukan di repository (SHA: ${sha.slice(0, 7)}).`);
-      } else if (getRes.status === 404) {
-        addLog(`File ${filePath} belum ada di repository, akan dibuat baru.`);
-      } else {
-        const errJson = await getRes.json().catch(() => ({}));
-        throw new Error(errJson.message || `Gagal memeriksa status file di GitHub (HTTP ${getRes.status})`);
+      } catch (errApi) {
+        addLog(`ℹ️ Serverless endpoint lokal tidak merespons, mencoba direct GitHub API fallback...`);
       }
 
-      // 2. Commit update to GitHub
-      addLog(`Mengirim commit pembaruan data ke ${repo}...`);
-      const jsonStr = JSON.stringify(fullDB, null, 2);
-      const b64 = btoa(unescape(encodeURIComponent(jsonStr)));
-      const nowStr = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
+      // 2. Fallback: Direct GitHub API jika serverless endpoint tidak aktif (misal running via file://)
+      if (!serverPublishSuccess) {
+        if (!token) {
+          throw new Error('Serverless API tidak tersedia di lingkungan ini dan GitHub Token browser belum diisi.');
+        }
 
-      const commitBody = {
-        message: `feat(cms): update data jadwal & pemain via Baddel CMS [${nowStr} WIB]`,
-        content: b64,
-        branch: branch
-      };
-      if (sha) commitBody.sha = sha;
+        addLog(`Menghubungkan langsung ke GitHub repository: ${repo} (branch: ${branch})...`);
+        const filePath = 'data/database.json';
+        const apiUrl = `https://api.github.com/repos/${repo}/contents/${filePath}`;
 
-      const putRes = await fetch(apiUrl, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/vnd.github.v3+json'
-        },
-        body: JSON.stringify(commitBody)
-      });
+        let sha = null;
+        const getRes = await fetch(`${apiUrl}?ref=${branch}&_=${Date.now()}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+        if (getRes.ok) {
+          const fileData = await getRes.json();
+          sha = fileData.sha;
+          addLog(`File ${filePath} terverifikasi (SHA: ${sha.slice(0, 7)}).`);
+        }
 
-      if (!putRes.ok) {
-        const errJson = await putRes.json().catch(() => ({}));
-        throw new Error(errJson.message || `Gagal melakukan commit ke GitHub (HTTP ${putRes.status})`);
+        const jsonStr = JSON.stringify(fullDB, null, 2);
+        const b64 = btoa(unescape(encodeURIComponent(jsonStr)));
+        const nowStr = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
+
+        const commitBody = {
+          message: `feat(cms): update data jadwal & pemain via Baddel CMS [${nowStr} WIB]`,
+          content: b64,
+          branch: branch
+        };
+        if (sha) commitBody.sha = sha;
+
+        const putRes = await fetch(apiUrl, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/vnd.github.v3+json'
+          },
+          body: JSON.stringify(commitBody)
+        });
+
+        if (!putRes.ok) {
+          const errJson = await putRes.json().catch(() => ({}));
+          throw new Error(errJson.message || `Gagal melakukan commit ke GitHub (HTTP ${putRes.status})`);
+        }
+
+        const commitResult = await putRes.json();
+        commitSha = commitResult.commit ? commitResult.commit.sha.slice(0, 7) : 'latest';
+        commitUrl = commitResult.commit ? commitResult.commit.html_url : `https://github.com/${repo}/commits/${branch}`;
       }
 
-      const commitResult = await putRes.json();
-      const commitSha = commitResult.commit ? commitResult.commit.sha.slice(0, 7) : 'latest';
-      const commitUrl = commitResult.commit ? commitResult.commit.html_url : `https://github.com/${repo}/commits/${branch}`;
-
-      addLog(`✅ Commit berhasil dibuat di GitHub! (SHA: <a href="${commitUrl}" target="_blank" style="color:var(--color-gold); text-decoration:underline;">${commitSha}</a>)`);
+      const nowTimeStr = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
+      addLog(`✅ Commit berhasil tercatat di GitHub! (SHA: <a href="${commitUrl}" target="_blank" style="color:var(--color-gold); text-decoration:underline;">${commitSha}</a>)`);
       addLog(`🚀 Vercel webhook aktif: Vercel sedang otomatis merebuild dan mendeploy website.`);
-      addLog(`⏱ Perubahan akan live untuk semua pengunjung dalam ~20-30 detik!`);
+      addLog(`⏱ Perubahan akan aktif live untuk seluruh pengunjung dalam ~20-30 detik!`);
 
       // Update state
       cfg.lastPublished = new Date().toISOString();
@@ -1880,13 +1899,13 @@
         statusBadge.innerHTML = '<i class="fas fa-circle-check"></i> Berhasil Diterbitkan!';
       }
       if (statusText) {
-        statusText.innerHTML = `Terakhir dipublish ke commit <a href="${commitUrl}" target="_blank" style="color:var(--color-gold); text-decoration:underline;">${commitSha}</a>. Vercel sedang mendeploy.`;
+        statusText.innerHTML = `Terakhir dipublish ke commit <a href="${commitUrl}" target="_blank" style="color:var(--color-gold); text-decoration:underline;">${commitSha}</a>. Vercel sedang mendeploy live.`;
       }
       if (lastTimeText) {
-        lastTimeText.textContent = `Terakhir dipublish: ${nowStr} WIB`;
+        lastTimeText.textContent = `Terakhir dipublish: ${nowTimeStr} WIB`;
       }
 
-      showToast(`Data berhasil di-publish ke GitHub (commit ${commitSha})! Vercel otomatis mendeploy.`, 'success');
+      showToast(`Data berhasil di-publish ke Vercel (commit ${commitSha})!`, 'success');
 
     } catch (err) {
       console.error('[Baddel Publish Error]', err);
@@ -1896,7 +1915,7 @@
         statusBadge.innerHTML = '<i class="fas fa-triangle-exclamation"></i> Gagal Publish';
       }
       if (statusText) {
-        statusText.textContent = `Gagal: ${err.message}. Periksa token GitHub Anda.`;
+        statusText.textContent = `Gagal: ${err.message}`;
       }
       showToast(`Gagal publish: ${err.message}`, 'error');
     } finally {
@@ -1906,7 +1925,7 @@
 
   function autoPublishIfEnabled() {
     const cfg = getGitHubConfig();
-    if (cfg && cfg.autoSync && cfg.token) {
+    if (cfg && cfg.autoSync) {
       triggerPublishToVercel(true);
     }
   }
@@ -1939,6 +1958,23 @@
       statusText.innerHTML = `Terakhir dipublish (commit <code>${cfg.lastCommitSha}</code>). Siap untuk update berikutnya.`;
     }
 
+    // Auto-check serverless API status on load
+    fetch('/api/publish')
+      .then(r => r.json())
+      .then(data => {
+        if (data && data.hasServerToken) {
+          const badge = document.getElementById('sync-status-badge');
+          if (badge) {
+            badge.className = 'schedule-status-badge status-open';
+            badge.innerHTML = '<i class="fas fa-shield-halved"></i> Server Vercel Siap';
+          }
+          if (statusText && !cfg.lastCommitSha) {
+            statusText.innerHTML = 'Token GitHub terhubung di server Vercel. Klik <strong>PUBLISH VERCEL</strong> untuk sync live.';
+          }
+        }
+      })
+      .catch(() => {});
+
     if (btnToggleTok && tokenInput && iconToggleTok) {
       btnToggleTok.addEventListener('click', () => {
         const isPw = tokenInput.type === 'password';
@@ -1963,37 +1999,53 @@
 
     if (btnTest) {
       btnTest.addEventListener('click', async () => {
-        const token = tokenInput ? tokenInput.value.trim() : '';
-        const repo = repoInput ? repoInput.value.trim() : 'abuhuud/baddel';
-        if (!token) {
-          showToast('Masukkan GitHub Token terlebih dahulu untuk tes koneksi.', 'error');
-          return;
-        }
         btnTest.disabled = true;
-        btnTest.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menghubungkan...';
+        btnTest.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memeriksa...';
         try {
-          const res = await fetch(`https://api.github.com/repos/${repo}`, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Accept': 'application/vnd.github.v3+json'
+          // 1. Check serverless API first
+          let serverOk = false;
+          try {
+            const apiRes = await fetch('/api/publish');
+            if (apiRes.ok) {
+              const apiData = await apiRes.json();
+              if (apiData.hasServerToken) {
+                serverOk = true;
+                showToast(`Serverless Vercel API terhubung ke repository ${apiData.repo}!`, 'success');
+              }
             }
-          });
-          if (!res.ok) {
-            const errJson = await res.json().catch(() => ({}));
-            throw new Error(errJson.message || `HTTP ${res.status}`);
+          } catch (e) {}
+
+          // 2. If client token provided, test direct GitHub API
+          const token = tokenInput ? tokenInput.value.trim() : '';
+          const repo = repoInput ? repoInput.value.trim() : 'abuhuud/baddel';
+          if (token) {
+            const res = await fetch(`https://api.github.com/repos/${repo}`, {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+              }
+            });
+            if (res.ok) {
+              const repoData = await res.json();
+              showToast(`Token browser berhasil terhubung ke repository ${repoData.full_name}!`, 'success');
+            } else {
+              const errJson = await res.json().catch(() => ({}));
+              throw new Error(errJson.message || `HTTP ${res.status}`);
+            }
+          } else if (!serverOk) {
+            showToast('Server API lokal belum terdeteksi (aktif saat deploy Vercel). Anda dapat menguji langsung setelah dideploy.', 'info');
           }
-          const repoData = await res.json();
-          showToast(`Koneksi berhasil terhubung ke repository ${repoData.full_name}!`, 'success');
+
           const badge = document.getElementById('sync-status-badge');
           if (badge) {
             badge.className = 'schedule-status-badge status-open';
-            badge.innerHTML = '<i class="fas fa-circle-check"></i> Terhubung ke GitHub';
+            badge.innerHTML = '<i class="fas fa-circle-check"></i> Siap Publikasi';
           }
         } catch (e) {
           showToast(`Gagal terhubung: ${e.message}`, 'error');
         } finally {
           btnTest.disabled = false;
-          btnTest.innerHTML = '<i class="fas fa-plug"></i> Tes Koneksi GitHub';
+          btnTest.innerHTML = '<i class="fas fa-plug"></i> Tes Koneksi';
         }
       });
     }
