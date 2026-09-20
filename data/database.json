@@ -1,6 +1,6 @@
 {
-  "version": "2026.09.19-v4",
-  "lastUpdated": "2026-09-19T16:04:18.047Z",
+  "version": "baddel_gt0sam",
+  "lastUpdated": "2026-09-20T07:10:31.886Z",
   "players": [
     {
       "id": "basz",
@@ -193,9 +193,9 @@
       "id": "novi",
       "number": "03",
       "num": "03",
-      "name": "V",
+      "name": "NOVI",
       "category": "women",
-      "instagram": "@nyimas_novianti",
+      "instagram": "nyimas_novianti",
       "image": "assets/images/players/novi.jpg",
       "hasImage": true,
       "gallery": []
@@ -255,7 +255,6 @@
       "eventStatusText": "Upcoming",
       "slotsLeft": 22,
       "totalSlots": 22,
-      "slotsTotal": 22,
       "slotsFilled": 0,
       "notes": "3 Lapangan masing-masing 4 Jam"
     },
@@ -279,7 +278,6 @@
       "eventStatusText": "Completed",
       "slotsLeft": 0,
       "totalSlots": 22,
-      "slotsTotal": 22,
       "slotsFilled": 0,
       "notes": "Include Shuttlecock"
     }
