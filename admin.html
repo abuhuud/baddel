@@ -67,13 +67,20 @@
 
   <!-- Admin Header -->
   <header class="admin-header admin-locked-content" id="admin-header-bar">
-    <a href="admin.html" class="admin-brand">
-      <img src="assets/images/brand/baddel-logo.png" alt="Baddel Logo">
-      <div>
-        <div class="admin-brand-title">BADDEL COMMUNITY</div>
-        <span class="admin-brand-badge">ADMIN CONTROL PANEL</span>
-      </div>
-    </a>
+    <div class="admin-header-left">
+      <button class="admin-burger-btn" id="btn-admin-burger" aria-label="Buka Menu Navigasi" aria-expanded="false" title="Menu Navigasi">
+        <i class="fas fa-bars icon-bars"></i>
+        <i class="fas fa-xmark icon-close" style="display:none;"></i>
+      </button>
+
+      <a href="admin.html" class="admin-brand">
+        <img src="assets/images/brand/baddel-logo.png" alt="Baddel Logo">
+        <div>
+          <div class="admin-brand-title">BADDEL COMMUNITY</div>
+          <span class="admin-brand-badge">ADMIN CONTROL PANEL</span>
+        </div>
+      </a>
+    </div>
 
     <div class="admin-nav-actions">
       <div class="admin-live-sync-indicator" id="header-sync-status-badge" style="display:inline-flex; align-items:center; gap:0.4rem; font-size:0.75rem; font-weight:600; color:#34D399; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); border-radius:999px; padding:0.3rem 0.75rem;">
@@ -95,8 +102,18 @@
   <!-- Admin Layout -->
   <div class="admin-layout admin-locked-content" id="admin-main-layout">
 
-    <!-- Sidebar Navigation -->
-    <aside class="admin-sidebar">
+    <!-- Sidebar Navigation Drawer -->
+    <aside class="admin-sidebar" id="admin-sidebar">
+      <div class="admin-sidebar-header">
+        <div class="admin-sidebar-header-brand">
+          <img src="assets/images/brand/baddel-logo.png" alt="Baddel Logo">
+          <span>MENU CMS</span>
+        </div>
+        <button type="button" class="admin-sidebar-close" id="btn-admin-sidebar-close" aria-label="Tutup Menu">
+          <i class="fas fa-xmark"></i>
+        </button>
+      </div>
+
       <ul class="admin-menu">
         <li>
           <button class="admin-tab-btn active" data-tab="tab-schedules">
@@ -114,7 +131,27 @@
           </button>
         </li>
       </ul>
+
+      <!-- Quick mobile actions inside drawer -->
+      <div class="admin-sidebar-mobile-actions">
+        <div class="admin-sidebar-divider"></div>
+        <button type="button" class="admin-sidebar-action-btn" id="btn-drawer-publish">
+          <i class="fas fa-cloud-arrow-up" style="color:var(--color-gold);"></i>
+          <span>Sync Live Data</span>
+        </button>
+        <a href="index.html" class="admin-sidebar-action-btn" target="_blank">
+          <i class="fas fa-arrow-up-right-from-square" style="color:var(--color-blue-light);"></i>
+          <span>Lihat Website</span>
+        </a>
+        <button type="button" class="admin-sidebar-action-btn" id="btn-drawer-logout" style="color:#F87171;">
+          <i class="fas fa-arrow-right-from-bracket"></i>
+          <span>Logout CMS</span>
+        </button>
+      </div>
     </aside>
+
+    <!-- Backdrop overlay for mobile drawer -->
+    <div class="admin-drawer-backdrop" id="admin-drawer-backdrop"></div>
 
     <!-- Main Content Area -->
     <main class="admin-content">

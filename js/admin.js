@@ -57,6 +57,14 @@
   const toast = document.getElementById('admin-toast');
   const toastMsg = document.getElementById('admin-toast-msg');
 
+  // Mobile Off-Canvas Drawer Elements
+  const btnBurger = document.getElementById('btn-admin-burger');
+  const sidebarEl = document.getElementById('admin-sidebar');
+  const drawerBackdrop = document.getElementById('admin-drawer-backdrop');
+  const btnSidebarClose = document.getElementById('btn-admin-sidebar-close');
+  const btnDrawerPublish = document.getElementById('btn-drawer-publish');
+  const btnDrawerLogout = document.getElementById('btn-drawer-logout');
+
   // Auth Gate Elements
   const loginGate = document.getElementById('admin-login-gate');
   const loginForm = document.getElementById('form-admin-login');
@@ -112,10 +120,96 @@
 
   function lockDashboard() {
     sessionStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
+    closeMobileDrawer();
     if (loginGate) loginGate.classList.remove('hidden');
     if (headerBar) headerBar.classList.add('admin-locked-content');
     if (mainLayout) mainLayout.classList.add('admin-locked-content');
     if (loginPass) loginPass.value = '';
+  }
+
+  // ——— Mobile Off-Canvas Drawer Navigation ———
+  function openMobileDrawer() {
+    if (sidebarEl) sidebarEl.classList.add('open');
+    if (drawerBackdrop) drawerBackdrop.classList.add('open');
+    if (btnBurger) {
+      btnBurger.classList.add('active');
+      btnBurger.setAttribute('aria-expanded', 'true');
+    }
+    document.body.classList.add('admin-drawer-open');
+  }
+
+  function closeMobileDrawer() {
+    if (sidebarEl) sidebarEl.classList.remove('open');
+    if (drawerBackdrop) drawerBackdrop.classList.remove('open');
+    if (btnBurger) {
+      btnBurger.classList.remove('active');
+      btnBurger.setAttribute('aria-expanded', 'false');
+    }
+    document.body.classList.remove('admin-drawer-open');
+  }
+
+  function toggleMobileDrawer() {
+    if (sidebarEl && sidebarEl.classList.contains('open')) {
+      closeMobileDrawer();
+    } else {
+      openMobileDrawer();
+    }
+  }
+
+  let isMobileDrawerInitialized = false;
+  function initMobileDrawer() {
+    if (isMobileDrawerInitialized) return;
+    isMobileDrawerInitialized = true;
+
+    if (btnBurger) {
+      btnBurger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleMobileDrawer();
+      });
+    }
+
+    if (btnSidebarClose) {
+      btnSidebarClose.addEventListener('click', () => {
+        closeMobileDrawer();
+      });
+    }
+
+    if (drawerBackdrop) {
+      drawerBackdrop.addEventListener('click', () => {
+        closeMobileDrawer();
+      });
+    }
+
+    // Mirror drawer action buttons
+    if (btnDrawerPublish) {
+      btnDrawerPublish.addEventListener('click', () => {
+        closeMobileDrawer();
+        const headerPublish = document.getElementById('btn-header-publish');
+        if (headerPublish) headerPublish.click();
+      });
+    }
+
+    if (btnDrawerLogout) {
+      btnDrawerLogout.addEventListener('click', () => {
+        closeMobileDrawer();
+        const mainLogout = document.getElementById('btn-admin-logout');
+        if (mainLogout) mainLogout.click();
+      });
+    }
+
+    // Close on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && sidebarEl && sidebarEl.classList.contains('open')) {
+        closeMobileDrawer();
+      }
+    });
+
+    // Auto close drawer if user resizes back to desktop (> 900px)
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 900 && sidebarEl && sidebarEl.classList.contains('open')) {
+        closeMobileDrawer();
+      }
+    });
   }
 
   // ——— Auth Gate Initialization ———
@@ -123,6 +217,7 @@
   function initAuthGate() {
     if (isAuthGateInitialized) return;
     isAuthGateInitialized = true;
+    initMobileDrawer();
 
     // Password visibility toggle
     if (btnTogglePw && loginPass && pwEyeIcon) {
@@ -192,6 +287,7 @@
   }
 
   function initDashboard() {
+    initMobileDrawer();
     initTabs();
     initModals();
     renderSchedulesTable();
@@ -326,6 +422,9 @@
         btn.classList.add('active');
         const targetPanel = document.getElementById(targetTab);
         if (targetPanel) targetPanel.classList.add('active');
+
+        // Close mobile drawer when tab is clicked
+        closeMobileDrawer();
       });
     });
   }
