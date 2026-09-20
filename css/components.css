@@ -3170,9 +3170,29 @@
   backdrop-filter: blur(12px);
   position: relative;
   overflow: hidden;
+  scroll-margin-top: 100px;
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
     border-color 0.35s ease,
     box-shadow 0.35s ease;
+}
+
+/* Specific schedule link highlight animation */
+.schedule-card--highlight {
+  border-color: var(--color-gold) !important;
+  box-shadow: 0 0 35px rgba(230, 195, 108, 0.65) !important;
+  animation: scheduleCardPulse 1.8s ease-in-out 2;
+  z-index: 10;
+}
+
+@keyframes scheduleCardPulse {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(230, 195, 108, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(230, 195, 108, 0.85);
+    transform: scale(1.02);
+  }
 }
 
 .schedule-card::before {

@@ -169,7 +169,7 @@
         return;
       }
 
-      container.innerHTML = inRange.map(item => {
+      container.innerHTML = inRange.map((item, idx) => {
         const sport = (item.sport || 'badminton').toLowerCase();
         const title = item.title || (sport === 'padel' ? 'BADDEL PADEL SESSION' : 'BADDEL BADMINTON SESSION');
         const dateStr = item.dateFormatted || item.date || 'TBA';
@@ -212,11 +212,21 @@
         );
         const waLink = `https://wa.me/6281270000739?text=${waText}`;
 
-        const shareText = `🏸 ${title}\n📅 ${dateStr} — ${timeStr}\n📍 ${venueStr}${courtList.length > 0 ? '\n🏟 Court: ' + courtList.join(', ') : ''}\n💰 HTM: ${feeStr}\n\nJoin sesi main bersama Baddel Community! 🔥`;
-        const shareUrl = window.location.origin + window.location.pathname + '#schedule';
+        // Unique DOM ID & specific URL for this schedule
+        const rawId = item.id || ('sch_' + idx);
+        const scheduleCardId = 'schedule-' + String(rawId).replace(/[^a-zA-Z0-9_-]/g, '_');
+        const scheduleSpecificUrl = window.location.origin + window.location.pathname + '#' + scheduleCardId;
+
+        const sportEmoji = sport === 'padel' ? '🎾' : '🏸';
+        const courtLine = courtList.length > 0 ? `\n🏟 Court: ${courtList.join(', ')}` : '';
+        const mapsLine = `\n🗺 Maps: ${mapsUrl}`;
+        const feeLine = feeStr ? `\n💰 HTM: ${feeStr}` : '';
+
+        // Share text: metadata, gmaps link, CTA, enter, specific schedule URL
+        const shareText = `${sportEmoji} ${title}\n📅 ${dateStr} — ${timeStr}\n📍 ${venueStr}${courtLine}${mapsLine}${feeLine}\n\nJoin sesi main bersama Baddel Community! 🔥\n${scheduleSpecificUrl}`;
 
         return `
-          <div class="schedule-card ${isFull ? 'is-full' : ''} ${isCompleted ? 'is-completed' : ''}" data-sport="${sport}">
+          <div id="${scheduleCardId}" class="schedule-card ${isFull ? 'is-full' : ''} ${isCompleted ? 'is-completed' : ''}" data-sport="${sport}">
             <div class="schedule-card-header">
               <div class="schedule-badges-left">
                 ${sportBadge}
@@ -298,7 +308,7 @@
                 <button type="button" class="schedule-btn-share"
                   data-share-title="${escapeHTML(title)}"
                   data-share-text="${escapeHTML(shareText)}"
-                  data-share-url="${escapeHTML(shareUrl)}"
+                  data-share-url="${escapeHTML(scheduleSpecificUrl)}"
                   title="Bagikan jadwal ini ke sosial media">
                   <i class="fas fa-share-nodes"></i>
                   <span>Share</span>
@@ -348,6 +358,47 @@
 
     renderSchedules();
 
+    // Helper: copy to clipboard with feedback
+    async function copyToClipboard(text, btnEl) {
+      let ok = false;
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text);
+          ok = true;
+        } else {
+          throw new Error('Clipboard API unavailable');
+        }
+      } catch {
+        try {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none;left:-9999px';
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          ok = document.execCommand('copy');
+          document.body.removeChild(ta);
+        } catch {
+          ok = false;
+        }
+      }
+
+      if (btnEl) {
+        const icon = btnEl.querySelector('i');
+        const label = btnEl.querySelector('span');
+        const origIcon = icon ? icon.className : '';
+        const origLabel = label ? label.textContent : '';
+        if (icon) icon.className = ok ? 'fas fa-check' : 'fas fa-copy';
+        if (label) label.textContent = ok ? 'Disalin!' : 'Salin';
+        btnEl.classList.add('share-copied');
+        setTimeout(() => {
+          if (icon) icon.className = origIcon;
+          if (label) label.textContent = origLabel;
+          btnEl.classList.remove('share-copied');
+        }, 2000);
+      }
+    }
+
     // Share button — event delegation on container
     container.addEventListener('click', async (e) => {
       const shareBtn = e.target.closest('.schedule-btn-share');
@@ -355,56 +406,68 @@
 
       const shareTitle = shareBtn.getAttribute('data-share-title') || 'Baddel Community — Jadwal Main';
       const shareText  = shareBtn.getAttribute('data-share-text')  || '';
-      const shareUrl   = shareBtn.getAttribute('data-share-url')   || window.location.href;
 
       if (navigator.share) {
-        // Native share sheet (mobile & modern desktop)
         try {
-          await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
+          // Native share sheet (mobile & modern desktop)
+          await navigator.share({
+            title: shareTitle,
+            text: shareText
+          });
         } catch (err) {
-          if (err.name !== 'AbortError') console.warn('Share failed:', err);
+          if (err.name === 'AbortError') return;
+          await copyToClipboard(shareText, shareBtn);
         }
       } else {
-        // Fallback: copy to clipboard
-        const copyText = shareText + '\n\n' + shareUrl;
-        try {
-          await navigator.clipboard.writeText(copyText);
-        } catch {
-          // Last resort fallback
-          const ta = document.createElement('textarea');
-          ta.value = copyText;
-          ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
-          document.body.appendChild(ta);
-          ta.select();
-          document.execCommand('copy');
-          document.body.removeChild(ta);
-        }
-        // Visual feedback
-        const icon = shareBtn.querySelector('i');
-        const label = shareBtn.querySelector('span');
-        const origIcon = icon ? icon.className : '';
-        const origLabel = label ? label.textContent : '';
-        if (icon) icon.className = 'fas fa-check';
-        if (label) label.textContent = 'Disalin!';
-        shareBtn.classList.add('share-copied');
-        setTimeout(() => {
-          if (icon) icon.className = origIcon;
-          if (label) label.textContent = origLabel;
-          shareBtn.classList.remove('share-copied');
-        }, 2000);
+        await copyToClipboard(shareText, shareBtn);
       }
     });
+
+    // Deep-link to specific schedule card when URL contains hash e.g. #schedule-sch-01
+    function handleScheduleHash() {
+      const hash = window.location.hash;
+      if (!hash || !hash.startsWith('#schedule-')) return;
+      const targetId = hash.slice(1);
+      let targetEl = document.getElementById(targetId);
+
+      // If card not in DOM (e.g. user filter is set to sport that excludes it), switch to 'all'
+      if (!targetEl && activeFilter !== 'all') {
+        activeFilter = 'all';
+        filterBtns.forEach(b => {
+          b.classList.toggle('active', (b.getAttribute('data-filter') || 'all') === 'all');
+        });
+        renderSchedules();
+        targetEl = document.getElementById(targetId);
+      }
+
+      if (targetEl) {
+        setTimeout(() => {
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          targetEl.classList.remove('schedule-card--highlight');
+          void targetEl.offsetWidth; // trigger reflow
+          targetEl.classList.add('schedule-card--highlight');
+          setTimeout(() => {
+            targetEl.classList.remove('schedule-card--highlight');
+          }, 3500);
+        }, 300);
+      }
+    }
+
+    handleScheduleHash();
+    window.addEventListener('hashchange', handleScheduleHash);
 
     // Listen for storage events in case admin updates schedule in another tab
     window.addEventListener('storage', (e) => {
       if (e.key === 'baddel_cms_db_v1') {
         renderSchedules();
+        handleScheduleHash();
       }
     });
 
     // Listen for remote server database sync events
     window.addEventListener('baddel:data-synced', () => {
       renderSchedules();
+      handleScheduleHash();
     });
   }
 
