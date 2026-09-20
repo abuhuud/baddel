@@ -14,7 +14,9 @@ var BadcomModal = (function () {
   function init() {
     overlay = document.getElementById('modal-overlay');
     modal = document.getElementById('player-modal');
-    players = BadcomData.players;
+    players = (window.BadcomData && typeof window.BadcomData.getPlayers === 'function')
+      ? window.BadcomData.getPlayers()
+      : (window.BadcomData && window.BadcomData.players) || [];
 
     if (!overlay || !modal) return;
 
@@ -270,15 +272,6 @@ var BadcomModal = (function () {
     });
   }
 
-  /* Public findIndex polyfill */
-  if (!Array.prototype.findIndex) {
-    Array.prototype.findIndex = function (fn) {
-      for (var i = 0; i < this.length; i++) {
-        if (fn(this[i], i, this)) return i;
-      }
-      return -1;
-    };
-  }
 
   return { init: init, open: open, close: close };
 

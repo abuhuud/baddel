@@ -550,7 +550,6 @@ var BadcomData = (function () {
       eventStatusText: eventStatus === 'completed' ? 'Completed' : 'Upcoming',
       slotsLeft: slotsLeft,
       totalSlots: totalSlots,
-      slotsTotal: totalSlots,
       slotsFilled: slotsFilled,
       notes: s.notes || 'Shuttlecock & Lapangan Karpet disediakan'
     };
@@ -565,7 +564,7 @@ var BadcomData = (function () {
       image: item.image || 'assets/images/gallery/1.JPG',
       title: String(title),
       subtitle: String(sub),
-      sub: String(sub),
+      sub: String(sub), // kept for backward compat with legacy data
       tag: item.tag || 'MOMENT'
     };
   }
@@ -578,11 +577,6 @@ var BadcomData = (function () {
         var parsed = JSON.parse(raw);
         // Jika hash cocok, data repository GitHub belum berubah -> gunakan localStorage
         if (parsed && parsed._dataHash === currentHash && Array.isArray(parsed.players) && parsed.players.length > 0) {
-          if (!parsed._v3_empty_gal_init) {
-            parsed.players.forEach(function (p) { p.gallery = []; });
-            parsed._v3_empty_gal_init = true;
-            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed)); } catch (e) {}
-          }
           return {
             players: parsed.players.map(normalizePlayer),
             schedules: (Array.isArray(parsed.schedules) ? parsed.schedules : defaultSchedules).map(normalizeSchedule),
@@ -623,12 +617,13 @@ var BadcomData = (function () {
   var activeDB = loadDB();
 
   function saveDB() {
+    var currentHash = activeDB._dataHash || computeDefaultDataHash();
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         players: activeDB.players,
         schedules: activeDB.schedules,
         communityGallery: activeDB.communityGallery,
-        _dataHash: computeDefaultDataHash(),
+        _dataHash: currentHash,
         lastUpdated: activeDB.lastUpdated || new Date().toISOString()
       }));
     } catch (e) {

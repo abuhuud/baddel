@@ -23,6 +23,34 @@
   let playerDivisionFilter = 'all';
   let playerGalleryFilter = 'all';
 
+  // ——— Schedule Date Parsing Helpers (module-level constants) ———
+  const ADMIN_MON = {
+    jan:0,feb:1,mar:2,apr:3,mei:4,may:4,
+    jun:5,jul:6,agu:7,aug:7,sep:8,okt:9,oct:9,nov:10,des:11,dec:11
+  };
+
+  function adminParseDate(item) {
+    if (!item) return null;
+    if (item.isoDate && /^\d{4}-\d{2}-\d{2}$/.test(item.isoDate)) {
+      return new Date(item.isoDate + 'T00:00:00');
+    }
+    const s = (item.dateFormatted || item.date || '').replace(/^[^,]+,\s*/, '').trim();
+    if (!s) return null;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return new Date(s + 'T00:00:00');
+    const dmy = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+    if (dmy) return new Date(parseInt(dmy[3], 10), parseInt(dmy[2], 10) - 1, parseInt(dmy[1], 10));
+    const p = s.split(/\s+/);
+    if (p.length >= 3) {
+      const d = parseInt(p[0], 10);
+      const m = ADMIN_MON[(p[1] || '').toLowerCase().slice(0, 3)];
+      const y = parseInt(p[2], 10);
+      if (!isNaN(d) && m !== undefined && !isNaN(y)) return new Date(y, m, d);
+    }
+    const parsed = Date.parse(s);
+    return !isNaN(parsed) ? new Date(parsed) : null;
+  }
+
+
   // DOM Elements
   const tabs = document.querySelectorAll('.admin-tab-btn');
   const panels = document.querySelectorAll('.admin-panel');
@@ -287,8 +315,6 @@
     setupAvatarDropzone('comm-image-dropzone', 'file-comm-image', 'comm-image-url', 'comm-preview-img');
   }
 
-  // refreshAll is defined above (line ~159) — duplicate removed
-
   // ——— Tabs Navigation ———
   function initTabs() {
     tabs.forEach(btn => {
@@ -527,8 +553,6 @@
     }
   }
 
-  // setupImageFileInput removed — superseded by setupAvatarDropzone (drag-and-drop + compression)
-
 
   // ============================================
   // TAB 1: SCHEDULES MANAGEMENT
@@ -541,47 +565,8 @@
     const raw = window.BadcomData.getSchedules();
 
     // Sort by nearest date first (upcoming closest date first, then past dates)
-    const ADMIN_MON = {
-      jan:0,feb:1,mar:2,apr:3,mei:4,may:4,
-      jun:5,jul:6,agu:7,aug:7,sep:8,okt:9,oct:9,nov:10,des:11,dec:11
-    };
-    function adminParseDate(item) {
-      if (!item) return null;
-      if (item.isoDate && /^\d{4}-\d{2}-\d{2}$/.test(item.isoDate)) {
-        return new Date(item.isoDate + 'T00:00:00');
-      }
-      const s = (item.dateFormatted || item.date || '').replace(/^[^,]+,\s*/, '').trim();
-      if (!s) return null;
-
-      // Check YYYY-MM-DD
-      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
-        return new Date(s + 'T00:00:00');
-      }
-
-      // Check DD/MM/YYYY or DD-MM-YYYY
-      const dmy = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
-      if (dmy) {
-        return new Date(parseInt(dmy[3], 10), parseInt(dmy[2], 10) - 1, parseInt(dmy[1], 10));
-      }
-
-      // Check e.g. "20 September 2026"
-      const p = s.split(/\s+/);
-      if (p.length >= 3) {
-        const d = parseInt(p[0], 10);
-        const m = ADMIN_MON[(p[1] || '').toLowerCase().slice(0, 3)];
-        const y = parseInt(p[2], 10);
-        if (!isNaN(d) && m !== undefined && !isNaN(y)) return new Date(y, m, d);
-      }
-
-      const parsed = Date.parse(s);
-      if (!isNaN(parsed)) return new Date(parsed);
-
-      return null;
-    }
-
     const todayDate = new Date();
     todayDate.setHours(0, 0, 0, 0);
-
     const schedules = raw.slice().sort((a, b) => {
       const da = adminParseDate(a), db = adminParseDate(b);
       if (da && db) {
@@ -589,13 +574,14 @@
         const bUpcoming = db >= todayDate;
         if (aUpcoming && !bUpcoming) return -1;
         if (!aUpcoming && bUpcoming) return 1;
-        if (aUpcoming) return da - db; // upcoming closest first
-        return db - da; // past closest to today first
+        if (aUpcoming) return da - db;
+        return db - da;
       }
       if (da) return -1;
       if (db) return 1;
       return 0;
     });
+
 
     if (schedules.length === 0) {
       tbody.innerHTML = `
@@ -613,7 +599,8 @@
         ? `<span class="schedule-sport-badge badge-padel"><i class="fas fa-table-tennis-paddle-ball"></i> Padel</span>`
         : `<span class="schedule-sport-badge badge-badminton"><i class="fas fa-feather"></i> Badminton</span>`;
 
-      const isCompleted = item.eventStatus === 'completed' || (item.eventStatus !== 'upcoming' && adminParseDate(item) && adminParseDate(item) < todayDate);
+      const isCompleted = item.eventStatus === 'completed' || (item.eventStatus !== 'upcoming' && (() => { const d = adminParseDate(item); return d && d < todayDate; })());
+
       const eventStatusBadge = isCompleted
         ? `<span class="schedule-status-badge status-completed"><i class="fas fa-circle-check"></i> Completed</span>`
         : `<span class="schedule-status-badge status-upcoming"><i class="fas fa-calendar-check"></i> Upcoming</span>`;
@@ -959,10 +946,8 @@
       date,
       time,
       venue,
-      courtNames: (document.getElementById('sched-court-names') ? document.getElementById('sched-court-names').value.trim() : ''),
-      court: (document.getElementById('sched-court-names') ? document.getElementById('sched-court-names').value.trim() : ''),
+      courtNames: (() => { const el = document.getElementById('sched-court-names'); return el ? el.value.trim() : ''; })(),
       mapsUrl,
-      locationUrl: mapsUrl,
       fee,
       slotsLeft,
       totalSlots,
@@ -1694,7 +1679,7 @@
       setSyncLoading(true);
 
       const fullDB = {
-        version: '2026.09.19-v4',
+        version: window.BadcomData.getDataHash ? window.BadcomData.getDataHash() : '2026.09',
         lastUpdated: new Date().toISOString(),
         players: window.BadcomData.getPlayers(),
         schedules: window.BadcomData.getSchedules(),
