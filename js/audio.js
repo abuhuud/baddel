@@ -1,6 +1,6 @@
 /* ============================================
    BADDEL COMMUNITY — AUDIO CONTROLLER (AUDIO.JS)
-   Compact Theme Song Player with Autoplay & User Controls
+   Compact Theme Song Player with Delayed Autoplay & User Controls
    ============================================ */
 
 (function () {
@@ -8,6 +8,7 @@
 
   var SONG_SRC = 'assets/songs/Baddel%20Theme%20Song.mpeg';
   var TARGET_VOLUME = 0.32;
+  var AUTOPLAY_DELAY_MS = 2500; // Mulai memutar 2.5 detik setelah pengunjung membuka website
   var STORAGE_TIME_KEY = 'baddel_audio_time';
   var STORAGE_PAUSED_KEY = 'baddel_audio_paused';
 
@@ -15,6 +16,8 @@
   var widgetEl = null;
   var playBtnEl = null;
   var statusTextEl = null;
+  var autoplayTimer = null;
+  var fadeInterval = null;
 
   var BaddelAudio = {
     init: function () {
@@ -63,7 +66,7 @@
       // 2. Render Compact Widget in DOM
       BaddelAudio.renderWidget();
 
-      // 3. Autoplay if user hasn't explicitly chosen to turn it off
+      // 3. Delayed Autoplay if user hasn't explicitly chosen to turn it off
       var userPaused = false;
       try {
         userPaused = sessionStorage.getItem(STORAGE_PAUSED_KEY) === 'true';
@@ -134,21 +137,57 @@
       });
     },
 
+    fadeIn: function (targetVol, durationMs) {
+      if (!audio) return;
+      if (fadeInterval) clearInterval(fadeInterval);
+
+      var steps = 25;
+      var stepTime = (durationMs || 1500) / steps;
+      var stepIncrement = targetVol / steps;
+      audio.volume = 0;
+
+      fadeInterval = setInterval(function () {
+        if (!audio || audio.paused) {
+          clearInterval(fadeInterval);
+          return;
+        }
+        if (audio.volume + stepIncrement < targetVol) {
+          audio.volume = Math.min(audio.volume + stepIncrement, 1);
+        } else {
+          audio.volume = targetVol;
+          clearInterval(fadeInterval);
+        }
+      }, stepTime);
+    },
+
     attemptAutoplay: function () {
       if (!audio) return;
-      audio.volume = TARGET_VOLUME;
 
-      var playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise.then(function () {
-          // Autoplay allowed directly
-          BaddelAudio.updateUI(true);
-        }).catch(function () {
-          // Blocked by browser until user gesture: start on first interaction
-          BaddelAudio.updateUI(false);
-          BaddelAudio.attachInteractionListeners();
-        });
-      }
+      if (autoplayTimer) clearTimeout(autoplayTimer);
+
+      // Mulai otomatis beberapa detik setelah website dibuka (2.5 detik)
+      autoplayTimer = setTimeout(function () {
+        var userPaused = false;
+        try {
+          userPaused = sessionStorage.getItem(STORAGE_PAUSED_KEY) === 'true';
+        } catch (e) {}
+
+        if (userPaused || !audio || !audio.paused) return;
+
+        audio.volume = 0;
+        var playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.then(function () {
+            // Autoplay diizinkan oleh browser, fade-in lembut
+            BaddelAudio.fadeIn(TARGET_VOLUME, 1500);
+            BaddelAudio.updateUI(true);
+          }).catch(function () {
+            // Jika diblokir oleh browser sebelum ada interaksi: siapkan di interaksi pertama
+            BaddelAudio.updateUI(false);
+            BaddelAudio.attachInteractionListeners();
+          });
+        }
+      }, AUTOPLAY_DELAY_MS);
     },
 
     attachInteractionListeners: function () {
@@ -161,8 +200,9 @@
         } catch (e) {}
 
         if (!userPaused && audio && audio.paused) {
-          audio.volume = TARGET_VOLUME;
+          audio.volume = 0;
           audio.play().then(function () {
+            BaddelAudio.fadeIn(TARGET_VOLUME, 1200);
             BaddelAudio.updateUI(true);
           }).catch(function (err) {
             console.warn('Audio interaction play notice:', err);
@@ -183,24 +223,32 @@
     togglePlay: function () {
       if (!audio) return;
 
+      // Hentikan timer autoplay yang tertunda jika pengunjung berinteraksi manual
+      if (autoplayTimer) {
+        clearTimeout(autoplayTimer);
+        autoplayTimer = null;
+      }
+
       if (audio.paused) {
-        // Visitor wants to play
+        // Pengunjung ingin memutar lagu
         try {
           sessionStorage.removeItem(STORAGE_PAUSED_KEY);
         } catch (e) {}
 
-        audio.volume = TARGET_VOLUME;
+        audio.volume = 0;
         audio.play().then(function () {
+          BaddelAudio.fadeIn(TARGET_VOLUME, 800);
           BaddelAudio.updateUI(true);
         }).catch(function (err) {
           console.error('Audio play error:', err);
         });
       } else {
-        // Visitor wants to pause / turn off
+        // Pengunjung ingin mematikan / jeda lagu
         try {
           sessionStorage.setItem(STORAGE_PAUSED_KEY, 'true');
         } catch (e) {}
 
+        if (fadeInterval) clearInterval(fadeInterval);
         audio.pause();
         BaddelAudio.updateUI(false);
       }
