@@ -189,8 +189,21 @@
 
 /* State when paused / off */
 .baddel-audio-widget:not(.is-playing) {
-  opacity: 0.85;
-  border-color: rgba(74, 145, 226, 0.25);
+  opacity: 0.9;
+  border-color: rgba(74, 145, 226, 0.35);
+}
+
+.baddel-audio-widget:not(.is-playing) .baddel-audio-btn--play {
+  animation: baddelPulseBtn 2s infinite;
+}
+
+@keyframes baddelPulseBtn {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(230, 195, 108, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(230, 195, 108, 0);
+  }
 }
 
 .baddel-audio-widget:not(.is-playing):hover {

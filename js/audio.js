@@ -1,14 +1,15 @@
 /* ============================================
    BADDEL COMMUNITY — AUDIO CONTROLLER (AUDIO.JS)
-   Compact Theme Song Player with 2s Autoplay & User Controls
+   Compact Theme Song Player with Guaranteed Audible Playback
    ============================================ */
 
 (function () {
   'use strict';
 
-  var SONG_SRC = 'assets/songs/Baddel%20Theme%20Song.mpeg';
-  var TARGET_VOLUME = 0.32;
-  var AUTOPLAY_DELAY_MS = 2000; // Tepat 2 detik setelah pengunjung masuk ke website
+  var SONG_SRC = 'assets/songs/Baddel%20Theme%20Song.mp3';
+  var SONG_SRC_FALLBACK = 'assets/songs/Baddel%20Theme%20Song.mpeg';
+  var TARGET_VOLUME = 0.45; // Suara jelas dan nyaman didengar
+  var AUTOPLAY_DELAY_MS = 2000; // Tepat 2 detik setelah website dibuka
   var STORAGE_TIME_KEY = 'baddel_audio_time';
   var STORAGE_PAUSED_KEY = 'baddel_audio_paused';
 
@@ -17,8 +18,6 @@
   var playBtnEl = null;
   var statusTextEl = null;
   var autoplayTimer = null;
-  var fadeInterval = null;
-  var interactionBound = false;
 
   var BaddelAudio = {
     init: function () {
@@ -33,13 +32,26 @@
     },
 
     setup: function () {
-      // 1. Create Audio Element
+      // 1. Inisialisasi Objek Audio
       audio = new Audio();
-      audio.src = SONG_SRC;
       audio.loop = true;
       audio.preload = 'auto';
+      audio.muted = false;
+      audio.volume = TARGET_VOLUME;
 
-      // Restore playback position in session
+      // Cek dukungan format mp3 atau mpeg
+      var canPlayMp3 = audio.canPlayType('audio/mpeg');
+      audio.src = canPlayMp3 ? SONG_SRC : SONG_SRC_FALLBACK;
+
+      // Error handling: jika .mp3 gagal dimuat, alihkan ke .mpeg
+      audio.addEventListener('error', function () {
+        if (audio.src.indexOf('.mp3') !== -1) {
+          audio.src = SONG_SRC_FALLBACK;
+          audio.load();
+        }
+      });
+
+      // Kembalikan posisi waktu lagu di sesi ini jika ada
       try {
         var savedTime = parseFloat(sessionStorage.getItem(STORAGE_TIME_KEY) || '0');
         if (!isNaN(savedTime) && savedTime > 0) {
@@ -47,7 +59,7 @@
         }
       } catch (e) {}
 
-      // Periodic time sync
+      // Sinkronisasi posisi waktu secara berkala
       setInterval(function () {
         if (audio && !audio.paused && !isNaN(audio.currentTime)) {
           try {
@@ -64,19 +76,20 @@
         }
       });
 
-      // 2. Render Compact Widget in DOM
+      // 2. Render Widget Mini di DOM
       BaddelAudio.renderWidget();
 
-      // 3. Check if user previously paused
+      // 3. Cek preferensi pengunjung sebelumnya
       var userPaused = false;
       try {
         userPaused = sessionStorage.getItem(STORAGE_PAUSED_KEY) === 'true';
       } catch (e) {}
 
       if (!userPaused) {
-        // Pasang interaction listener langsung agar jika pengunjung klik/tap sebelum 2 detik, langsung siap
+        // Pasang interaction listener di seluruh halaman:
+        // Jika pengunjung mengetuk/klik di mana saja sebelum atau sesudah 2 detik, suara langsung keluar!
         BaddelAudio.attachInteractionListeners();
-        // Jadwalkan autoplay setelah tepat 2 detik
+        // Jadwalkan pemutaran bersuara setelah 2 detik
         BaddelAudio.scheduleAutoplay();
       } else {
         BaddelAudio.updateUI(false);
@@ -109,14 +122,14 @@
           '    <span class="baddel-audio-eq" aria-hidden="true">',
           '      <span></span><span></span><span></span>',
           '    </span>',
-          '    <span id="baddel-audio-status-text">Baddel</span>',
+          '    <span id="baddel-audio-status-text">Play</span>',
           '  </div>',
           '</div>',
           '',
           '<!-- Control toggle button -->',
-          '<button type="button" class="baddel-audio-btn baddel-audio-btn--play" id="baddel-audio-play-btn" aria-label="Putar / Matikan Musik" title="Matikan Musik">',
-          '  <svg class="icon-play" style="display:none;" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>',
-          '  <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>',
+          '<button type="button" class="baddel-audio-btn baddel-audio-btn--play" id="baddel-audio-play-btn" aria-label="Putar / Matikan Musik" title="Putar Musik">',
+          '  <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>',
+          '  <svg class="icon-pause" style="display:none;" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>',
           '</button>'
         ].join('\n');
 
@@ -126,12 +139,12 @@
       playBtnEl = document.getElementById('baddel-audio-play-btn');
       statusTextEl = document.getElementById('baddel-audio-status-text');
 
-      // Click anywhere on widget toggles music
+      // Klik di area widget mana saja akan memutar/menjeda lagu
       widgetEl.addEventListener('click', function () {
         BaddelAudio.togglePlay();
       });
 
-      // Audio state events
+      // Event status audio
       audio.addEventListener('play', function () {
         BaddelAudio.updateUI(true);
       });
@@ -141,35 +154,11 @@
       });
     },
 
-    fadeIn: function (targetVol, durationMs) {
-      if (!audio) return;
-      if (fadeInterval) clearInterval(fadeInterval);
-
-      var steps = 20;
-      var stepTime = (durationMs || 1000) / steps;
-      var stepIncrement = targetVol / steps;
-      audio.volume = 0;
-      audio.muted = false;
-
-      fadeInterval = setInterval(function () {
-        if (!audio || audio.paused) {
-          clearInterval(fadeInterval);
-          return;
-        }
-        if (audio.volume + stepIncrement < targetVol) {
-          audio.volume = Math.min(audio.volume + stepIncrement, 1);
-        } else {
-          audio.volume = targetVol;
-          clearInterval(fadeInterval);
-        }
-      }, stepTime);
-    },
-
     scheduleAutoplay: function () {
       if (!audio) return;
       if (autoplayTimer) clearTimeout(autoplayTimer);
 
-      // Mulai autoplay setelah 2 detik
+      // Coba mulai autoplay bersuara setelah 2 detik
       autoplayTimer = setTimeout(function () {
         var userPaused = false;
         try {
@@ -178,31 +167,26 @@
 
         if (userPaused || !audio || !audio.paused) return;
 
-        // Coba putar bersuara langsung
+        // Pastikan suara tidak di-mute dan volume penuh
         audio.muted = false;
-        audio.volume = 0;
+        audio.volume = TARGET_VOLUME;
+
         var playPromise = audio.play();
         if (playPromise !== undefined) {
           playPromise.then(function () {
-            BaddelAudio.fadeIn(TARGET_VOLUME, 1200);
+            // Berhasil autoplay bersuara langsung!
             BaddelAudio.updateUI(true);
           }).catch(function () {
-            // Jika browser memblokir unmuted autoplay tanpa gestur:
-            // Putar dalam mode muted agar piringan berputar & audio jalan,
-            // lalu otomatis bersuara pada sentuhan/klik pertama pengguna!
-            audio.muted = true;
-            audio.play().then(function () {
-              BaddelAudio.updateUI(true);
-            }).catch(function () {});
+            // Browser membatasi audio bersuara sebelum interaksi klik:
+            // JANGAN putar secara bisu (muted). Biarkan tombol bersiap,
+            // dan langsung bunyi dengan suara penuh saat pengunjung pertama kali klik di mana pun!
+            BaddelAudio.updateUI(false);
           });
         }
       }, AUTOPLAY_DELAY_MS);
     },
 
     attachInteractionListeners: function () {
-      if (interactionBound) return;
-      interactionBound = true;
-
       var interactionEvents = ['pointerdown', 'touchstart', 'click', 'keydown'];
 
       function handleFirstInteraction(evt) {
@@ -211,62 +195,55 @@
           userPaused = sessionStorage.getItem(STORAGE_PAUSED_KEY) === 'true';
         } catch (e) {}
 
-        if (!userPaused && audio) {
+        if (!userPaused && audio && audio.paused) {
           audio.muted = false;
-          if (audio.paused) {
-            audio.volume = 0;
-            audio.play().then(function () {
-              BaddelAudio.fadeIn(TARGET_VOLUME, 1000);
-              BaddelAudio.updateUI(true);
-            }).catch(function () {});
-          } else if (audio.volume === 0 || audio.muted) {
-            BaddelAudio.fadeIn(TARGET_VOLUME, 1000);
+          audio.volume = TARGET_VOLUME;
+          audio.play().then(function () {
             BaddelAudio.updateUI(true);
-          }
+          }).catch(function (err) {
+            console.warn('Playback on interaction:', err);
+          });
         }
 
-        // Lepas listener setelah gestur pertama
+        // Lepas listener setelah interaksi pertama
         interactionEvents.forEach(function (evName) {
           window.removeEventListener(evName, handleFirstInteraction, true);
         });
-        interactionBound = false;
       }
 
       interactionEvents.forEach(function (evName) {
-        window.addEventListener(evName, handleFirstInteraction, { capture: true, once: true });
+        window.addEventListener(evName, handleFirstInteraction, { capture: true, passive: true });
       });
     },
 
     togglePlay: function () {
       if (!audio) return;
 
-      // Batalkan timer autoplay jika pengguna klik manual
+      // Batalkan timer autoplay jika ada interaksi manual
       if (autoplayTimer) {
         clearTimeout(autoplayTimer);
         autoplayTimer = null;
       }
 
-      if (audio.paused || audio.muted) {
-        // Pengunjung ingin menyalakan lagu
+      if (audio.paused) {
+        // Pengunjung ingin menyalakan musik
         try {
           sessionStorage.removeItem(STORAGE_PAUSED_KEY);
         } catch (e) {}
 
         audio.muted = false;
-        audio.volume = 0;
+        audio.volume = TARGET_VOLUME;
         audio.play().then(function () {
-          BaddelAudio.fadeIn(TARGET_VOLUME, 800);
           BaddelAudio.updateUI(true);
         }).catch(function (err) {
           console.error('Audio play error:', err);
         });
       } else {
-        // Pengunjung ingin mematikan lagu
+        // Pengunjung ingin mematikan musik
         try {
           sessionStorage.setItem(STORAGE_PAUSED_KEY, 'true');
         } catch (e) {}
 
-        if (fadeInterval) clearInterval(fadeInterval);
         audio.pause();
         BaddelAudio.updateUI(false);
       }
@@ -288,8 +265,8 @@
         }
       } else {
         widgetEl.classList.remove('is-playing');
-        widgetEl.setAttribute('title', 'Theme Song Baddel (Mati - Klik untuk Bunyikan)');
-        if (statusTextEl) statusTextEl.textContent = 'Paused';
+        widgetEl.setAttribute('title', 'Theme Song Baddel (Klik untuk Putar)');
+        if (statusTextEl) statusTextEl.textContent = 'Play';
         if (playBtnEl) {
           playBtnEl.setAttribute('title', 'Putar Musik');
           var iconPlay2 = playBtnEl.querySelector('.icon-play');
