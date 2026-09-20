@@ -1,6 +1,6 @@
 {
   "version": "baddel_gt0sam",
-  "lastUpdated": "2026-09-20T09:26:05.940Z",
+  "lastUpdated": "2026-09-20T10:09:10.333Z",
   "players": [
     {
       "id": "basz",
@@ -249,11 +249,11 @@
       "courtNames": "Court 1, Court 2",
       "mapsUrl": "https://maps.app.goo.gl/bNDC74Uk2SzQXNNH9?g_st=ac",
       "locationUrl": "https://maps.app.goo.gl/bNDC74Uk2SzQXNNH9?g_st=ac",
-      "fee": "Rp 60.000 / orang",
+      "fee": "Rp 50.000 / orang",
       "status": "open",
       "eventStatus": "upcoming",
       "eventStatusText": "Upcoming",
-      "slotsLeft": 16,
+      "slotsLeft": 7,
       "totalSlots": 16,
       "slotsFilled": 0,
       "notes": "Include Shuttlecock. Harap datang tepat waktu"
