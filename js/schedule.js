@@ -212,6 +212,9 @@
         );
         const waLink = `https://wa.me/6281270000739?text=${waText}`;
 
+        const shareText = `🏸 ${title}\n📅 ${dateStr} — ${timeStr}\n📍 ${venueStr}${courtList.length > 0 ? '\n🏟 Court: ' + courtList.join(', ') : ''}\n💰 HTM: ${feeStr}\n\nJoin sesi main bersama Baddel Community! 🔥`;
+        const shareUrl = window.location.origin + window.location.pathname + '#schedule';
+
         return `
           <div class="schedule-card ${isFull ? 'is-full' : ''} ${isCompleted ? 'is-completed' : ''}" data-sport="${sport}">
             <div class="schedule-card-header">
@@ -260,9 +263,15 @@
 
                 <div class="schedule-detail-item">
                   <div class="schedule-detail-icon"><i class="fas fa-location-dot"></i></div>
-                  <div>
+                  <div style="min-width:0; flex:1;">
                     <span class="schedule-detail-label">Lokasi</span>
                     <strong class="schedule-detail-value">${escapeHTML(venueStr)}</strong>
+                    <a href="${escapeHTML(mapsUrl)}" target="_blank" rel="noopener noreferrer"
+                       class="schedule-maps-inline-btn" title="Buka petunjuk arah di Google Maps">
+                      <i class="fas fa-location-arrow"></i>
+                      <span>Petunjuk Arah</span>
+                      <span class="schedule-btn-arrow">↗</span>
+                    </a>
                   </div>
                 </div>
 
@@ -286,11 +295,14 @@
 
             <div class="schedule-card-footer">
               <div class="schedule-actions-grid">
-                <a href="${escapeHTML(mapsUrl)}" target="_blank" rel="noopener noreferrer" class="schedule-btn-location" title="Buka Petunjuk Arah di Google Maps">
-                  <i class="fas fa-location-arrow"></i>
-                  <span>Lokasi</span>
-                  <span class="schedule-btn-arrow">↗</span>
-                </a>
+                <button type="button" class="schedule-btn-share"
+                  data-share-title="${escapeHTML(title)}"
+                  data-share-text="${escapeHTML(shareText)}"
+                  data-share-url="${escapeHTML(shareUrl)}"
+                  title="Bagikan jadwal ini ke sosial media">
+                  <i class="fas fa-share-nodes"></i>
+                  <span>Share</span>
+                </button>
                 ${isCompleted ? `
                   <button type="button" class="schedule-btn-rsvp is-disabled is-completed" disabled title="Sesi Main Telah Selesai (Completed)">
                     <i class="fas fa-circle-check"></i>
@@ -335,6 +347,53 @@
     });
 
     renderSchedules();
+
+    // Share button — event delegation on container
+    container.addEventListener('click', async (e) => {
+      const shareBtn = e.target.closest('.schedule-btn-share');
+      if (!shareBtn) return;
+
+      const shareTitle = shareBtn.getAttribute('data-share-title') || 'Baddel Community — Jadwal Main';
+      const shareText  = shareBtn.getAttribute('data-share-text')  || '';
+      const shareUrl   = shareBtn.getAttribute('data-share-url')   || window.location.href;
+
+      if (navigator.share) {
+        // Native share sheet (mobile & modern desktop)
+        try {
+          await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
+        } catch (err) {
+          if (err.name !== 'AbortError') console.warn('Share failed:', err);
+        }
+      } else {
+        // Fallback: copy to clipboard
+        const copyText = shareText + '\n\n' + shareUrl;
+        try {
+          await navigator.clipboard.writeText(copyText);
+        } catch {
+          // Last resort fallback
+          const ta = document.createElement('textarea');
+          ta.value = copyText;
+          ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+        // Visual feedback
+        const icon = shareBtn.querySelector('i');
+        const label = shareBtn.querySelector('span');
+        const origIcon = icon ? icon.className : '';
+        const origLabel = label ? label.textContent : '';
+        if (icon) icon.className = 'fas fa-check';
+        if (label) label.textContent = 'Disalin!';
+        shareBtn.classList.add('share-copied');
+        setTimeout(() => {
+          if (icon) icon.className = origIcon;
+          if (label) label.textContent = origLabel;
+          shareBtn.classList.remove('share-copied');
+        }, 2000);
+      }
+    });
 
     // Listen for storage events in case admin updates schedule in another tab
     window.addEventListener('storage', (e) => {

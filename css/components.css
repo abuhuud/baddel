@@ -3394,28 +3394,54 @@
   white-space: nowrap;
 }
 
+.schedule-maps-inline-btn,
 .schedule-maps-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  margin-top: 0.35rem;
-  padding: 0.25rem 0.6rem;
-  font-size: 0.72rem;
-  color: var(--color-gold);
-  background: rgba(230, 195, 108, 0.08);
-  border: 1px solid rgba(230, 195, 108, 0.25);
+  gap: 0.45rem;
+  margin-top: 0.4rem;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--color-gold) !important;
+  background: rgba(230, 195, 108, 0.1);
+  border: 1px solid rgba(230, 195, 108, 0.35);
   border-radius: 4px;
-  font-weight: 600;
   text-decoration: none;
   transition: all var(--transition-fast);
+  line-height: 1.2;
 }
 
+.schedule-maps-inline-btn i,
+.schedule-maps-link i {
+  font-size: 0.78rem;
+  color: var(--color-gold);
+  transition: transform var(--transition-fast);
+}
+
+.schedule-maps-inline-btn .schedule-btn-arrow,
+.schedule-maps-link .schedule-btn-arrow {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--color-gold);
+  transition: transform var(--transition-fast);
+}
+
+.schedule-maps-inline-btn:hover,
 .schedule-maps-link:hover {
   background: var(--color-gold);
-  color: #031226;
+  color: #031226 !important;
   border-color: var(--color-gold);
+  box-shadow: 0 2px 10px rgba(230, 195, 108, 0.4);
   transform: translateY(-1px);
-  box-shadow: 0 0 12px rgba(230, 195, 108, 0.3);
+}
+
+.schedule-maps-inline-btn:hover i,
+.schedule-maps-link:hover i,
+.schedule-maps-inline-btn:hover .schedule-btn-arrow,
+.schedule-maps-link:hover .schedule-btn-arrow {
+  color: #031226 !important;
+  transform: translate(1px, -1px);
 }
 
 .schedule-card-notes {
@@ -3432,7 +3458,7 @@
 /* Schedule Card Action Buttons */
 .schedule-actions-grid {
   display: grid;
-  grid-template-columns: 108px 1fr;
+  grid-template-columns: 104px 1fr;
   gap: 0.6rem;
   width: 100%;
   align-items: stretch;
@@ -3440,20 +3466,20 @@
 
 @media (max-width: 480px) {
   .schedule-actions-grid {
-    grid-template-columns: 100px 1fr;
+    grid-template-columns: 96px 1fr;
     gap: 0.5rem;
   }
 }
 
-/* Button Lokasi (Google Maps) */
-.schedule-btn-location {
+/* Schedule Card Share Button */
+.schedule-btn-share {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  background: rgba(230, 195, 108, 0.1);
-  color: var(--color-gold) !important;
-  border: 1px solid rgba(230, 195, 108, 0.4);
+  gap: 0.45rem;
+  background: rgba(255, 255, 255, 0.05);
+  color: #E2E8F0;
+  border: 1px solid rgba(255, 255, 255, 0.16);
   padding: 0.75rem 0.65rem;
   min-height: 44px;
   box-sizing: border-box;
@@ -3463,41 +3489,38 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
   border-radius: 4px;
-  text-decoration: none;
+  cursor: pointer;
   transition: all var(--transition-fast);
   white-space: nowrap;
   line-height: 1.2;
 }
 
-.schedule-btn-location i {
-  font-size: 0.92rem;
+.schedule-btn-share i {
+  font-size: 0.88rem;
   color: var(--color-gold);
   transition: transform var(--transition-fast);
 }
 
-.schedule-btn-arrow {
-  font-size: 0.82rem;
-  font-weight: 800;
-  color: var(--color-gold);
-  transition: transform var(--transition-fast);
-}
-
-.schedule-btn-location:hover {
-  background: var(--color-gold);
-  color: #031226 !important;
-  border-color: var(--color-gold);
-  box-shadow: 0 0 20px rgba(230, 195, 108, 0.45);
+.schedule-btn-share:hover {
+  background: rgba(230, 195, 108, 0.16);
+  color: #FFFFFF;
+  border-color: rgba(230, 195, 108, 0.55);
+  box-shadow: 0 0 16px rgba(230, 195, 108, 0.3);
   transform: translateY(-2px);
 }
 
-.schedule-btn-location:hover i {
-  color: #031226;
-  transform: translate(2px, -2px) scale(1.15);
+.schedule-btn-share:hover i {
+  transform: scale(1.15);
 }
 
-.schedule-btn-location:hover .schedule-btn-arrow {
-  color: #031226;
-  transform: translate(2px, -2px);
+.schedule-btn-share.share-copied {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: #10B981;
+  color: #10B981;
+}
+
+.schedule-btn-share.share-copied i {
+  color: #10B981;
 }
 
 /* Button Daftar / Join Sesi (Vibrant WhatsApp Green Gradient) */
