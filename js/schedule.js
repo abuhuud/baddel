@@ -67,49 +67,55 @@
       return 'upcoming';
     }
 
+    function formatDateID(date) {
+      const DAYS_ID  = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+      const MONTHS_ID = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+      return DAYS_ID[date.getDay()] + ', ' + date.getDate() + ' ' + MONTHS_ID[date.getMonth()] + ' ' + date.getFullYear();
+    }
+
+    const rangeInfoEl = document.getElementById('schedule-range-info');
+
     function renderSchedules() {
       const all = window.BadcomData ? window.BadcomData.getSchedules() : [];
 
-      // --- Current date reference ---
+      // --- 14-day rolling window from today ---
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      const cutoff = new Date(today);
-      cutoff.setDate(today.getDate() + 7);
-      const pastLimit = new Date(today);
-      pastLimit.setDate(today.getDate() - 7);
+      const endDate = new Date(today);
+      endDate.setDate(today.getDate() + 13); // today + 13 = 14 days total
 
-      // Apply sport & status filter
+      // --- Update range info badge ---
+      if (rangeInfoEl) {
+        const sportLabel = activeFilter === 'badminton' ? 'Badminton'
+                         : activeFilter === 'padel'     ? 'Padel'
+                         : 'Semua Olahraga';
+        rangeInfoEl.innerHTML = `
+          <div class="schedule-range-badge">
+            <span class="schedule-range-icon"><i class="fas fa-calendar-range"></i></span>
+            <span class="schedule-range-text">
+              <span class="schedule-range-label">Menampilkan jadwal</span>
+              <strong class="schedule-range-dates">${formatDateID(today)} &mdash; ${formatDateID(endDate)}</strong>
+            </span>
+            <span class="schedule-range-sport">${sportLabel}</span>
+          </div>
+        `;
+      }
+
+      // Apply 14-day window + sport filter
       const inRange = all.filter(item => {
         const d = parseScheduleDate(item);
         if (d) d.setHours(0, 0, 0, 0);
 
-        const evStatus = getItemEventStatus(item, d, today);
+        // Sport filter
         const itemSport = (item.sport || '').toLowerCase();
-
-        // 1. Filter tabs logic
-        if (activeFilter === 'upcoming') {
-          if (evStatus !== 'upcoming') return false;
-          if (d && (d < today || d > cutoff)) return false;
-          return true;
+        if ((activeFilter === 'badminton' || activeFilter === 'padel') && itemSport !== activeFilter) {
+          return false;
         }
 
-        if (activeFilter === 'completed') {
-          return evStatus === 'completed';
-        }
-
-        if (activeFilter === 'badminton' || activeFilter === 'padel') {
-          if (itemSport !== activeFilter) return false;
-        }
-
-        // 2. Default ('all' or sport): Upcoming H+7 window + Recent Completed
-        if (evStatus === 'upcoming') {
-          if (!d) return true;
-          return d >= today && d <= cutoff;
-        } else {
-          // Completed session
-          if (!d) return true;
-          return d >= pastLimit && d <= today;
-        }
+        // Date window: today up to +13 days (14 days total)
+        // Items without a parseable date are included (TBA)
+        if (d) return d >= today && d <= endDate;
+        return true;
       });
 
       // --- Sort: Upcoming Open (closest) -> Upcoming Full (closest) -> Completed (newest past first) ---
@@ -148,15 +154,16 @@
       });
 
       if (inRange.length === 0) {
-        const emptyMsg = activeFilter === 'completed'
-          ? 'Belum ada sesi main yang ditandai Selesai (Completed).'
-          : 'Jadwal main untuk periode ini akan segera diperbarui. Stay tuned!';
-
+        const sportText = activeFilter === 'badminton' ? 'Badminton'
+                        : activeFilter === 'padel'     ? 'Padel'
+                        : '';
         container.innerHTML = `
           <div class="schedule-empty">
             <div class="schedule-empty-icon">🏸</div>
             <h3>Tidak Ada Jadwal Ditemukan</h3>
-            <p>${emptyMsg}</p>
+            <p>Belum ada sesi${sportText ? ' ' + sportText : ''} dalam 2 minggu ke depan.<br>
+               <span style="opacity:0.7;font-size:0.88em;">${formatDateID(today)} &ndash; ${formatDateID(endDate)}</span>
+            </p>
           </div>
         `;
         return;

@@ -352,16 +352,10 @@
             </p>
           </div>
 
-          <!-- Sport & Status Filter Tabs -->
+          <!-- Sport Filter Tabs -->
           <div class="schedule-filters reveal reveal-delay-2">
             <button class="schedule-filter-btn active" data-filter="all">
               <i class="fas fa-layer-group"></i> SEMUA
-            </button>
-            <button class="schedule-filter-btn" data-filter="upcoming">
-              <i class="fas fa-calendar-check" style="color:#34D399;"></i> UPCOMING
-            </button>
-            <button class="schedule-filter-btn" data-filter="completed">
-              <i class="fas fa-circle-check" style="color:#F87171;"></i> COMPLETED
             </button>
             <button class="schedule-filter-btn" data-filter="badminton">
               <i class="fas fa-feather"></i> BADMINTON
@@ -370,6 +364,11 @@
               <i class="fas fa-table-tennis-paddle-ball"></i> PADEL
             </button>
           </div>
+        </div>
+
+        <!-- Dynamic Date Range Info -->
+        <div class="schedule-range-info reveal reveal-delay-3" id="schedule-range-info" aria-live="polite">
+          <!-- Populated by js/schedule.js -->
         </div>
 
         <!-- Schedule Cards Grid -->
