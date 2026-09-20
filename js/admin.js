@@ -1850,7 +1850,7 @@
         .catch(() => {
           if (checkTimer) clearTimeout(checkTimer);
         });
-    }, 800);
+    }, 2000); // Delay 2s to ensure this fires well after window 'load' event
   }
 
   function escapeHTML(str) {

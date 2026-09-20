@@ -806,12 +806,18 @@ var BadcomData = (function () {
       });
   }
 
-  // Trigger remote sync on startup
+  // Trigger remote sync AFTER the page is fully loaded.
+  // Using 'load' event (not 'DOMContentLoaded') ensures fetch requests don't
+  // start while the browser is still parsing/rendering the page, which would
+  // keep the browser tab refresh-button spinning indefinitely.
   if (typeof window !== 'undefined') {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initRemoteSync);
+    if (document.readyState === 'complete') {
+      // Already loaded (e.g. script is deferred or async)
+      setTimeout(initRemoteSync, 0);
     } else {
-      initRemoteSync();
+      window.addEventListener('load', function () {
+        setTimeout(initRemoteSync, 0);
+      });
     }
   }
 
