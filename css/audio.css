@@ -1,41 +1,42 @@
 /* ============================================
    BADDEL COMMUNITY — AUDIO PLAYER WIDGET
-   Glassmorphic Floating Theme Song Player
+   Ultra-Compact Floating Theme Song Player
    ============================================ */
 
 .baddel-audio-widget {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  bottom: 20px;
+  right: 20px;
   z-index: 9990;
   display: flex;
   align-items: center;
-  gap: 12px;
-  background: rgba(5, 18, 38, 0.88);
-  border: 1px solid rgba(74, 145, 226, 0.3);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  padding: 8px 14px 8px 8px;
-  border-radius: 50px;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5), 0 0 25px rgba(20, 82, 164, 0.25);
+  gap: 8px;
+  background: rgba(4, 16, 34, 0.9);
+  border: 1px solid rgba(74, 145, 226, 0.32);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 4px 10px 4px 5px;
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 16px rgba(20, 82, 164, 0.2);
   user-select: none;
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
   font-family: var(--font-body, 'Inter', sans-serif);
+  line-height: 1;
 }
 
 .baddel-audio-widget:hover {
-  border-color: rgba(74, 145, 226, 0.55);
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.65), 0 0 30px rgba(74, 145, 226, 0.35);
+  border-color: rgba(230, 195, 108, 0.55);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.65), 0 0 20px rgba(230, 195, 108, 0.3);
   transform: translateY(-2px);
 }
 
-/* Vinyl Disc */
+/* Vinyl Disc (Mini) */
 .baddel-audio-disc-wrap {
   position: relative;
-  width: 42px;
-  height: 42px;
+  width: 28px;
+  height: 28px;
   flex-shrink: 0;
-  cursor: pointer;
 }
 
 .baddel-audio-disc {
@@ -43,39 +44,30 @@
   height: 100%;
   border-radius: 50%;
   background: radial-gradient(circle at center, #E6C36C 14%, #111827 15%, #05070B 45%, #1F2937 70%, #0B111E 100%);
-  border: 1.5px solid rgba(230, 195, 108, 0.4);
-  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.9), 0 2px 8px rgba(0, 0, 0, 0.4);
+  border: 1.2px solid rgba(230, 195, 108, 0.5);
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.9), 0 2px 6px rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: baddelSpin 4s linear infinite;
+  animation: baddelSpin 3.5s linear infinite;
   animation-play-state: paused;
   position: relative;
   overflow: hidden;
 }
 
-.baddel-audio-disc::after {
-  content: '';
-  position: absolute;
-  inset: 25%;
-  border-radius: 50%;
-  border: 1px dashed rgba(255, 255, 255, 0.15);
-  pointer-events: none;
-}
-
 .baddel-audio-disc-center {
-  width: 14px;
-  height: 14px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: #1452A4;
-  border: 1.5px solid #E6C36C;
+  border: 1px solid #E6C36C;
   z-index: 2;
 }
 
 .baddel-audio-widget.is-playing .baddel-audio-disc {
   animation-play-state: running;
-  border-color: rgba(230, 195, 108, 0.85);
-  box-shadow: 0 0 15px rgba(230, 195, 108, 0.35);
+  border-color: rgba(230, 195, 108, 0.9);
+  box-shadow: 0 0 10px rgba(230, 195, 108, 0.45);
 }
 
 @keyframes baddelSpin {
@@ -88,15 +80,15 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  min-width: 110px;
-  max-width: 160px;
+  min-width: 72px;
+  max-width: 96px;
 }
 
 .baddel-audio-title {
-  font-size: 0.78rem;
+  font-size: 0.70rem;
   font-weight: 700;
   color: #FFFFFF;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -104,11 +96,11 @@
 }
 
 .baddel-audio-sub {
-  font-size: 0.68rem;
-  color: var(--color-muted, #98A6B8);
+  font-size: 0.58rem;
+  color: #94A3B8;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   line-height: 1;
 }
 
@@ -116,29 +108,30 @@
 .baddel-audio-eq {
   display: inline-flex;
   align-items: flex-end;
-  gap: 2px;
-  height: 10px;
-  width: 12px;
+  gap: 1.5px;
+  height: 8px;
+  width: 9px;
+  flex-shrink: 0;
 }
 
 .baddel-audio-eq span {
-  width: 2px;
+  width: 1.8px;
   background: #4A91E2;
   border-radius: 1px;
-  height: 3px;
+  height: 2px;
   transition: height 0.2s ease;
 }
 
 .baddel-audio-widget.is-playing .baddel-audio-eq span {
   background: #E6C36C;
-  animation: baddelEqBounce 0.8s ease-in-out infinite alternate;
+  animation: baddelEqBounce 0.7s ease-in-out infinite alternate;
 }
 
 .baddel-audio-widget.is-playing .baddel-audio-eq span:nth-child(1) {
   animation-delay: 0.1s;
 }
 .baddel-audio-widget.is-playing .baddel-audio-eq span:nth-child(2) {
-  animation-delay: 0.3s;
+  animation-delay: 0.35s;
 }
 .baddel-audio-widget.is-playing .baddel-audio-eq span:nth-child(3) {
   animation-delay: 0.2s;
@@ -146,145 +139,98 @@
 
 @keyframes baddelEqBounce {
   0% { height: 2px; }
-  100% { height: 10px; }
+  100% { height: 8px; }
 }
 
-/* Buttons */
-.baddel-audio-controls {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
+/* Single Control Button (Play/Pause Toggle) */
 .baddel-audio-btn {
-  background: rgba(20, 82, 164, 0.35);
-  border: 1px solid rgba(74, 145, 226, 0.35);
+  background: rgba(20, 82, 164, 0.4);
+  border: 1px solid rgba(74, 145, 226, 0.4);
   color: #FFFFFF;
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   padding: 0;
+  flex-shrink: 0;
   transition: all 0.2s ease;
 }
 
 .baddel-audio-btn:hover {
-  background: rgba(74, 145, 226, 0.5);
-  border-color: #4A91E2;
-  color: #FFFFFF;
-  transform: scale(1.08);
+  background: rgba(74, 145, 226, 0.6);
+  border-color: #E6C36C;
+  color: #E6C36C;
+  transform: scale(1.1);
 }
 
 .baddel-audio-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.92);
 }
 
 .baddel-audio-btn--play {
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, #1452A4, #2369C8);
-  border: 1px solid rgba(230, 195, 108, 0.4);
+  background: linear-gradient(135deg, #1452A4, #1d68cd);
+  border: 1px solid rgba(230, 195, 108, 0.45);
   color: #E6C36C;
 }
 
-.baddel-audio-btn--play:hover {
-  background: linear-gradient(135deg, #2369C8, #4A91E2);
-  border-color: #E6C36C;
-  color: #FFFFFF;
-  box-shadow: 0 0 12px rgba(74, 145, 226, 0.6);
+.baddel-audio-widget.is-playing .baddel-audio-btn--play {
+  background: rgba(230, 195, 108, 0.15);
+  border-color: rgba(230, 195, 108, 0.6);
+  color: #E6C36C;
 }
 
 .baddel-audio-btn svg {
-  width: 14px;
-  height: 14px;
+  width: 10px;
+  height: 10px;
 }
 
-/* Hint Tooltip (shows if autoplay blocked until first interaction) */
-.baddel-audio-hint {
-  position: absolute;
-  bottom: calc(100% + 10px);
-  right: 0;
-  background: rgba(4, 23, 49, 0.95);
-  border: 1px solid rgba(230, 195, 108, 0.45);
-  color: #F5F7FA;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 0.72rem;
-  font-weight: 500;
-  white-space: nowrap;
-  pointer-events: none;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
-  opacity: 0;
-  transform: translateY(6px);
-  transition: all 0.3s ease;
-  z-index: 9992;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+/* State when paused / off */
+.baddel-audio-widget:not(.is-playing) {
+  opacity: 0.85;
+  border-color: rgba(74, 145, 226, 0.25);
 }
 
-.baddel-audio-hint::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  right: 20px;
-  border: 5px solid transparent;
-  border-top-color: rgba(4, 23, 49, 0.95);
-}
-
-.baddel-audio-widget.has-hint .baddel-audio-hint {
+.baddel-audio-widget:not(.is-playing):hover {
   opacity: 1;
-  transform: translateY(0);
-  animation: baddelHintFloat 2.5s ease-in-out infinite;
 }
 
-@keyframes baddelHintFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-}
-
-/* Collapsed state for ultra-clean mobile / user toggle */
-.baddel-audio-widget.is-collapsed {
-  padding: 6px;
-  gap: 0;
-}
-
-.baddel-audio-widget.is-collapsed .baddel-audio-info,
-.baddel-audio-widget.is-collapsed .baddel-audio-controls {
-  display: none;
-}
-
-/* Responsive adjustment */
+/* Responsive adjustment for Mobile */
 @media (max-width: 640px) {
   .baddel-audio-widget {
-    bottom: 18px;
-    right: 18px;
-    padding: 6px 12px 6px 6px;
+    bottom: 14px;
+    right: 14px;
+    padding: 3px 8px 3px 4px;
+    gap: 6px;
   }
   
   .baddel-audio-disc-wrap {
-    width: 36px;
-    height: 36px;
+    width: 26px;
+    height: 26px;
   }
   
   .baddel-audio-info {
-    max-width: 120px;
+    min-width: 65px;
+    max-width: 82px;
   }
   
   .baddel-audio-title {
-    font-size: 0.72rem;
+    font-size: 0.66rem;
+  }
+
+  .baddel-audio-sub {
+    font-size: 0.54rem;
   }
   
   .baddel-audio-btn {
-    width: 28px;
-    height: 28px;
+    width: 22px;
+    height: 22px;
   }
   
-  .baddel-audio-btn--play {
-    width: 30px;
-    height: 30px;
+  .baddel-audio-btn svg {
+    width: 9px;
+    height: 9px;
   }
 }
