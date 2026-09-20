@@ -1,6 +1,6 @@
 {
   "version": "baddel_gt0sam",
-  "lastUpdated": "2026-09-20T09:11:44.725Z",
+  "lastUpdated": "2026-09-20T09:15:45.002Z",
   "players": [
     {
       "id": "basz",
@@ -249,7 +249,7 @@
       "courtNames": "Court 1, Court 2",
       "mapsUrl": "https://share.google/YmDUclESoUjl3lZVv",
       "locationUrl": "https://share.google/YmDUclESoUjl3lZVv",
-      "fee": "Rp 50.000 / orang",
+      "fee": "Rp 60.000 / orang",
       "status": "open",
       "eventStatus": "upcoming",
       "eventStatusText": "Upcoming",
