@@ -3201,14 +3201,27 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 3px;
+  height: 4px;
   background: linear-gradient(90deg, var(--color-blue), var(--color-blue-light));
-  opacity: 0.6;
+  opacity: 0.85;
   transition: opacity 0.3s ease;
 }
 
 .schedule-card[data-sport="padel"]::before {
   background: linear-gradient(90deg, #10B981, #34D399);
+}
+
+/* Card: Upcoming (Akan Datang) */
+.schedule-card.is-upcoming {
+  background: linear-gradient(180deg, rgba(6, 26, 56, 0.78) 0%, rgba(3, 14, 30, 0.9) 100%);
+  border: 1px solid rgba(74, 145, 226, 0.32);
+}
+
+.schedule-card.is-upcoming:hover {
+  transform: translateY(-6px);
+  border-color: rgba(230, 195, 108, 0.55);
+  box-shadow: 0 16px 36px rgba(2, 12, 26, 0.85),
+    0 0 25px rgba(74, 145, 226, 0.3);
 }
 
 .schedule-card:hover {
@@ -3219,8 +3232,8 @@
 }
 
 .schedule-card.is-full {
-  opacity: 0.8;
-  border-color: rgba(239, 68, 68, 0.2);
+  opacity: 0.85;
+  border-color: rgba(239, 68, 68, 0.3);
 }
 
 .schedule-card-header {
@@ -3312,17 +3325,48 @@
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
+/* Card: Completed (Sudah Selesai) - Muted Slate/Charcoal */
 .schedule-card.is-completed {
-  opacity: 0.88;
-  border-color: rgba(239, 68, 68, 0.3);
-  background: linear-gradient(180deg, rgba(7, 29, 61, 0.88) 0%, rgba(35, 10, 16, 0.55) 100%);
+  opacity: 0.85;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.85) 0%, rgba(10, 15, 26, 0.92) 100%);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  box-shadow: 0 4px 16px rgba(2, 12, 26, 0.4);
+}
+
+.schedule-card.is-completed::before {
+  background: linear-gradient(90deg, #475569, #64748B) !important;
+  opacity: 0.6;
 }
 
 .schedule-card.is-completed:hover {
-  opacity: 1;
-  border-color: rgba(239, 68, 68, 0.55);
-  box-shadow: 0 16px 36px rgba(2, 12, 26, 0.8),
-    0 0 25px rgba(239, 68, 68, 0.22);
+  opacity: 0.98;
+  transform: translateY(-4px);
+  border-color: rgba(148, 163, 184, 0.45);
+  box-shadow: 0 12px 28px rgba(2, 12, 26, 0.7),
+    0 0 18px rgba(100, 116, 139, 0.2);
+}
+
+.schedule-card.is-completed .schedule-card-title {
+  color: #CBD5E1;
+}
+
+.schedule-card.is-completed .schedule-detail-item .schedule-detail-icon {
+  background: rgba(100, 116, 139, 0.15);
+  border-color: rgba(100, 116, 139, 0.3);
+  color: #94A3B8;
+}
+
+.schedule-card.is-completed .schedule-card-details {
+  background: rgba(2, 10, 20, 0.3);
+  border-color: rgba(100, 116, 139, 0.15);
+}
+
+.schedule-card.is-completed .schedule-btn-rsvp.is-completed {
+  background: rgba(51, 65, 85, 0.4);
+  border-color: rgba(71, 85, 105, 0.45);
+  color: #94A3B8 !important;
+  box-shadow: none;
+  cursor: not-allowed;
 }
 
 .schedule-card-title {

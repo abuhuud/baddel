@@ -84,42 +84,17 @@
       const endDate = new Date(today);
       endDate.setDate(today.getDate() + 13); // today + 13 = 14 days total
 
-      // --- Update range info badge ---
-      if (rangeInfoEl) {
-        const sportLabel = activeFilter === 'badminton' ? 'Badminton'
-                         : activeFilter === 'padel'     ? 'Padel'
-                         : 'Semua Olahraga';
-        rangeInfoEl.innerHTML = `
-          <div class="schedule-range-badge">
-            <span class="schedule-range-icon"><i class="fas fa-calendar-range"></i></span>
-            <span class="schedule-range-text">
-              <span class="schedule-range-label">Menampilkan jadwal</span>
-              <strong class="schedule-range-dates">${formatDateID(today)} &mdash; ${formatDateID(endDate)}</strong>
-            </span>
-            <span class="schedule-range-sport">${sportLabel}</span>
-          </div>
-        `;
-      }
-
-      // Apply 14-day window + sport filter
-      const inRange = all.filter(item => {
-        const d = parseScheduleDate(item);
-        if (d) d.setHours(0, 0, 0, 0);
-
-        // Sport filter
+      // Apply sport filter (SEMUA, BADMINTON, PADEL) — semua jadwal tampil
+      const filtered = all.filter(item => {
         const itemSport = (item.sport || '').toLowerCase();
         if ((activeFilter === 'badminton' || activeFilter === 'padel') && itemSport !== activeFilter) {
           return false;
         }
-
-        // Date window: today up to +13 days (14 days total)
-        // Items without a parseable date are included (TBA)
-        if (d) return d >= today && d <= endDate;
         return true;
       });
 
-      // --- Sort: Upcoming Open (closest) -> Upcoming Full (closest) -> Completed (newest past first) ---
-      inRange.sort((a, b) => {
+      // --- Sort: UPCOMING first (closest date to furthest), then COMPLETED (most recent past first) ---
+      filtered.sort((a, b) => {
         const da = parseScheduleDate(a);
         const db = parseScheduleDate(b);
         if (da) da.setHours(0, 0, 0, 0);
@@ -128,32 +103,59 @@
         const evA = getItemEventStatus(a, da, today);
         const evB = getItemEventStatus(b, db, today);
 
-        const aFull = a.status === 'full' || (a.slotsLeft != null && a.slotsLeft === 0);
-        const bFull = b.status === 'full' || (b.slotsLeft != null && b.slotsLeft === 0);
+        const isCompA = evA === 'completed' ? 1 : 0;
+        const isCompB = evB === 'completed' ? 1 : 0;
 
-        // Group 1: Upcoming Open (rank 0)
-        // Group 2: Upcoming Full (rank 1)
-        // Group 3: Completed (rank 2)
-        const rankA = evA === 'completed' ? 2 : (aFull ? 1 : 0);
-        const rankB = evB === 'completed' ? 2 : (bFull ? 1 : 0);
+        // Group 1: Upcoming (0), Group 2: Completed (1)
+        if (isCompA !== isCompB) {
+          return isCompA - isCompB;
+        }
 
-        if (rankA !== rankB) return rankA - rankB;
-
-        if (evA === 'completed' && evB === 'completed') {
-          if (da && db) return db - da; // most recent completed first
+        // If both upcoming: closest date first
+        if (isCompA === 0) {
+          if (da && db) {
+            if (da.getTime() !== db.getTime()) return da - db;
+          }
+          const aFull = a.status === 'full' || (a.slotsLeft != null && a.slotsLeft === 0);
+          const bFull = b.status === 'full' || (b.slotsLeft != null && b.slotsLeft === 0);
+          if (aFull !== bFull) return aFull ? 1 : -1;
           if (da) return -1;
           if (db) return 1;
           return 0;
         }
 
-        // Both upcoming
-        if (da && db) return da - db; // closest date first
+        // If both completed: most recent completed session first (descending date)
+        if (da && db) return db - da;
         if (da) return -1;
         if (db) return 1;
         return 0;
       });
 
-      if (inRange.length === 0) {
+      // --- Update range info badge with Upcoming & Completed counts ---
+      const upcomingCount = filtered.filter(item => {
+        const d = parseScheduleDate(item);
+        if (d) d.setHours(0, 0, 0, 0);
+        return getItemEventStatus(item, d, today) !== 'completed';
+      }).length;
+      const completedCount = filtered.length - upcomingCount;
+
+      if (rangeInfoEl) {
+        const sportLabel = activeFilter === 'badminton' ? 'Badminton'
+                         : activeFilter === 'padel'     ? 'Padel'
+                         : 'Semua Olahraga';
+        rangeInfoEl.innerHTML = `
+          <div class="schedule-range-badge">
+            <span class="schedule-range-icon"><i class="fas fa-calendar-check"></i></span>
+            <span class="schedule-range-text">
+              <span class="schedule-range-label">Daftar Jadwal Sesi Main</span>
+              <strong class="schedule-range-dates">${upcomingCount} Sesi Akan Datang &bull; ${completedCount} Selesai</strong>
+            </span>
+            <span class="schedule-range-sport">${sportLabel}</span>
+          </div>
+        `;
+      }
+
+      if (filtered.length === 0) {
         const sportText = activeFilter === 'badminton' ? 'Badminton'
                         : activeFilter === 'padel'     ? 'Padel'
                         : '';
@@ -161,15 +163,13 @@
           <div class="schedule-empty">
             <div class="schedule-empty-icon">🏸</div>
             <h3>Tidak Ada Jadwal Ditemukan</h3>
-            <p>Belum ada sesi${sportText ? ' ' + sportText : ''} dalam 2 minggu ke depan.<br>
-               <span style="opacity:0.7;font-size:0.88em;">${formatDateID(today)} &ndash; ${formatDateID(endDate)}</span>
-            </p>
+            <p>Belum ada jadwal sesi main${sportText ? ' ' + sportText : ''} yang tersedia saat ini.</p>
           </div>
         `;
         return;
       }
 
-      container.innerHTML = inRange.map((item, idx) => {
+      container.innerHTML = filtered.map((item, idx) => {
         const sport = (item.sport || 'badminton').toLowerCase();
         const title = item.title || (sport === 'padel' ? 'BADDEL PADEL SESSION' : 'BADDEL BADMINTON SESSION');
         const dateStr = item.dateFormatted || item.date || 'TBA';
@@ -226,7 +226,7 @@
         const shareText = `${sportEmoji} ${title}\n📅 ${dateStr} — ${timeStr}\n📍 ${venueStr}${courtLine}${mapsLine}${feeLine}\n\nJoin sesi main bersama Baddel Community! 🔥\n${scheduleSpecificUrl}`;
 
         return `
-          <div id="${scheduleCardId}" class="schedule-card ${isFull ? 'is-full' : ''} ${isCompleted ? 'is-completed' : ''}" data-sport="${sport}">
+          <div id="${scheduleCardId}" class="schedule-card ${isCompleted ? 'is-completed' : 'is-upcoming'} ${isFull ? 'is-full' : ''}" data-sport="${sport}">
             <div class="schedule-card-header">
               <div class="schedule-badges-left">
                 ${sportBadge}
