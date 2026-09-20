@@ -187,9 +187,14 @@
     },
 
     attachInteractionListeners: function () {
-      var interactionEvents = ['pointerdown', 'touchstart', 'click', 'keydown'];
+      var interactionEvents = ['pointerdown', 'touchstart', 'touchend', 'mousedown', 'click', 'keydown'];
 
       function handleFirstInteraction(evt) {
+        var target = evt.target;
+        if (target && target.closest && target.closest('#baddel-audio-widget')) {
+          return;
+        }
+
         var userPaused = false;
         try {
           userPaused = sessionStorage.getItem(STORAGE_PAUSED_KEY) === 'true';
@@ -205,13 +210,15 @@
           });
         }
 
-        // Lepas listener setelah interaksi pertama
+        // Lepas listener setelah interaksi pertama berhasil
         interactionEvents.forEach(function (evName) {
+          document.removeEventListener(evName, handleFirstInteraction, true);
           window.removeEventListener(evName, handleFirstInteraction, true);
         });
       }
 
       interactionEvents.forEach(function (evName) {
+        document.addEventListener(evName, handleFirstInteraction, { capture: true, passive: true });
         window.addEventListener(evName, handleFirstInteraction, { capture: true, passive: true });
       });
     },
