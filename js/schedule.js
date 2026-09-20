@@ -142,13 +142,13 @@
       if (rangeInfoEl) {
         const sportLabel = activeFilter === 'badminton' ? 'Badminton'
                          : activeFilter === 'padel'     ? 'Padel'
-                         : 'Semua Olahraga';
+                         : 'All Sports';
         rangeInfoEl.innerHTML = `
           <div class="schedule-range-badge">
             <span class="schedule-range-icon"><i class="fas fa-calendar-check"></i></span>
             <span class="schedule-range-text">
-              <span class="schedule-range-label">Daftar Jadwal Sesi Main</span>
-              <strong class="schedule-range-dates">${upcomingCount} Sesi Akan Datang &bull; ${completedCount} Selesai</strong>
+              <span class="schedule-range-label">Court Session Schedule</span>
+              <strong class="schedule-range-dates">${upcomingCount} Upcoming &bull; ${completedCount} Completed</strong>
             </span>
             <span class="schedule-range-sport">${sportLabel}</span>
           </div>
@@ -162,8 +162,8 @@
         container.innerHTML = `
           <div class="schedule-empty">
             <div class="schedule-empty-icon">🏸</div>
-            <h3>Tidak Ada Jadwal Ditemukan</h3>
-            <p>Belum ada jadwal sesi main${sportText ? ' ' + sportText : ''} yang tersedia saat ini.</p>
+            <h3>No Schedules Found</h3>
+            <p>No ${sportText ? sportText + ' ' : ''}sessions currently available.</p>
           </div>
         `;
         return;
@@ -195,10 +195,10 @@
 
         // Capacity / State Badge
         const slotBadge = isCompleted
-          ? `<span class="schedule-status-badge status-ended"><i class="fas fa-flag-checkered"></i> Selesai</span>`
+          ? `<span class="schedule-status-badge status-ended"><i class="fas fa-flag-checkered"></i> Completed</span>`
           : (isFull 
             ? `<span class="schedule-status-badge status-full"><i class="fas fa-lock"></i> Full Booked</span>`
-            : `<span class="schedule-status-badge status-open"><i class="fas fa-circle-check"></i> ${slotsCount} Slot Tersedia</span>`
+            : `<span class="schedule-status-badge status-open"><i class="fas fa-circle-check"></i> ${slotsCount} Slots Open</span>`
           );
 
         const sportBadge = sport === 'padel'
@@ -208,7 +208,7 @@
         const mapsUrl = item.mapsUrl || item.locationUrl || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(venueStr));
 
         const waText = encodeURIComponent(
-          `Halo Admin Baddel, saya mau join main:\n\n\u2022 Sesi: ${title}\n\u2022 Olahraga: ${sport.toUpperCase()}\n\u2022 Tanggal: ${dateStr}\n\u2022 Waktu: ${timeStr}\n\u2022 Lokasi: ${venueStr}${courtList.length > 0 ? '\n\u2022 Court: ' + courtList.join(', ') : ''}\n\u2022 Maps: ${mapsUrl}\n\nApakah masih ada slot kosong?`
+          `Hi Baddel Community Admin, I would like to join:\n\n\u2022 Session: ${title}\n\u2022 Sport: ${sport.toUpperCase()}\n\u2022 Date: ${dateStr}\n\u2022 Time: ${timeStr}\n\u2022 Venue: ${venueStr}${courtList.length > 0 ? '\n\u2022 Court: ' + courtList.join(', ') : ''}\n\u2022 Maps: ${mapsUrl}\n\nAre there any open slots available?`
         );
         const waLink = `https://wa.me/6281270000739?text=${waText}`;
 
@@ -220,10 +220,10 @@
         const sportEmoji = sport === 'padel' ? '🎾' : '🏸';
         const courtLine = courtList.length > 0 ? `\n🏟 Court: ${courtList.join(', ')}` : '';
         const mapsLine = `\n🗺 Maps: ${mapsUrl}`;
-        const feeLine = feeStr ? `\n💰 HTM: ${feeStr}` : '';
+        const feeLine = feeStr ? `\n💰 Fee: ${feeStr}` : '';
 
         // Share text: metadata, gmaps link, CTA, enter, specific schedule URL
-        const shareText = `${sportEmoji} ${title}\n📅 ${dateStr} — ${timeStr}\n📍 ${venueStr}${courtLine}${mapsLine}${feeLine}\n\nJoin sesi main bersama Baddel Community! 🔥\n${scheduleSpecificUrl}`;
+        const shareText = `${sportEmoji} ${title}\n📅 ${dateStr} — ${timeStr}\n📍 ${venueStr}${courtLine}${mapsLine}${feeLine}\n\nJoin our court session with Baddel Community! 🔥\n${scheduleSpecificUrl}`;
 
         return `
           <div id="${scheduleCardId}" class="schedule-card ${isCompleted ? 'is-completed' : 'is-upcoming'} ${isFull ? 'is-full' : ''}" data-sport="${sport}">
@@ -244,7 +244,7 @@
                 <div class="schedule-detail-item">
                   <div class="schedule-detail-icon"><i class="far fa-calendar-alt"></i></div>
                   <div>
-                    <span class="schedule-detail-label">Tanggal</span>
+                    <span class="schedule-detail-label">Date</span>
                     <strong class="schedule-detail-value">${escapeHTML(dateStr)}</strong>
                   </div>
                 </div>
@@ -252,7 +252,7 @@
                 <div class="schedule-detail-item">
                   <div class="schedule-detail-icon"><i class="far fa-clock"></i></div>
                   <div>
-                    <span class="schedule-detail-label">Waktu</span>
+                    <span class="schedule-detail-label">Time</span>
                     <strong class="schedule-detail-value">${escapeHTML(timeStr)}</strong>
                   </div>
                 </div>
@@ -274,13 +274,13 @@
                 <div class="schedule-detail-item">
                   <div class="schedule-detail-icon"><i class="fas fa-location-dot"></i></div>
                   <div style="min-width:0; flex:1;">
-                    <span class="schedule-detail-label">Lokasi</span>
+                    <span class="schedule-detail-label">Venue</span>
                     <strong class="schedule-detail-value">${escapeHTML(venueStr)}</strong>
                     <a href="${escapeHTML(mapsUrl)}" target="_blank" rel="noopener noreferrer"
-                       class="schedule-maps-inline-btn" title="Buka petunjuk arah di Google Maps">
-                      <i class="fas fa-location-arrow"></i>
-                      <span>Petunjuk Arah</span>
-                      <span class="schedule-btn-arrow">↗</span>
+                       class="schedule-maps-inline-btn" title="Get directions on Google Maps">
+                       <i class="fas fa-location-arrow"></i>
+                       <span>Directions</span>
+                       <span class="schedule-btn-arrow">↗</span>
                     </a>
                   </div>
                 </div>
@@ -289,7 +289,7 @@
                 <div class="schedule-detail-item">
                   <div class="schedule-detail-icon"><i class="fas fa-ticket"></i></div>
                   <div>
-                    <span class="schedule-detail-label">HTM / Biaya</span>
+                    <span class="schedule-detail-label">Fee</span>
                     <strong class="schedule-detail-value text-accent">${escapeHTML(feeStr)}</strong>
                   </div>
                 </div>
@@ -309,23 +309,23 @@
                   data-share-title="${escapeHTML(title)}"
                   data-share-text="${escapeHTML(shareText)}"
                   data-share-url="${escapeHTML(scheduleSpecificUrl)}"
-                  title="Bagikan jadwal ini ke sosial media">
+                  title="Share this schedule">
                   <i class="fas fa-share-nodes"></i>
                   <span>Share</span>
                 </button>
                 ${isCompleted ? `
-                  <button type="button" class="schedule-btn-rsvp is-disabled is-completed" disabled title="Sesi Main Telah Selesai (Completed)">
+                  <button type="button" class="schedule-btn-rsvp is-disabled is-completed" disabled title="Session Completed">
                     <i class="fas fa-circle-check"></i>
                     <span>Completed</span>
                   </button>
                 ` : (isFull ? `
-                  <button type="button" class="schedule-btn-rsvp is-disabled" disabled title="Slot Sesi Telah Penuh">
+                  <button type="button" class="schedule-btn-rsvp is-disabled" disabled title="Session is Fully Booked">
                     <i class="fas fa-ban"></i>
-                    <span>Slot Penuh</span>
+                    <span>Full Booked</span>
                   </button>
                 ` : `
-                  <a href="${waLink}" target="_blank" rel="noopener noreferrer" class="schedule-btn-rsvp" title="Daftar & Booking Slot via WhatsApp">
-                    <span>Daftar / Join</span>
+                  <a href="${waLink}" target="_blank" rel="noopener noreferrer" class="schedule-btn-rsvp" title="Book & RSVP via WhatsApp">
+                    <span>Join Session</span>
                     <i class="fab fa-whatsapp"></i>
                   </a>
                 `)}
@@ -389,7 +389,7 @@
         const origIcon = icon ? icon.className : '';
         const origLabel = label ? label.textContent : '';
         if (icon) icon.className = ok ? 'fas fa-check' : 'fas fa-copy';
-        if (label) label.textContent = ok ? 'Disalin!' : 'Salin';
+        if (label) label.textContent = ok ? 'Copied!' : 'Copy';
         btnEl.classList.add('share-copied');
         setTimeout(() => {
           if (icon) icon.className = origIcon;
@@ -404,7 +404,7 @@
       const shareBtn = e.target.closest('.schedule-btn-share');
       if (!shareBtn) return;
 
-      const shareTitle = shareBtn.getAttribute('data-share-title') || 'Baddel Community — Jadwal Main';
+      const shareTitle = shareBtn.getAttribute('data-share-title') || 'Baddel Community — Court Schedule';
       const shareText  = shareBtn.getAttribute('data-share-text')  || '';
 
       if (navigator.share) {

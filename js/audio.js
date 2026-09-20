@@ -105,7 +105,7 @@
         widgetEl.className = 'baddel-audio-widget';
         widgetEl.setAttribute('role', 'region');
         widgetEl.setAttribute('aria-label', 'Baddel Theme Song Player');
-        widgetEl.setAttribute('title', 'Klik untuk Hidupkan / Matikan Musik');
+        widgetEl.setAttribute('title', 'Click to Play / Pause Music');
 
         widgetEl.innerHTML = [
           '<!-- Mini vinyl disc -->',
@@ -127,7 +127,7 @@
           '</div>',
           '',
           '<!-- Control toggle button -->',
-          '<button type="button" class="baddel-audio-btn baddel-audio-btn--play" id="baddel-audio-play-btn" aria-label="Putar / Matikan Musik" title="Putar Musik">',
+          '<button type="button" class="baddel-audio-btn baddel-audio-btn--play" id="baddel-audio-play-btn" aria-label="Play / Pause Music" title="Play Music">',
           '  <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>',
           '  <svg class="icon-pause" style="display:none;" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>',
           '</button>'
@@ -261,10 +261,10 @@
 
       if (isPlaying) {
         widgetEl.classList.add('is-playing');
-        widgetEl.setAttribute('title', 'Theme Song Baddel (Aktif - Klik untuk Matikan)');
+        widgetEl.setAttribute('title', 'Baddel Theme Song (Playing - Click to Pause)');
         if (statusTextEl) statusTextEl.textContent = 'Playing';
         if (playBtnEl) {
-          playBtnEl.setAttribute('title', 'Matikan Musik');
+          playBtnEl.setAttribute('title', 'Pause Music');
           var iconPlay = playBtnEl.querySelector('.icon-play');
           var iconPause = playBtnEl.querySelector('.icon-pause');
           if (iconPlay) iconPlay.style.display = 'none';
@@ -272,10 +272,10 @@
         }
       } else {
         widgetEl.classList.remove('is-playing');
-        widgetEl.setAttribute('title', 'Theme Song Baddel (Klik untuk Putar)');
+        widgetEl.setAttribute('title', 'Baddel Theme Song (Click to Play)');
         if (statusTextEl) statusTextEl.textContent = 'Play';
         if (playBtnEl) {
-          playBtnEl.setAttribute('title', 'Putar Musik');
+          playBtnEl.setAttribute('title', 'Play Music');
           var iconPlay2 = playBtnEl.querySelector('.icon-play');
           var iconPause2 = playBtnEl.querySelector('.icon-pause');
           if (iconPlay2) iconPlay2.style.display = 'block';

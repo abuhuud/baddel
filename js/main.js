@@ -90,7 +90,7 @@
             '    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">',
             '      <path d="M15 3h6v6"></path><path d="M10 14L21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>',
             '    </svg>',
-            '    <span>Buka Detail</span>',
+            '    <span>View Details</span>',
             '  </div>',
             '  <div class="gallery-card__overlay">',
             '    <div class="gallery-card__caption">',
@@ -191,7 +191,7 @@
       if (lbThumbs) {
         lbThumbs.innerHTML = galleryItems.map(function (it, i) {
           var activeClass = (i === activeIndex) ? ' is-active' : '';
-          return '<button type="button" class="community-lightbox__thumb' + activeClass + '" data-i="' + i + '" aria-label="Momen ' + (i + 1) + '"><img src="' + escapeHTML(it.image) + '" alt="thumb"></button>';
+          return '<button type="button" class="community-lightbox__thumb' + activeClass + '" data-i="' + i + '" aria-label="Moment ' + (i + 1) + '"><img src="' + escapeHTML(it.image) + '" alt="thumb"></button>';
         }).join('');
 
         lbThumbs.querySelectorAll('.community-lightbox__thumb').forEach(function (tb) {

@@ -111,7 +111,7 @@ var BadcomModal = (function () {
   /* ——— Render player content into modal ——— */
   function render(player) {
     var playerNum = player.number || player.num || '00';
-    var playerName = player.name || 'PEMAIN';
+    var playerName = player.name || 'PLAYER';
 
     /* Image side */
     var imgSide = document.getElementById('modal-image-side');
@@ -175,27 +175,27 @@ var BadcomModal = (function () {
 
       if (galleryLabel) {
         if (playerGallery.length > 0) {
-          galleryLabel.innerHTML = 'GALERI PEMAIN <span class="modal__gallery-badge">' + playerGallery.length + ' Foto</span>';
+          galleryLabel.innerHTML = 'PLAYER GALLERY <span class="modal__gallery-badge">' + playerGallery.length + ' Photos</span>';
         } else {
-          galleryLabel.innerHTML = 'GALERI PEMAIN <span class="modal__gallery-badge modal__gallery-badge--empty">0</span>';
+          galleryLabel.innerHTML = 'PLAYER GALLERY <span class="modal__gallery-badge modal__gallery-badge--empty">0</span>';
         }
       }
 
       if (playerGallery.length > 0) {
         var displayThumbs = [];
         if (player.hasImage && player.image) {
-          displayThumbs.push({ src: player.image, label: 'Foto Utama', isMain: true });
+          displayThumbs.push({ src: player.image, label: 'Main Photo', isMain: true });
         }
         playerGallery.forEach(function (imgSrc, idx) {
           if (imgSrc !== player.image) {
-            displayThumbs.push({ src: imgSrc, label: 'Momen ' + (idx + 1), isMain: false });
+            displayThumbs.push({ src: imgSrc, label: 'Moment ' + (idx + 1), isMain: false });
           }
         });
 
         galleryGrid.className = 'modal__gallery-grid';
         galleryGrid.innerHTML = displayThumbs.map(function (item, idx) {
           var isActive = (idx === 0) ? ' is-active' : '';
-          var tag = item.isMain ? '<span class="modal__gallery-thumb-tag">Utama</span>' : '';
+          var tag = item.isMain ? '<span class="modal__gallery-thumb-tag">Main</span>' : '';
           return [
             '<button type="button" class="modal__gallery-thumb' + isActive + '" data-img="' + escapeHTML(item.src) + '" aria-label="' + escapeHTML(item.label) + '">',
             '  <img src="' + escapeHTML(item.src) + '" alt="' + escapeHTML(playerName) + ' ' + escapeHTML(item.label) + '" loading="lazy" decoding="async">',
@@ -236,8 +236,8 @@ var BadcomModal = (function () {
           '    </svg>',
           '  </div>',
           '  <div class="modal__gallery-empty-content">',
-          '    <div class="modal__gallery-empty-title">Galeri Kosong</div>',
-          '    <div class="modal__gallery-empty-desc">Belum ada foto momen aksi untuk pemain ini.</div>',
+          '    <div class="modal__gallery-empty-title">Empty Gallery</div>',
+          '    <div class="modal__gallery-empty-desc">No moment photos uploaded for this player yet.</div>',
           '  </div>',
           '</div>'
         ].join('');

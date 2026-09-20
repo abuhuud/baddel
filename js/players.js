@@ -201,7 +201,7 @@ var BadcomPlayers = (function () {
     var catLabel = cat === 'women' ? 'WOMEN' : 'MEN';
     var galleryCount = (player.gallery && player.gallery.length) || (hasImage ? 1 : 0);
     var playerNum = player.number || player.num || '00';
-    var playerName = player.name || 'PEMAIN';
+    var playerName = player.name || 'PLAYER';
 
     var imageHTML = hasImage
       ? '<img class="player-card__img" src="' + player.image + '" alt="' + escapeHTML(playerName) + '" loading="lazy" decoding="async" onerror="this.parentElement.innerHTML=\'<div class=\\\'player-card__placeholder\\\'><span class=\\\'player-card__placeholder-num\\\'>' + escapeHTML(playerNum) + '</span></div>\'">'

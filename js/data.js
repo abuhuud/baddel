@@ -237,9 +237,9 @@ var BadcomData = (function () {
       id: "sch-00",
       title: "BADDEL FRIDAY NIGHT SMASH",
       sport: "badminton",
-      day: "JUMAT",
+      day: "FRIDAY",
       isoDate: "2026-09-18",
-      dateFormatted: "Jumat, 18 Sep 2026",
+      dateFormatted: "Friday, 18 Sep 2026",
       date: "18 Sep 2026",
       time: "19:00 - 21:00 WIB",
       venue: "Royal Sports Arena Jakarta",
@@ -253,16 +253,16 @@ var BadcomData = (function () {
       totalSlots: 12,
       slotsTotal: 12,
       slotsFilled: 12,
-      fee: "Rp 50.000 / orang",
-      notes: "Sesi main telah sukses diselenggarakan"
+      fee: "Rp 50.000 / person",
+      notes: "Session successfully completed"
     },
     {
       id: "sch-01",
       title: "BADDEL WEEKEND SMASH #001",
       sport: "badminton",
-      day: "SABTU",
+      day: "SATURDAY",
       isoDate: "2026-09-20",
-      dateFormatted: "Sabtu, 20 Sep 2026",
+      dateFormatted: "Saturday, 20 Sep 2026",
       date: "20 Sep 2026",
       time: "19:00 - 21:00 WIB",
       venue: "Royal Sports Arena Jakarta",
@@ -276,16 +276,16 @@ var BadcomData = (function () {
       totalSlots: 12,
       slotsTotal: 12,
       slotsFilled: 8,
-      fee: "Rp 50.000 / orang",
-      notes: "Shuttlecock & Lapangan Karpet disediakan"
+      fee: "Rp 50.000 / person",
+      notes: "Shuttlecocks & Court provided"
     },
     {
       id: "sch-02",
       title: "JAKARTA PADEL NIGHT RALLY",
       sport: "padel",
-      day: "SENIN",
+      day: "MONDAY",
       isoDate: "2026-09-22",
-      dateFormatted: "Senin, 22 Sep 2026",
+      dateFormatted: "Monday, 22 Sep 2026",
       date: "22 Sep 2026",
       time: "19:00 - 21:00 WIB",
       venue: "Padel Pro Jakarta Arena",
@@ -299,16 +299,16 @@ var BadcomData = (function () {
       totalSlots: 8,
       slotsTotal: 8,
       slotsFilled: 8,
-      fee: "Rp 125.000 / orang",
-      notes: "Bola Padel & Raket sewa tersedia"
+      fee: "Rp 125.000 / person",
+      notes: "Padel balls & rental rackets available"
     },
     {
       id: "sch-03",
-      title: "SUNDAY MORNING BULUTANGKIS",
+      title: "SUNDAY MORNING BADMINTON",
       sport: "badminton",
-      day: "MINGGU",
+      day: "SUNDAY",
       isoDate: "2026-09-21",
-      dateFormatted: "Minggu, 21 Sep 2026",
+      dateFormatted: "Sunday, 21 Sep 2026",
       date: "21 Sep 2026",
       time: "08:00 - 11:00 WIB",
       venue: "GOR Bulutangkis Gelora",
@@ -322,8 +322,8 @@ var BadcomData = (function () {
       totalSlots: 16,
       slotsTotal: 16,
       slotsFilled: 10,
-      fee: "Rp 45.000 / orang",
-      notes: "Sesi Pagi + Coffee & Breakfast Nongkrong"
+      fee: "Rp 45.000 / person",
+      notes: "Morning Session + Coffee & Breakfast"
     }
   ];
 

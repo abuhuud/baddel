@@ -249,7 +249,7 @@
           }));
 
           unlockDashboard();
-          showToast('Login berhasil! Selamat datang Admin.', 'success');
+          showToast('Login successful! Welcome Admin.', 'success');
         } else {
           // Login Failed
           loginError.classList.remove('show');
@@ -264,9 +264,9 @@
     // Logout
     if (btnLogout) {
       btnLogout.addEventListener('click', () => {
-        if (confirm('Apakah Anda yakin ingin logout dari CMS Baddel?')) {
+        if (confirm('Are you sure you want to log out from Baddel CMS?')) {
           lockDashboard();
-          showToast('Anda telah berhasil logout.', 'success');
+          showToast('You have been logged out successfully.', 'success');
         }
       });
     }
@@ -315,7 +315,7 @@
     setupMultiFileDropzone('player-modal-gallery-dropzone', 'file-player-gallery-multi', (newImages) => {
       currentModalEditingMoments.push(...newImages);
       renderModalMomentsGrid();
-      showToast(`${newImages.length} foto momen ditambahkan ke antrean simpan!`, 'success');
+      showToast(`${newImages.length} moment photos added to save queue!`, 'success');
     });
 
     // Player Modal Manual URL Add
@@ -325,13 +325,13 @@
       const handleAddUrl = () => {
         const val = inputModalUrl.value.trim();
         if (!val) {
-          showToast('Masukkan link / URL gambar terlebih dahulu.', 'error');
+          showToast('Please enter an image URL first.', 'error');
           return;
         }
         currentModalEditingMoments.push(val);
         inputModalUrl.value = '';
         renderModalMomentsGrid();
-        showToast('Foto momen via URL berhasil ditambahkan!', 'success');
+        showToast('Moment photo added via URL successfully!', 'success');
       };
       btnAddModalUrl.addEventListener('click', handleAddUrl);
       inputModalUrl.addEventListener('keydown', (e) => {
@@ -346,10 +346,10 @@
     const btnClearAllMoments = document.getElementById('btn-clear-all-modal-moments');
     if (btnClearAllMoments) {
       btnClearAllMoments.addEventListener('click', () => {
-        if (confirm('Hapus semua foto momen di galeri pemain ini?')) {
+        if (confirm('Delete all moment photos for this player?')) {
           currentModalEditingMoments = [];
           renderModalMomentsGrid();
-          showToast('Semua foto momen di modal dihapus.', 'info');
+          showToast('All moment photos in modal removed.', 'info');
         }
       });
     }
@@ -367,7 +367,7 @@
 
       renderQuickModalMomentsGrid(p);
       renderPlayersTable();
-      showToast(`${newImages.length} foto momen berhasil diupload ke galeri ${p.name}!`, 'success');
+      showToast(`${newImages.length} moment photos uploaded to ${p.name}'s gallery!`, 'success');
       autoPublishIfEnabled();
     });
 
@@ -378,7 +378,7 @@
       const handleQuickAdd = () => {
         const val = inputQuickUrl.value.trim();
         if (!val) {
-          showToast('Masukkan link gambar terlebih dahulu.', 'error');
+          showToast('Please enter an image link first.', 'error');
           return;
         }
         if (!currentQuickGalleryPlayerId) return;
@@ -393,7 +393,7 @@
         inputQuickUrl.value = '';
         renderQuickModalMomentsGrid(p);
         renderPlayersTable();
-        showToast('Foto momen berhasil ditambahkan ke galeri!', 'success');
+        showToast('Moment photo added to gallery!', 'success');
         autoPublishIfEnabled();
       };
       btnQuickAddUrl.addEventListener('click', handleQuickAdd);
@@ -490,11 +490,11 @@
     const files = Array.from(fileList).filter(f => f.type.startsWith('image/'));
 
     if (files.length === 0) {
-      showToast('File yang dipilih harus berformat gambar (JPG, PNG, WebP).', 'error');
+      showToast('Selected file must be an image format (JPG, PNG, WebP).', 'error');
       return;
     }
 
-    showToast(`Memproses dan mengompresi ${files.length} foto momen...`, 'info');
+    showToast(`Processing and compressing ${files.length} moment photos...`, 'info');
 
     const promises = files.map(file => {
       return new Promise((resolve) => {
@@ -604,7 +604,7 @@
       if (files && files.length > 0) {
         const file = files[0];
         if (!file.type.startsWith('image/')) {
-          showToast('File harus berupa gambar.', 'error');
+          showToast('File must be an image format.', 'error');
           return;
         }
         const reader = new FileReader();
@@ -615,7 +615,7 @@
               previewImg.src = compressed;
               previewImg.style.display = 'inline-block';
             }
-            showToast('Foto profil utama berhasil dimuat!', 'success');
+            showToast('Main profile photo loaded successfully!', 'success');
           });
         };
         reader.readAsDataURL(file);
@@ -686,7 +686,7 @@
       tbody.innerHTML = `
         <tr>
           <td colspan="8" style="text-align:center; padding: 2.5rem; color:var(--color-muted);">
-            Belum ada jadwal main yang tersimpan. Klik "Tambah Jadwal Baru" di atas.
+            No schedules saved yet. Click "Add New Schedule" above.
           </td>
         </tr>
       `;
@@ -706,7 +706,7 @@
 
       const statusBadge = item.status === 'full'
         ? `<span class="schedule-status-badge status-full">Full Booked</span>`
-        : `<span class="schedule-status-badge status-open">${item.slotsLeft || 0} Tersedia</span>`;
+        : `<span class="schedule-status-badge status-open">${item.slotsLeft || 0} Open</span>`;
 
       const courtStr = item.courtNames || item.court || '';
 
@@ -727,8 +727,8 @@
               </div>
             ` : ''}
             <div>
-              <a href="${escapeHTML(item.mapsUrl || item.locationUrl || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(item.venue)))}" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:0.3rem; margin-top:0.25rem; font-size:0.75rem; color:var(--color-gold); text-decoration:none;" title="Buka Petunjuk di Google Maps">
-                <i class="fas fa-location-arrow"></i> Petunjuk GMaps ↗
+              <a href="${escapeHTML(item.mapsUrl || item.locationUrl || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(item.venue)))}" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:0.3rem; margin-top:0.25rem; font-size:0.75rem; color:var(--color-gold); text-decoration:none;" title="Open Directions in Google Maps">
+                <i class="fas fa-location-arrow"></i> Directions ↗
               </a>
             </div>
           </td>
@@ -739,7 +739,7 @@
               <i class="fas fa-pen"></i> Edit
             </button>
             <button class="admin-btn-action btn-danger btn-del-schedule" data-id="${item.id}">
-              <i class="fas fa-trash"></i> Hapus
+              <i class="fas fa-trash"></i> Delete
             </button>
           </td>
         </tr>
@@ -762,14 +762,14 @@
     const parts = isoString.split('-').map(Number);
     if (parts.length < 3 || isNaN(parts[0])) return '';
     const dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
-    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     return days[dateObj.getDay()] + ', ' + parts[2] + ' ' + months[dateObj.getMonth()] + ' ' + parts[0];
   }
 
-  function formatRupiah(num, unit = '/ orang') {
+  function formatRupiah(num, unit = '/ person') {
     const val = parseInt(num, 10);
-    if (isNaN(val) || val <= 0) return 'Gratis';
+    if (isNaN(val) || val <= 0) return 'Free';
     return 'Rp ' + val.toLocaleString('id-ID') + ' ' + unit;
   }
 
@@ -865,7 +865,7 @@
 
   function openScheduleModal(id = null) {
     const isEdit = Boolean(id);
-    document.getElementById('modal-schedule-title').textContent = isEdit ? 'Edit Jadwal Main' : 'Tambah Jadwal Main Baru';
+    document.getElementById('modal-schedule-title').textContent = isEdit ? 'Edit Court Schedule' : 'Add New Court Schedule';
     document.getElementById('sched-id').value = id || '';
 
     const datePicker = document.getElementById('sched-date-picker');
@@ -911,11 +911,11 @@
         const rawDigits = parseRupiahDigits(sched.fee);
         if (feeAmount) feeAmount.value = rawDigits > 0 ? rawDigits : '';
         if (feeUnit && sched.fee) {
-          if (sched.fee.includes('/ sesi')) feeUnit.value = '/ sesi';
-          else if (sched.fee.includes('/ tim')) feeUnit.value = '/ tim';
-          else feeUnit.value = '/ orang';
+          if (sched.fee.includes('/ session') || sched.fee.includes('/ sesi')) feeUnit.value = '/ session';
+          else if (sched.fee.includes('/ team') || sched.fee.includes('/ tim')) feeUnit.value = '/ team';
+          else feeUnit.value = '/ person';
         }
-        if (feeInput) feeInput.value = sched.fee || (rawDigits > 0 ? formatRupiah(rawDigits, feeUnit ? feeUnit.value : '/ orang') : 'Rp 65.000 / orang');
+        if (feeInput) feeInput.value = sched.fee || (rawDigits > 0 ? formatRupiah(rawDigits, feeUnit ? feeUnit.value : '/ person') : 'Rp 65.000 / person');
 
         document.getElementById('sched-slots').value = sched.slotsLeft != null ? sched.slotsLeft : 4;
         document.getElementById('sched-total-slots').value = sched.totalSlots || 12;
@@ -968,12 +968,12 @@
 
       // Default fee
       if (feeAmount) feeAmount.value = '65000';
-      if (feeUnit) feeUnit.value = '/ orang';
-      if (feeInput) feeInput.value = 'Rp 65.000 / orang';
+      if (feeUnit) feeUnit.value = '/ person';
+      if (feeInput) feeInput.value = 'Rp 65.000 / person';
 
       document.getElementById('sched-slots').value = '6';
       document.getElementById('sched-total-slots').value = '12';
-      document.getElementById('sched-notes').value = 'Wajib sepatu non-marking. Kok disediakan panitia.';
+      document.getElementById('sched-notes').value = 'Non-marking shoes required. Shuttlecocks provided.';
     }
 
     modalSchedule.classList.add('open');
@@ -1012,12 +1012,12 @@
     const feeUnit = document.getElementById('sched-fee-unit');
     let fee = '';
     if (feeAmount && feeAmount.value) {
-      fee = formatRupiah(feeAmount.value, feeUnit ? feeUnit.value : '/ orang');
+      fee = formatRupiah(feeAmount.value, feeUnit ? feeUnit.value : '/ person');
     }
     // Update hidden sched-fee so data layer can read it too
     const feeHidden = document.getElementById('sched-fee');
-    if (feeHidden) feeHidden.value = fee || 'Rp 50.000 / orang';
-    if (!fee) fee = 'Rp 50.000 / orang';
+    if (feeHidden) feeHidden.value = fee || 'Rp 50.000 / person';
+    if (!fee) fee = 'Rp 50.000 / person';
 
     const slotsLeft = parseInt(document.getElementById('sched-slots').value) || 0;
     const totalSlots = parseInt(document.getElementById('sched-total-slots').value) || 12;
@@ -1026,7 +1026,7 @@
     const eventStatus = (eventStatusInput && eventStatusInput.value) || 'upcoming';
 
     if (!title || !date || !time || !venue) {
-      alert('Mohon lengkapi judul, tanggal, waktu, dan lokasi sesi.');
+      alert('Please provide session title, date, time, and venue.');
       return;
     }
 
@@ -1062,16 +1062,16 @@
     window.BadcomData.saveSchedules(schedules);
     modalSchedule.classList.remove('open');
     renderSchedulesTable();
-    showToast('Jadwal main berhasil disimpan!', 'success');
+    showToast('Court schedule successfully saved!', 'success');
     autoPublishIfEnabled();
   }
 
   function deleteSchedule(id) {
-    if (!confirm('Apakah Anda yakin ingin menghapus jadwal ini?')) return;
+    if (!confirm('Are you sure you want to delete this schedule?')) return;
     const schedules = window.BadcomData.getSchedules().filter(s => s.id !== id);
     window.BadcomData.saveSchedules(schedules);
     renderSchedulesTable();
-    showToast('Jadwal berhasil dihapus.', 'success');
+    showToast('Schedule successfully deleted.', 'success');
     autoPublishIfEnabled();
   }
 
@@ -1186,15 +1186,15 @@
         activeTags.push(`Keyword: "${playerSearchQuery}"`);
       }
       if (playerDivisionFilter !== 'all') {
-        activeTags.push(`Divisi: ${playerDivisionFilter.toUpperCase()}`);
+        activeTags.push(`Division: ${playerDivisionFilter.toUpperCase()}`);
       }
       if (playerGalleryFilter !== 'all') {
-        activeTags.push(playerGalleryFilter === 'has-photos' ? 'Ada Foto Momen' : 'Galeri Kosong');
+        activeTags.push(playerGalleryFilter === 'has-photos' ? 'Has Photos' : 'Empty Gallery');
       }
 
       if (activeTags.length > 0) {
         tagsContainer.innerHTML = activeTags.map(t => `<span class="admin-filter-tag">${escapeHTML(t)}</span>`).join('') +
-          `<button type="button" class="admin-reset-filter-btn" id="btn-reset-player-filters"><i class="fas fa-rotate-left"></i> Reset Filter</button>`;
+          `<button type="button" class="admin-reset-filter-btn" id="btn-reset-player-filters"><i class="fas fa-rotate-left"></i> Reset Filters</button>`;
         const btnReset = document.getElementById('btn-reset-player-filters');
         if (btnReset) {
           btnReset.onclick = () => {
@@ -1222,8 +1222,8 @@
         <tr>
           <td colspan="7" style="text-align:center; padding: 3rem 1rem; color:var(--color-muted);">
             <i class="fas fa-users-slash" style="font-size:2.2rem; color:rgba(74, 145, 226, 0.35); margin-bottom:0.75rem; display:block;"></i>
-            <strong style="color:var(--color-white); font-size:1rem; display:block; margin-bottom:0.35rem;">Tidak ada pemain yang cocok</strong>
-            <span style="font-size:0.85rem;">Coba sesuaikan kata kunci pencarian atau ganti pilihan filter.</span>
+            <strong style="color:var(--color-white); font-size:1rem; display:block; margin-bottom:0.35rem;">No matching players found</strong>
+            <span style="font-size:0.85rem;">Try adjusting your search query or filter options.</span>
           </td>
         </tr>
       `;
@@ -1232,7 +1232,7 @@
 
     tbody.innerHTML = filtered.map(player => {
       const pNum = player.number || player.num || '00';
-      const pName = player.name || 'PEMAIN';
+      const pName = player.name || 'PLAYER';
       const momentsCount = (player.gallery && player.gallery.length) || 0;
       const categoryBadge = (player.category || '').toLowerCase() === 'women'
         ? `<span class="schedule-sport-badge badge-padel"><i class="fas fa-venus"></i> Women</span>`
@@ -1240,9 +1240,9 @@
       const igClean = (player.instagram || '').replace('@', '');
 
       const galleryPill = `
-        <button type="button" class="admin-table-gallery-btn ${momentsCount > 0 ? 'has-photos' : ''}" data-manage-gallery="${player.id}" title="Klik untuk kelola galeri foto aksi pemain ini">
+        <button type="button" class="admin-table-gallery-btn ${momentsCount > 0 ? 'has-photos' : ''}" data-manage-gallery="${player.id}" title="Click to manage action photos for this player">
           <i class="fas fa-camera"></i>
-          <span><strong>${momentsCount}</strong> Foto</span>
+          <span><strong>${momentsCount}</strong> Photos</span>
           <i class="fas fa-arrow-up-right-from-square" style="font-size:0.65rem; opacity:0.7;"></i>
         </button>
       `;
@@ -1250,7 +1250,7 @@
       return `
         <tr>
           <td>
-            <div class="admin-thumb-wrap" title="Klik untuk perbesar foto" data-preview-img="${player.image || 'assets/images/players/1.png'}" data-preview-title="#${escapeHTML(pNum)} ${escapeHTML(pName)}">
+            <div class="admin-thumb-wrap" title="Click to enlarge photo" data-preview-img="${player.image || 'assets/images/players/1.png'}" data-preview-title="#${escapeHTML(pNum)} ${escapeHTML(pName)}">
               <img src="${player.image || 'assets/images/players/1.png'}" alt="${escapeHTML(pName)}" class="admin-thumb" onerror="this.src='assets/images/players/1.png'">
               <span class="admin-thumb-zoom-icon"><i class="fas fa-magnifying-glass"></i></span>
             </div>
@@ -1265,13 +1265,13 @@
             ${galleryPill}
           </td>
           <td style="text-align:right; white-space:nowrap;">
-            <button class="admin-btn-action btn-edit-player" data-id="${player.id}" title="Edit data profil dan galeri">
+            <button class="admin-btn-action btn-edit-player" data-id="${player.id}" title="Edit profile data and gallery">
               <i class="fas fa-pen"></i> Edit
             </button>
-            <button class="admin-btn-action btn-gold btn-manage-gallery-player" data-id="${player.id}" title="Kelola foto momen aksi">
-              <i class="fas fa-images"></i> Galeri
+            <button class="admin-btn-action btn-gold btn-manage-gallery-player" data-id="${player.id}" title="Manage action photos">
+              <i class="fas fa-images"></i> Gallery
             </button>
-            <button class="admin-btn-action btn-danger btn-del-player" data-id="${player.id}" title="Hapus pemain">
+            <button class="admin-btn-action btn-danger btn-del-player" data-id="${player.id}" title="Delete player">
               <i class="fas fa-trash"></i>
             </button>
           </td>
@@ -1422,7 +1422,7 @@
     const image = document.getElementById('player-photo-url').value.trim() || 'assets/images/players/1.png';
 
     if (!name || !num) {
-      alert('Nama dan nomor pemain tidak boleh kosong.');
+      alert('Player name and squad number are required.');
       return;
     }
 
@@ -1451,7 +1451,7 @@
     window.BadcomData.savePlayers(players);
     modalPlayer.classList.remove('open');
     renderPlayersTable();
-    showToast(`Data dan ${playerData.gallery.length} foto momen pemain berhasil disimpan!`, 'success');
+    showToast(`Player profile and ${playerData.gallery.length} moment photos saved!`, 'success');
     autoPublishIfEnabled();
   }
 
@@ -1460,12 +1460,12 @@
     const p = players.find(item => item.id === id);
     if (!p) return;
 
-    if (!confirm(`Apakah Anda yakin ingin menghapus pemain "${p.name}"?`)) return;
+    if (!confirm(`Are you sure you want to delete player "${p.name}"?`)) return;
 
     const filtered = players.filter(item => item.id !== id);
     window.BadcomData.savePlayers(filtered);
     renderPlayersTable();
-    showToast(`Pemain ${p.name} berhasil dihapus.`, 'success');
+    showToast(`Player ${p.name} successfully deleted.`, 'success');
     autoPublishIfEnabled();
   }
 
@@ -1474,14 +1474,14 @@
     const players = window.BadcomData.getPlayers();
     const player = players.find(p => p.id === playerId);
     if (!player) {
-      alert('Pemain tidak ditemukan.');
+      alert('Player not found.');
       return;
     }
 
     currentQuickGalleryPlayerId = playerId;
 
     const pNum = player.number || player.num || '00';
-    const pName = player.name || 'PEMAIN';
+    const pName = player.name || 'PLAYER';
     const pCat = (player.category || 'men').toLowerCase();
     const pIg = (player.instagram || '').replace(/^@/, '');
 
@@ -1520,7 +1520,7 @@
     const gallery = Array.isArray(player.gallery) ? player.gallery : [];
     const count = gallery.length;
 
-    if (counterBadge) counterBadge.innerHTML = `<strong>${count}</strong> Foto Momen`;
+    if (counterBadge) counterBadge.innerHTML = `<strong>${count}</strong> Moment Photos`;
     if (sectionCounter) sectionCounter.textContent = count;
 
     if (!grid) return;
@@ -1529,7 +1529,7 @@
       grid.innerHTML = `
         <div class="admin-modal-moments-empty">
           <i class="fas fa-camera"></i>
-          <p>Galeri momen aksi untuk ${escapeHTML(player.name)} masih kosong.<br>Tarik &amp; lepas beberapa foto ke kotak di atas untuk mengunggah langsung!</p>
+          <p>Action moments gallery for ${escapeHTML(player.name)} is currently empty.<br>Drag &amp; drop photos into the box above to upload directly!</p>
         </div>
       `;
       return;
@@ -1537,9 +1537,9 @@
 
     grid.innerHTML = gallery.map((src, idx) => `
       <div class="admin-modal-moment-card" data-idx="${idx}">
-        <img src="${src}" alt="Momen ${escapeHTML(player.name)} #${idx + 1}" class="admin-modal-moment-thumb" onerror="this.src='assets/images/gallery/1.JPG'">
+        <img src="${src}" alt="Moment ${escapeHTML(player.name)} #${idx + 1}" class="admin-modal-moment-thumb" onerror="this.src='assets/images/gallery/1.JPG'">
         <span class="admin-modal-moment-badge">#${idx + 1}</span>
-        <button type="button" class="admin-modal-moment-del" data-quick-del-idx="${idx}" title="Hapus foto ini dari galeri">
+        <button type="button" class="admin-modal-moment-del" data-quick-del-idx="${idx}" title="Remove photo from gallery">
           <i class="fas fa-times"></i>
         </button>
       </div>
@@ -1550,7 +1550,7 @@
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const idx = parseInt(btn.getAttribute('data-quick-del-idx'), 10);
-        if (confirm('Hapus foto momen ini dari galeri pemain?')) {
+        if (confirm('Remove this photo from the player gallery?')) {
           player.gallery.splice(idx, 1);
           const players = window.BadcomData.getPlayers();
           const target = players.find(x => x.id === player.id);
@@ -1559,7 +1559,7 @@
 
           renderQuickModalMomentsGrid(player);
           renderPlayersTable();
-          showToast('Foto momen berhasil dihapus.', 'success');
+          showToast('Moment photo removed successfully.', 'success');
           autoPublishIfEnabled();
         }
       });
@@ -1569,7 +1569,7 @@
     grid.querySelectorAll('.admin-modal-moment-card').forEach(card => {
       card.addEventListener('click', () => {
         const img = card.querySelector('img');
-        if (img) openImageLightbox(img.src, `Momen ${player.name}`);
+        if (img) openImageLightbox(img.src, `Moment ${player.name}`);
       });
     });
   }
@@ -1588,7 +1588,7 @@
       tbody.innerHTML = `
         <tr>
           <td colspan="4" style="text-align:center; padding: 2.5rem; color:var(--color-muted);">
-            Belum ada momen galeri komunitas. Klik "Tambah Foto Sesi" di atas.
+            No community gallery moments yet. Click "Add Community Photo" above.
           </td>
         </tr>
       `;
@@ -1610,7 +1610,7 @@
               <i class="fas fa-pen"></i> Edit
             </button>
             <button class="admin-btn-action btn-danger btn-del-comm" data-id="${item.id}">
-              <i class="fas fa-trash"></i> Hapus
+              <i class="fas fa-trash"></i> Delete
             </button>
           </td>
         </tr>
@@ -1628,7 +1628,7 @@
 
   function openCommunityModal(id = null) {
     const isEdit = Boolean(id);
-    document.getElementById('modal-community-title').textContent = isEdit ? 'Edit Momen Komunitas' : 'Tambah Foto Sesi Komunitas';
+    document.getElementById('modal-community-title').textContent = isEdit ? 'Edit Community Moment' : 'Add Community Session Photo';
     document.getElementById('comm-id').value = id || '';
 
     const preview = document.getElementById('comm-preview-img');
@@ -1666,7 +1666,7 @@
     const image = document.getElementById('comm-image-url').value.trim();
 
     if (!title || !image) {
-      alert('Judul dan foto momen tidak boleh kosong.');
+      alert('Moment title and photo cannot be empty.');
       return;
     }
 
@@ -1690,16 +1690,16 @@
     window.BadcomData.saveCommunityGallery(list);
     modalCommunity.classList.remove('open');
     renderCommunityTable();
-    showToast('Momen komunitas berhasil disimpan!', 'success');
+    showToast('Community moment successfully saved!', 'success');
     autoPublishIfEnabled();
   }
 
   function deleteCommunityMoment(id) {
-    if (!confirm('Apakah Anda yakin ingin menghapus foto momen ini dari galeri komunitas?')) return;
+    if (!confirm('Are you sure you want to delete this moment photo from the community gallery?')) return;
     const list = window.BadcomData.getCommunityGallery().filter(x => x.id !== id);
     window.BadcomData.saveCommunityGallery(list);
     renderCommunityTable();
-    showToast('Momen komunitas berhasil dihapus.', 'success');
+    showToast('Community moment successfully deleted.', 'success');
     autoPublishIfEnabled();
   }
 
@@ -1816,7 +1816,7 @@
       // 2. Direct GitHub API Fallback
       if (!serverPublishSuccess) {
         if (!token) {
-          throw new Error('Kredensial GitHub Token tidak tersedia untuk melakukan commit.');
+          throw new Error('GitHub Token credentials are not configured for committing changes.');
         }
 
         const filePath = 'data/database.json';
@@ -1836,10 +1836,10 @@
 
         const jsonStr = JSON.stringify(fullDB, null, 2);
         const b64 = btoa(unescape(encodeURIComponent(jsonStr)));
-        const nowStr = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
+        const nowStr = new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' });
 
         const commitBody = {
-          message: `feat(cms): update data live via Baddel CMS [${nowStr} WIB]`,
+          message: `feat(cms): update live data via Baddel CMS [${nowStr} WIB]`,
           content: b64,
           branch: branch
         };
@@ -1857,7 +1857,7 @@
 
         if (!putRes.ok) {
           const errJson = await putRes.json().catch(() => ({}));
-          throw new Error(errJson.message || `Gagal commit ke GitHub (HTTP ${putRes.status})`);
+          throw new Error(errJson.message || `Failed to commit to GitHub (HTTP ${putRes.status})`);
         }
 
         const commitResult = await putRes.json();
@@ -1870,7 +1870,7 @@
       cfg.lastCommitSha = commitSha;
       saveGitHubConfig(cfg);
 
-      showToast(`Data berhasil di-push ke GitHub & Vercel (commit ${commitSha})!`, 'success');
+      showToast(`Live data successfully synced to GitHub & Vercel (commit ${commitSha})!`, 'success');
 
     } catch (err) {
       console.error('[Baddel Publish Error]', err);
@@ -1878,9 +1878,9 @@
         headerBadge.style.color = '#F87171';
         headerBadge.style.background = 'rgba(239, 68, 68, 0.12)';
         headerBadge.style.borderColor = 'rgba(239, 68, 68, 0.3)';
-        headerBadge.innerHTML = '<i class="fas fa-triangle-exclamation"></i> <span id="header-sync-status-text">Gagal Sync</span>';
+        headerBadge.innerHTML = '<i class="fas fa-triangle-exclamation"></i> <span id="header-sync-status-text">Sync Failed</span>';
       }
-      showToast(`Gagal publish: ${err.message}`, 'error');
+      showToast(`Publish failed: ${err.message}`, 'error');
     } finally {
       setSyncLoading(false);
     }
@@ -1928,7 +1928,7 @@
             headerBadge.style.color = '#34D399';
             headerBadge.style.background = 'rgba(16, 185, 129, 0.12)';
             headerBadge.style.borderColor = 'rgba(16, 185, 129, 0.3)';
-            headerBadge.innerHTML = '<span style="width:7px; height:7px; border-radius:50%; background:#34D399; display:inline-block; box-shadow:0 0 8px #34D399;"></span> <span id="header-sync-status-text">Live Sync Aktif</span>';
+            headerBadge.innerHTML = '<span style="width:7px; height:7px; border-radius:50%; background:#34D399; display:inline-block; box-shadow:0 0 8px #34D399;"></span> <span id="header-sync-status-text">Live Sync Active</span>';
           }
         })
         .catch(() => {

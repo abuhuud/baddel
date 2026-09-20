@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8">
@@ -30,18 +30,18 @@
         <i class="fas fa-shield-halved"></i>
       </div>
       <h2 class="admin-login-title">BADDEL CMS ACCESS</h2>
-      <p class="admin-login-sub">Portal ini dilindungi. Masukkan kredensial admin untuk mengelola website.</p>
+      <p class="admin-login-sub">This portal is protected. Enter admin credentials to manage website data.</p>
 
       <div class="admin-login-error" id="login-error-msg">
         <i class="fas fa-circle-exclamation"></i>
-        <span>Username atau Password salah!</span>
+        <span>Incorrect Username or Password!</span>
       </div>
 
       <form class="admin-login-form" id="form-admin-login" autocomplete="off">
         <div class="admin-form-group">
           <label for="login-username">Username</label>
           <div class="admin-input-group">
-            <input type="text" id="login-username" class="admin-input" placeholder="Masukkan username" required autofocus>
+            <input type="text" id="login-username" class="admin-input" placeholder="Enter username" required autofocus>
             <i class="fas fa-user input-icon"></i>
           </div>
         </div>
@@ -49,7 +49,7 @@
         <div class="admin-form-group">
           <label for="login-password">Password</label>
           <div class="admin-input-group">
-            <input type="password" id="login-password" class="admin-input" placeholder="Masukkan password" required>
+            <input type="password" id="login-password" class="admin-input" placeholder="Enter password" required>
             <i class="fas fa-lock input-icon"></i>
             <button type="button" class="btn-toggle-pw" id="btn-toggle-pw" aria-label="Toggle password visibility">
               <i class="far fa-eye" id="pw-eye-icon"></i>
@@ -58,7 +58,7 @@
         </div>
 
         <button type="submit" class="btn btn--primary admin-login-btn" id="btn-submit-login">
-          <span>MASUK KE CMS</span>
+          <span>LOGIN TO CMS</span>
           <i class="fas fa-arrow-right"></i>
         </button>
       </form>
@@ -68,7 +68,7 @@
   <!-- Admin Header -->
   <header class="admin-header admin-locked-content" id="admin-header-bar">
     <div class="admin-header-left">
-      <button class="admin-burger-btn" id="btn-admin-burger" aria-label="Buka Menu Navigasi" aria-expanded="false" title="Menu Navigasi">
+      <button class="admin-burger-btn" id="btn-admin-burger" aria-label="Open Navigation Menu" aria-expanded="false" title="Navigation Menu">
         <i class="fas fa-bars icon-bars"></i>
         <i class="fas fa-xmark icon-close" style="display:none;"></i>
       </button>
@@ -85,15 +85,15 @@
     <div class="admin-nav-actions">
       <div class="admin-live-sync-indicator" id="header-sync-status-badge" style="display:inline-flex; align-items:center; gap:0.4rem; font-size:0.75rem; font-weight:600; color:#34D399; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); border-radius:999px; padding:0.3rem 0.75rem;">
         <span style="width:7px; height:7px; border-radius:50%; background:#34D399; display:inline-block; box-shadow:0 0 8px #34D399;"></span>
-        <span id="header-sync-status-text">Live Sync Aktif</span>
+        <span id="header-sync-status-text">Live Sync Active</span>
       </div>
-      <button class="btn btn--gold btn--sm admin-nav-btn" id="btn-header-publish" title="Sync perubahan live ke GitHub & Vercel">
+      <button class="btn btn--gold btn--sm admin-nav-btn" id="btn-header-publish" title="Sync live data to GitHub & Vercel">
         <i class="fas fa-cloud-arrow-up"></i> <span class="nav-btn-text">SYNC LIVE</span>
       </button>
-      <a href="index.html" class="btn btn--secondary btn--sm admin-nav-btn" target="_blank" title="Buka website di tab baru">
-        <i class="fas fa-arrow-up-right-from-square"></i> <span class="nav-btn-text">LIHAT WEB</span>
+      <a href="index.html" class="btn btn--secondary btn--sm admin-nav-btn" target="_blank" title="Open website in new tab">
+        <i class="fas fa-arrow-up-right-from-square"></i> <span class="nav-btn-text">VIEW SITE</span>
       </a>
-      <button class="btn btn--secondary btn--sm admin-nav-btn" id="btn-admin-logout" style="border-color:rgba(230, 195, 108, 0.4); color:var(--color-gold);" title="Logout dari CMS">
+      <button class="btn btn--secondary btn--sm admin-nav-btn" id="btn-admin-logout" style="border-color:rgba(230, 195, 108, 0.4); color:var(--color-gold);" title="Logout from CMS">
         <i class="fas fa-arrow-right-from-bracket"></i> <span class="nav-btn-text">LOGOUT</span>
       </button>
     </div>
@@ -107,9 +107,9 @@
       <div class="admin-sidebar-header">
         <div class="admin-sidebar-header-brand">
           <img src="assets/images/brand/baddel-logo.png" alt="Baddel Logo">
-          <span>MENU CMS</span>
+          <span>CMS MENU</span>
         </div>
-        <button type="button" class="admin-sidebar-close" id="btn-admin-sidebar-close" aria-label="Tutup Menu">
+        <button type="button" class="admin-sidebar-close" id="btn-admin-sidebar-close" aria-label="Close Menu">
           <i class="fas fa-xmark"></i>
         </button>
       </div>
@@ -117,17 +117,17 @@
       <ul class="admin-menu">
         <li>
           <button class="admin-tab-btn active" data-tab="tab-schedules">
-            <i class="far fa-calendar-alt"></i> Jadwal Main
+            <i class="far fa-calendar-alt"></i> Court Schedules
           </button>
         </li>
         <li>
           <button class="admin-tab-btn" data-tab="tab-players">
-            <i class="fas fa-users"></i> Data &amp; Galeri Pemain
+            <i class="fas fa-users"></i> Players &amp; Gallery
           </button>
         </li>
         <li>
           <button class="admin-tab-btn" data-tab="tab-community-gallery">
-            <i class="fas fa-camera-retro"></i> Galeri Komunitas
+            <i class="fas fa-camera-retro"></i> Community Gallery
           </button>
         </li>
       </ul>
@@ -141,7 +141,7 @@
         </button>
         <a href="index.html" class="admin-sidebar-action-btn" target="_blank">
           <i class="fas fa-arrow-up-right-from-square" style="color:var(--color-blue-light);"></i>
-          <span>Lihat Website</span>
+          <span>View Website</span>
         </a>
         <button type="button" class="admin-sidebar-action-btn" id="btn-drawer-logout" style="color:#F87171;">
           <i class="fas fa-arrow-right-from-bracket"></i>
@@ -162,11 +162,11 @@
       <section class="admin-panel active" id="tab-schedules">
         <div class="admin-panel-header">
           <div>
-            <h1 class="admin-panel-title">Manajemen Jadwal Main</h1>
-            <p style="color:var(--color-muted); font-size:0.85rem;">Atur sesi jadwal main badminton & padel, kuota ketersediaan slot, HTM, dan venue.</p>
+            <h1 class="admin-panel-title">Court Schedule Management</h1>
+            <p style="color:var(--color-muted); font-size:0.85rem;">Manage badminton &amp; padel sessions, available slots, fees, and court venues.</p>
           </div>
           <button class="btn btn--primary btn--sm" id="btn-add-schedule">
-            <i class="fas fa-plus"></i> Tambah Jadwal Baru
+            <i class="fas fa-plus"></i> Add New Schedule
           </button>
         </div>
 
@@ -175,14 +175,14 @@
             <table class="admin-table">
               <thead>
                 <tr>
-                  <th>Sesi / Judul</th>
+                  <th>Session / Title</th>
                   <th style="width: 100px;">Sport</th>
-                  <th style="width: 120px;">Status Event</th>
-                  <th style="width: 160px;">Waktu &amp; Tanggal</th>
-                  <th style="width: 170px;">Lokasi</th>
-                  <th style="width: 120px;">HTM</th>
-                  <th style="width: 120px;">Ketersediaan</th>
-                  <th style="text-align:right; width: 140px;">Aksi</th>
+                  <th style="width: 120px;">Event Status</th>
+                  <th style="width: 160px;">Date &amp; Time</th>
+                  <th style="width: 170px;">Venue</th>
+                  <th style="width: 120px;">Fee</th>
+                  <th style="width: 120px;">Slots</th>
+                  <th style="text-align:right; width: 140px;">Actions</th>
                 </tr>
               </thead>
               <tbody id="table-schedules-body">
@@ -200,11 +200,11 @@
       <section class="admin-panel" id="tab-players">
         <div class="admin-panel-header">
           <div>
-            <h1 class="admin-panel-title">Data &amp; Galeri Pemain</h1>
-            <p style="color:var(--color-muted); font-size:0.85rem;">Cari, saring divisi, tambah pemain baru, atur foto profil utama, dan kelola album galeri momen tiap pemain.</p>
+            <h1 class="admin-panel-title">Players &amp; Moment Gallery</h1>
+            <p style="color:var(--color-muted); font-size:0.85rem;">Search, filter divisions, add new players, set profile photos, and manage moment galleries.</p>
           </div>
           <button class="btn btn--primary btn--sm" id="btn-add-player">
-            <i class="fas fa-user-plus"></i> Tambah Pemain Baru
+            <i class="fas fa-user-plus"></i> Add New Player
           </button>
         </div>
 
@@ -213,15 +213,15 @@
           <div class="admin-toolbar-row">
             <div class="admin-search-wrap">
               <i class="fas fa-search admin-search-icon"></i>
-              <input type="text" id="search-player-input" class="admin-input admin-search-input" placeholder="Cari nama, #nomor punggung, atau instagram..." autocomplete="off">
-              <button type="button" id="btn-clear-player-search" class="admin-search-clear" style="display:none;" title="Hapus pencarian">✕</button>
+              <input type="text" id="search-player-input" class="admin-input admin-search-input" placeholder="Search name, squad number, or instagram..." autocomplete="off">
+              <button type="button" id="btn-clear-player-search" class="admin-search-clear" style="display:none;" title="Clear search">✕</button>
             </div>
             <div class="admin-filters-wrap">
               <div class="admin-filter-pill-select">
                 <i class="fas fa-venus-mars" style="color:var(--color-blue-light); font-size:0.8rem;"></i>
-                <label for="filter-player-division">Divisi:</label>
+                <label for="filter-player-division">Division:</label>
                 <select id="filter-player-division" class="admin-select-sm">
-                  <option value="all">Semua Divisi</option>
+                  <option value="all">All Divisions</option>
                   <option value="men">Men's Squad</option>
                   <option value="women">Women's Squad</option>
                 </select>
@@ -229,18 +229,18 @@
 
               <div class="admin-filter-pill-select">
                 <i class="fas fa-images" style="color:var(--color-gold); font-size:0.8rem;"></i>
-                <label for="filter-player-gallery">Galeri:</label>
+                <label for="filter-player-gallery">Gallery:</label>
                 <select id="filter-player-gallery" class="admin-select-sm">
-                  <option value="all">Semua Status</option>
-                  <option value="has-photos">Ada Momen Foto</option>
-                  <option value="empty-photos">Belum Ada Foto</option>
+                  <option value="all">All Status</option>
+                  <option value="has-photos">Has Photos</option>
+                  <option value="empty-photos">No Photos Yet</option>
                 </select>
               </div>
             </div>
           </div>
           <div class="admin-toolbar-footer">
             <div class="admin-stats-pill" id="player-count-display">
-              <i class="fas fa-users"></i> Menampilkan <strong id="player-count-shown">0</strong> dari <strong id="player-count-total">0</strong> Pemain
+              <i class="fas fa-users"></i> Showing <strong id="player-count-shown">0</strong> of <strong id="player-count-total">0</strong> Players
             </div>
             <div id="player-active-filter-tags" class="admin-filter-tags"></div>
           </div>
@@ -251,13 +251,13 @@
             <table class="admin-table">
               <thead>
                 <tr>
-                  <th style="width: 60px;">Foto</th>
+                  <th style="width: 65px;">Photo</th>
                   <th style="width: 70px;">No.</th>
-                  <th>Nama Lengkap</th>
-                  <th style="width: 130px;">Divisi</th>
-                  <th style="width: 170px;">Instagram</th>
-                  <th style="width: 170px;">Galeri Momen</th>
-                  <th style="text-align:right; width: 170px;">Aksi</th>
+                  <th>Player Name</th>
+                  <th style="width: 130px;">Division</th>
+                  <th style="width: 160px;">Instagram</th>
+                  <th style="width: 160px;">Moment Gallery</th>
+                  <th style="text-align:right; width: 170px;">Actions</th>
                 </tr>
               </thead>
               <tbody id="table-players-body">
@@ -275,11 +275,11 @@
       <section class="admin-panel" id="tab-community-gallery">
         <div class="admin-panel-header">
           <div>
-            <h1 class="admin-panel-title">Galeri Komunitas (Homepage)</h1>
-            <p style="color:var(--color-muted); font-size:0.85rem;">Kelola foto-foto sesi Baddel yang tampil pada Section 06 / Gallery di homepage.</p>
+            <h1 class="admin-panel-title">Community Gallery (Homepage)</h1>
+            <p style="color:var(--color-muted); font-size:0.85rem;">Manage action moments and event photos displayed in the infinite stream on the homepage.</p>
           </div>
           <button class="btn btn--primary btn--sm" id="btn-add-community-photo">
-            <i class="fas fa-plus"></i> Tambah Foto Sesi
+            <i class="fas fa-plus"></i> Add Community Photo
           </button>
         </div>
 
@@ -288,10 +288,10 @@
             <table class="admin-table">
               <thead>
                 <tr>
-                  <th style="width: 70px;">Foto</th>
-                  <th>Judul Momen</th>
-                  <th style="width: 220px;">Sub-label</th>
-                  <th style="text-align:right; width: 150px;">Aksi</th>
+                  <th style="width: 70px;">Photo</th>
+                  <th>Moment Title</th>
+                  <th style="width: 220px;">Sub-label / Venue</th>
+                  <th style="text-align:right; width: 150px;">Actions</th>
                 </tr>
               </thead>
               <tbody id="table-community-body">
@@ -314,201 +314,198 @@
   <div class="admin-modal-overlay" id="modal-schedule">
     <div class="admin-modal-box">
       <div class="admin-modal-header">
-        <h3 class="admin-modal-title" id="modal-schedule-title">Tambah Jadwal Main</h3>
+        <h3 class="admin-modal-title" id="modal-schedule-title">Add Court Schedule</h3>
         <button class="admin-modal-close" data-close="modal-schedule">✕</button>
       </div>
       <div class="admin-modal-body">
         <input type="hidden" id="sched-id">
 
-        <!-- Row 1: Judul -->
+        <!-- Row 1: Title -->
         <div class="admin-form-group">
-          <label>Judul Sesi *</label>
-          <input type="text" id="sched-title" class="admin-input" placeholder="Contoh: Baddel Weekend Smash #014" required>
+          <label>Session Title *</label>
+          <input type="text" id="sched-title" class="admin-input" placeholder="e.g. Baddel Weekend Smash #014" required>
         </div>
 
-        <!-- Row 2: Olahraga + Status Event + Ketersediaan -->
+        <!-- Row 2: Sport + Event Status + Slot Status -->
         <div class="admin-form-row">
           <div class="admin-form-group">
-            <label>Olahraga *</label>
+            <label>Sport *</label>
             <select id="sched-sport" class="admin-select">
               <option value="badminton">🏸 Badminton</option>
               <option value="padel">🎾 Padel</option>
             </select>
           </div>
           <div class="admin-form-group">
-            <label>Status Jadwal *</label>
+            <label>Schedule Status *</label>
             <select id="sched-event-status" class="admin-select">
-              <option value="upcoming">⚡ Upcoming (Akan Datang)</option>
-              <option value="completed">🏁 Completed (Selesai)</option>
+              <option value="upcoming">⚡ Upcoming</option>
+              <option value="completed">🏁 Completed</option>
             </select>
           </div>
           <div class="admin-form-group">
-            <label>Ketersediaan Slot</label>
+            <label>Slot Availability</label>
             <select id="sched-status" class="admin-select">
-              <option value="open">✅ Tersedia (Open)</option>
+              <option value="open">✅ Open</option>
               <option value="full">🔒 Full Booked</option>
             </select>
           </div>
         </div>
 
-        <!-- Row 3: Tanggal + Jam -->
+        <!-- Row 3: Date + Time -->
         <div class="admin-form-row">
           <div class="admin-form-group">
-            <label>Tanggal Main *</label>
+            <label>Session Date *</label>
             <input type="date" id="sched-date-picker" class="admin-input" style="color-scheme:dark; cursor:pointer;">
-            <!-- Hidden: auto-populated from date picker by admin.js -->
-            <input type="hidden" id="sched-date" placeholder="Format: Hari, DD MMMM YYYY" required>
+            <input type="hidden" id="sched-date" placeholder="Format: Day, DD Month YYYY" required>
           </div>
           <div class="admin-form-group">
-            <label>Jam Main *</label>
+            <label>Session Time *</label>
             <div style="display:flex; gap:0.5rem; align-items:center;">
               <input type="time" id="sched-time-start" class="admin-input" style="flex:1; color-scheme:dark; cursor:pointer;" value="19:00">
-              <span style="color:var(--color-muted); font-size:0.85rem; flex-shrink:0;">s/d</span>
+              <span style="color:var(--color-muted); font-size:0.85rem; flex-shrink:0;">to</span>
               <input type="time" id="sched-time-end" class="admin-input" style="flex:1; color-scheme:dark; cursor:pointer;" value="21:00">
             </div>
-            <!-- Hidden: auto-populated from time pickers by admin.js -->
             <input type="hidden" id="sched-time" value="19:00 - 21:00 WIB">
           </div>
         </div>
 
-        <!-- Row 4: Lokasi + Court -->
+        <!-- Row 4: Venue + Court -->
         <div class="admin-form-row">
           <div class="admin-form-group">
-            <label>Lokasi / Venue *</label>
+            <label>Venue / Location *</label>
             <input type="text" id="sched-venue" class="admin-input" placeholder="Royal Sports Arena, Jakarta" required>
             <div style="margin-top:0.4rem; display:flex; gap:0.4rem; align-items:center;">
-              <input type="url" id="sched-maps-url" class="admin-input" style="font-size:0.8rem; flex:1;" placeholder="Link Google Maps (opsional)">
+              <input type="url" id="sched-maps-url" class="admin-input" style="font-size:0.8rem; flex:1;" placeholder="Google Maps link (optional)">
               <a href="#" id="btn-preview-maps" target="_blank" rel="noopener noreferrer" class="btn btn--secondary btn--sm" style="font-size:0.75rem; padding:0.55rem 0.7rem; white-space:nowrap; flex-shrink:0;">
                 <i class="fas fa-location-arrow"></i> Maps ↗
               </a>
             </div>
           </div>
           <div class="admin-form-group">
-            <label>Court yang Dipakai</label>
+            <label>Court(s) Used</label>
             <input type="text" id="sched-court-names" class="admin-input" placeholder="Court 1, Court 2, Court 3">
-            <small style="font-size:0.65rem; color:var(--color-muted); margin-top:0.2rem; display:block;">Pisahkan dengan koma jika lebih dari satu court.</small>
+            <small style="font-size:0.65rem; color:var(--color-muted); margin-top:0.2rem; display:block;">Separate with commas if more than one court.</small>
           </div>
         </div>
 
-        <!-- Row 5: HTM + Slot -->
+        <!-- Row 5: Fee + Capacity -->
         <div class="admin-form-row">
           <div class="admin-form-group">
-            <label>HTM / Biaya *</label>
+            <label>Fee / Cost *</label>
             <div style="display:flex; align-items:center; gap:0.4rem; min-width:0;">
               <span style="color:var(--color-gold); font-weight:700; font-size:0.88rem; padding:0 0.2rem; flex-shrink:0;">Rp</span>
               <input type="number" id="sched-fee-amount" class="admin-input" style="flex:1; min-width:0;" placeholder="65000" step="5000" min="0">
               <select id="sched-fee-unit" class="admin-select" style="width:auto; min-width:90px; max-width:110px; padding:0.45rem 0.4rem; flex-shrink:0;">
-                <option value="/ orang">/ orang</option>
-                <option value="/ sesi">/ sesi</option>
-                <option value="/ tim">/ tim</option>
+                <option value="/ person">/ person</option>
+                <option value="/ session">/ session</option>
+                <option value="/ team">/ team</option>
               </select>
             </div>
-            <!-- Hidden: auto-formatted fee string used by data layer -->
             <input type="hidden" id="sched-fee">
           </div>
           <div class="admin-form-group">
-            <label>Kapasitas Slot</label>
+            <label>Slot Capacity</label>
             <div style="display:flex; gap:0.5rem; align-items:center;">
               <div style="flex:1;">
-                <input type="number" id="sched-slots" class="admin-input" placeholder="Sisa slot" min="0">
-                <small style="font-size:0.7rem; color:var(--color-muted); margin-top:0.2rem; display:block;">Sisa slot kosong</small>
+                <input type="number" id="sched-slots" class="admin-input" placeholder="Slots left" min="0">
+                <small style="font-size:0.7rem; color:var(--color-muted); margin-top:0.2rem; display:block;">Remaining open slots</small>
               </div>
               <span style="color:var(--color-muted); font-size:0.85rem; flex-shrink:0; padding-top:0.3rem;">/</span>
               <div style="flex:1;">
-                <input type="number" id="sched-total-slots" class="admin-input" placeholder="Total slot" min="1">
-                <small style="font-size:0.7rem; color:var(--color-muted); margin-top:0.2rem; display:block;">Total kapasitas</small>
+                <input type="number" id="sched-total-slots" class="admin-input" placeholder="Total slots" min="1">
+                <small style="font-size:0.7rem; color:var(--color-muted); margin-top:0.2rem; display:block;">Total capacity</small>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Row 6: Catatan -->
+        <!-- Row 6: Notes -->
         <div class="admin-form-group">
-          <label>Catatan Tambahan <span style="color:var(--color-muted); font-weight:400;">(Opsional)</span></label>
-          <input type="text" id="sched-notes" class="admin-input" placeholder="Contoh: Shuttlecock disediakan. Wajib sepatu non-marking.">
+          <label>Additional Notes <span style="color:var(--color-muted); font-weight:400;">(Optional)</span></label>
+          <input type="text" id="sched-notes" class="admin-input" placeholder="e.g. Shuttlecocks provided. Non-marking shoes required.">
         </div>
       </div>
       <div class="admin-modal-footer">
-        <button class="btn btn--secondary btn--sm" data-close="modal-schedule">Batal</button>
-        <button class="btn btn--primary btn--sm" id="btn-save-schedule">Simpan Jadwal</button>
+        <button class="btn btn--secondary btn--sm" data-close="modal-schedule">Cancel</button>
+        <button class="btn btn--primary btn--sm" id="btn-save-schedule">Save Schedule</button>
       </div>
     </div>
   </div>
 
 
-  <!-- Modal: Player (Info & Galeri Terpadu) -->
+  <!-- Modal: Player -->
   <div class="admin-modal-overlay" id="modal-player">
     <div class="admin-modal-box admin-modal-box-lg">
       <div class="admin-modal-header">
-        <h3 class="admin-modal-title" id="modal-player-title">Tambah / Edit Pemain</h3>
+        <h3 class="admin-modal-title" id="modal-player-title">Add / Edit Player</h3>
         <button class="admin-modal-close" data-close="modal-player">✕</button>
       </div>
 
       <!-- Segmented Tabs Switcher inside Modal -->
       <div class="admin-modal-tabs">
         <button type="button" class="admin-modal-tab-btn active" data-modaltab="tab-modal-profile">
-          <i class="fas fa-id-card"></i> Profil &amp; Foto Utama
+          <i class="fas fa-id-card"></i> Profile &amp; Main Photo
         </button>
         <button type="button" class="admin-modal-tab-btn" data-modaltab="tab-modal-gallery">
-          <i class="fas fa-images"></i> Galeri Momen Aksi (<span id="modal-tab-gallery-count">0</span>)
+          <i class="fas fa-images"></i> Moments Gallery (<span id="modal-tab-gallery-count">0</span>)
         </button>
       </div>
 
       <div class="admin-modal-body">
         <input type="hidden" id="player-id">
         
-        <!-- SECTION 1: PROFIL & FOTO UTAMA -->
+        <!-- SECTION 1: PROFILE & MAIN PHOTO -->
         <div class="admin-modal-pane active" id="tab-modal-profile">
           <div class="admin-form-row">
             <div class="admin-form-group">
-              <label>Nama Lengkap *</label>
-              <input type="text" id="player-name" class="admin-input" placeholder="Contoh: SILVI" required>
+              <label>Full Name *</label>
+              <input type="text" id="player-name" class="admin-input" placeholder="e.g. SILVI" required>
             </div>
             <div class="admin-form-group">
-              <label>Nomor Punggung *</label>
-              <input type="text" id="player-num" class="admin-input" placeholder="Contoh: 20" required>
+              <label>Squad Number *</label>
+              <input type="text" id="player-num" class="admin-input" placeholder="e.g. 20" required>
             </div>
           </div>
 
           <div class="admin-form-row">
             <div class="admin-form-group">
-              <label>Divisi *</label>
+              <label>Division *</label>
               <select id="player-category" class="admin-select">
                 <option value="men">Men's Squad</option>
                 <option value="women">Women's Squad</option>
               </select>
             </div>
             <div class="admin-form-group">
-              <label>Instagram Handle (tanpa @)</label>
-              <input type="text" id="player-ig" class="admin-input" placeholder="Contoh: silviani_">
+              <label>Instagram Handle (without @)</label>
+              <input type="text" id="player-ig" class="admin-input" placeholder="e.g. silviani_">
             </div>
           </div>
 
           <div class="admin-form-group">
-            <label>Foto Profil Utama (URL Path atau Upload File)</label>
-            <input type="text" id="player-photo-url" class="admin-input" placeholder="Contoh: assets/images/players/silvi.jpg atau https://...">
+            <label>Main Profile Photo (URL Path or File Upload)</label>
+            <input type="text" id="player-photo-url" class="admin-input" placeholder="e.g. assets/images/players/silvi.jpg or https://...">
             
             <div class="admin-drag-dropzone admin-drag-dropzone-sm" id="player-avatar-dropzone" style="margin-top:0.5rem;">
               <i class="fas fa-cloud-arrow-up dropzone-icon"></i>
               <div class="dropzone-text">
-                <strong>Klik atau Tarik &amp; Lepas Foto Utama ke sini</strong>
-                <span>Format JPG, PNG, WebP</span>
+                <strong>Click or Drag &amp; Drop Main Photo here</strong>
+                <span>JPG, PNG, WebP format</span>
               </div>
               <input type="file" id="file-player-photo" accept="image/*" style="display:none;">
             </div>
             <div style="text-align:center;">
-              <img id="player-preview-img" class="admin-preview-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Preview Foto Utama" style="display:none;">
+              <img id="player-preview-img" class="admin-preview-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Main Photo Preview" style="display:none;">
             </div>
           </div>
         </div>
 
-        <!-- SECTION 2: GALERI MOMEN AKSI (MULTI-UPLOAD & DRAG-DROP) -->
+        <!-- SECTION 2: MOMENTS GALLERY -->
         <div class="admin-modal-pane" id="tab-modal-gallery">
           <div class="admin-gallery-intro-box">
             <i class="fas fa-circle-info" style="color:var(--color-blue-light); font-size:1.1rem;"></i>
             <div>
-              <strong style="color:var(--color-white); font-size:0.85rem; display:block;">Album Galeri Momen Aksi Pemain</strong>
-              <span style="color:var(--color-muted); font-size:0.78rem;">Foto aksi momen pemain akan tampil di popup profil pemain publik. Anda dapat mengunggah <strong>lebih dari 1 foto sekaligus</strong> atau melakukan drag &amp; drop langsung ke kotak di bawah.</span>
+              <strong style="color:var(--color-white); font-size:0.85rem; display:block;">Player Action Moments Album</strong>
+              <span style="color:var(--color-muted); font-size:0.78rem;">Player action photos appear in the public profile dialog. You can upload <strong>multiple photos at once</strong> or drag &amp; drop directly into the box below.</span>
             </div>
           </div>
 
@@ -516,19 +513,19 @@
           <div class="admin-drag-dropzone" id="player-modal-gallery-dropzone">
             <i class="fas fa-images dropzone-icon" style="color:var(--color-gold);"></i>
             <div class="dropzone-text">
-              <strong style="font-size:0.95rem; color:var(--color-white);">Tarik &amp; Lepas Foto di Sini (Bisa Banyak Foto Sekaligus)</strong>
-              <span style="font-size:0.78rem; color:var(--color-muted);">atau klik untuk memilih beberapa file gambar dari perangkat Anda</span>
+              <strong style="font-size:0.95rem; color:var(--color-white);">Drag &amp; Drop Photos Here (Multiple Files Allowed)</strong>
+              <span style="font-size:0.78rem; color:var(--color-muted);">or click to select multiple image files from your device</span>
             </div>
             <input type="file" id="file-player-gallery-multi" multiple accept="image/*" style="display:none;">
           </div>
 
           <!-- Manual URL Input Option -->
           <div class="admin-form-group" style="margin-top:0.75rem;">
-            <label>Atau Tambah Gambar Melalui URL / Link</label>
+            <label>Or Add Image via URL / Link</label>
             <div style="display:flex; gap:0.5rem;">
-              <input type="text" id="player-modal-moment-url" class="admin-input" style="flex:1;" placeholder="Tempel URL gambar (assets/images/gallery/... atau https://)">
+              <input type="text" id="player-modal-moment-url" class="admin-input" style="flex:1;" placeholder="Paste image URL (assets/images/gallery/... or https://)">
               <button type="button" class="btn btn--secondary btn--sm" id="btn-add-modal-moment-url">
-                <i class="fas fa-plus"></i> Tambah
+                <i class="fas fa-plus"></i> Add
               </button>
             </div>
           </div>
@@ -537,10 +534,10 @@
           <div class="admin-modal-moments-section" style="margin-top:1rem;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem;">
               <label style="font-size:0.75rem; text-transform:uppercase; color:var(--color-gold); font-weight:700; letter-spacing:0.05em; margin:0;">
-                <i class="fas fa-photo-film"></i> Koleksi Foto Momen Saat Ini (<span id="modal-moments-counter">0</span> Foto)
+                <i class="fas fa-photo-film"></i> Current Moments (<span id="modal-moments-counter">0</span> Photos)
               </label>
               <button type="button" id="btn-clear-all-modal-moments" class="btn-text-danger" style="display:none; font-size:0.75rem; color:#F87171; background:none; border:none; cursor:pointer;">
-                <i class="fas fa-trash-can"></i> Hapus Semua Foto
+                <i class="fas fa-trash-can"></i> Delete All Photos
               </button>
             </div>
 
@@ -552,19 +549,19 @@
 
       </div>
       <div class="admin-modal-footer">
-        <button class="btn btn--secondary btn--sm" data-close="modal-player">Batal</button>
-        <button class="btn btn--primary btn--sm" id="btn-save-player">Simpan Data &amp; Galeri</button>
+        <button class="btn btn--secondary btn--sm" data-close="modal-player">Cancel</button>
+        <button class="btn btn--primary btn--sm" id="btn-save-player">Save Player &amp; Gallery</button>
       </div>
     </div>
   </div>
 
 
-  <!-- Modal: Quick Manage Player Gallery (Akses Cepat Langsung dari Tabel) -->
+  <!-- Modal: Quick Manage Player Gallery -->
   <div class="admin-modal-overlay" id="modal-player-gallery">
     <div class="admin-modal-box admin-modal-box-lg">
       <div class="admin-modal-header">
         <h3 class="admin-modal-title">
-          <i class="fas fa-images" style="color:var(--color-gold); margin-right:0.4rem;"></i> Kelola Galeri Momen Pemain
+          <i class="fas fa-images" style="color:var(--color-gold); margin-right:0.4rem;"></i> Manage Player Moments Gallery
         </h3>
         <button class="admin-modal-close" data-close="modal-player-gallery">✕</button>
       </div>
@@ -579,11 +576,11 @@
               <span id="quick-modal-player-cat" class="schedule-sport-badge badge-badminton">Men's Squad</span>
               <span id="quick-modal-player-ig" style="font-size:0.78rem; color:var(--color-muted);">@handle</span>
             </div>
-            <h3 class="quick-banner-name" id="quick-modal-player-name">NAMA PEMAIN</h3>
+            <h3 class="quick-banner-name" id="quick-modal-player-name">PLAYER NAME</h3>
           </div>
           <div class="quick-banner-count">
             <i class="fas fa-camera" style="color:var(--color-gold);"></i>
-            <span id="quick-modal-count-badge"><strong>0</strong> Foto Momen</span>
+            <span id="quick-modal-count-badge"><strong>0</strong> Photos</span>
           </div>
         </div>
 
@@ -591,19 +588,19 @@
         <div class="admin-drag-dropzone" id="quick-gallery-dropzone" style="margin-top:0.75rem;">
           <i class="fas fa-cloud-arrow-up dropzone-icon" style="color:var(--color-gold);"></i>
           <div class="dropzone-text">
-            <strong style="font-size:0.95rem; color:var(--color-white);">Tarik &amp; Lepas Beberapa Foto ke Sini</strong>
-            <span style="font-size:0.78rem; color:var(--color-muted);">atau klik untuk memilih lebih dari 1 file foto sekaligus (Multi-upload)</span>
+            <strong style="font-size:0.95rem; color:var(--color-white);">Drag &amp; Drop Multiple Photos Here</strong>
+            <span style="font-size:0.78rem; color:var(--color-muted);">or click to select multiple photos at once (Multi-upload)</span>
           </div>
           <input type="file" id="file-quick-gallery-multi" multiple accept="image/*" style="display:none;">
         </div>
 
         <!-- Quick URL Input -->
         <div class="admin-form-group" style="margin-top:0.75rem;">
-          <label>Atau Tambah Lewat Link URL</label>
+          <label>Or Add via URL Link</label>
           <div style="display:flex; gap:0.5rem;">
-            <input type="text" id="quick-moment-url-input" class="admin-input" style="flex:1;" placeholder="assets/images/gallery/... atau https://...">
+            <input type="text" id="quick-moment-url-input" class="admin-input" style="flex:1;" placeholder="assets/images/gallery/... or https://...">
             <button type="button" class="btn btn--secondary btn--sm" id="btn-quick-add-url">
-              <i class="fas fa-plus"></i> Tambah URL
+              <i class="fas fa-plus"></i> Add URL
             </button>
           </div>
         </div>
@@ -612,9 +609,9 @@
         <div style="margin-top:1rem;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem;">
             <label style="font-size:0.75rem; text-transform:uppercase; color:var(--color-gold); font-weight:700; letter-spacing:0.05em; margin:0;">
-              <i class="fas fa-images"></i> Foto Momen Pemain Ini (<span id="quick-moments-counter">0</span> Foto)
+              <i class="fas fa-images"></i> Photos for this Player (<span id="quick-moments-counter">0</span> Photos)
             </label>
-            <small style="color:var(--color-muted); font-size:0.75rem;">Foto otomatis tersimpan saat diunggah</small>
+            <small style="color:var(--color-muted); font-size:0.75rem;">Photos are automatically saved upon upload</small>
           </div>
 
           <div class="admin-modal-moments-grid" id="quick-modal-moments-grid">
@@ -624,7 +621,7 @@
 
       </div>
       <div class="admin-modal-footer">
-        <button class="btn btn--primary btn--sm" data-close="modal-player-gallery">Selesai</button>
+        <button class="btn btn--primary btn--sm" data-close="modal-player-gallery">Done</button>
       </div>
     </div>
   </div>
@@ -634,39 +631,39 @@
   <div class="admin-modal-overlay" id="modal-community">
     <div class="admin-modal-box">
       <div class="admin-modal-header">
-        <h3 class="admin-modal-title" id="modal-community-title">Tambah Foto Sesi Komunitas</h3>
+        <h3 class="admin-modal-title" id="modal-community-title">Add Community Session Photo</h3>
         <button class="admin-modal-close" data-close="modal-community">✕</button>
       </div>
       <div class="admin-modal-body">
         <input type="hidden" id="comm-id">
         <div class="admin-form-group">
-          <label>Judul Momen *</label>
-          <input type="text" id="comm-title" class="admin-input" placeholder="Contoh: BADDEL COMMUNITY SESSION #009" required>
+          <label>Moment Title *</label>
+          <input type="text" id="comm-title" class="admin-input" placeholder="e.g. BADDEL COMMUNITY SESSION #009" required>
         </div>
         <div class="admin-form-group">
-          <label>Sub-Label / Lokasi & Tahun</label>
-          <input type="text" id="comm-subtitle" class="admin-input" placeholder="Contoh: ROYAL SPORTS — 2026">
+          <label>Sub-Label / Venue &amp; Year</label>
+          <input type="text" id="comm-subtitle" class="admin-input" placeholder="e.g. ROYAL SPORTS — 2026">
         </div>
         <div class="admin-form-group">
-          <label>Foto Sesi *</label>
-          <input type="text" id="comm-image-url" class="admin-input" placeholder="assets/images/gallery/1.JPG atau URL">
+          <label>Session Photo *</label>
+          <input type="text" id="comm-image-url" class="admin-input" placeholder="assets/images/gallery/1.JPG or URL">
           
           <div class="admin-drag-dropzone admin-drag-dropzone-sm" id="comm-image-dropzone" style="margin-top:0.5rem;">
             <i class="fas fa-cloud-arrow-up dropzone-icon"></i>
             <div class="dropzone-text">
-              <strong>Klik atau Tarik &amp; Lepas Foto Sesi ke sini</strong>
-              <span>Format JPG, PNG, WebP</span>
+              <strong>Click or Drag &amp; Drop Session Photo here</strong>
+              <span>JPG, PNG, WebP format</span>
             </div>
             <input type="file" id="file-comm-image" accept="image/*" style="display:none;">
           </div>
           <div style="text-align:center;">
-            <img id="comm-preview-img" class="admin-preview-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Preview Komunitas" style="display:none;">
+            <img id="comm-preview-img" class="admin-preview-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Community Preview" style="display:none;">
           </div>
         </div>
       </div>
       <div class="admin-modal-footer">
-        <button class="btn btn--secondary btn--sm" data-close="modal-community">Batal</button>
-        <button class="btn btn--primary btn--sm" id="btn-save-community">Simpan Momen</button>
+        <button class="btn btn--secondary btn--sm" data-close="modal-community">Cancel</button>
+        <button class="btn btn--primary btn--sm" id="btn-save-community">Save Moment</button>
       </div>
     </div>
   </div>
@@ -677,7 +674,7 @@
     <div class="admin-modal-box admin-lightbox-box">
       <div class="admin-modal-header" style="border-bottom:1px solid rgba(74, 145, 226, 0.2); padding: 0.85rem 1.25rem;">
         <h4 id="lightbox-title" style="font-size:0.95rem; color:var(--color-gold); margin:0; display:flex; align-items:center; gap:0.5rem;">
-          <i class="fas fa-magnifying-glass"></i> <span id="lightbox-caption">Preview Foto</span>
+          <i class="fas fa-magnifying-glass"></i> <span id="lightbox-caption">Photo Preview</span>
         </h4>
         <button class="admin-modal-close" data-close="modal-image-lightbox">✕</button>
       </div>
@@ -690,7 +687,7 @@
   <!-- Admin Toast Alert -->
   <div class="admin-toast" id="admin-toast">
     <i class="fas fa-circle-check"></i>
-    <span id="admin-toast-msg">Perubahan berhasil disimpan</span>
+    <span id="admin-toast-msg">Changes successfully saved</span>
   </div>
 
   <!-- Scripts -->
