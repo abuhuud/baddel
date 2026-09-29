@@ -1,6 +1,6 @@
 {
   "version": "baddel_5dj11b",
-  "lastUpdated": "2026-09-29T04:40:43.832Z",
+  "lastUpdated": "2026-09-29T04:42:20.124Z",
   "players": [
     {
       "id": "basz",
@@ -235,6 +235,29 @@
     }
   ],
   "schedules": [
+    {
+      "id": "sched_1790656938049",
+      "title": "Mabar Rutin Rabu - Mustika Badminton Hall",
+      "sport": "badminton",
+      "dateFormatted": "Wednesday, 30 September 2026",
+      "date": "Wednesday, 30 September 2026",
+      "isoDate": "2026-09-30",
+      "day": "",
+      "time": "20:00 - 23:00 WIB",
+      "venue": "Mustika Badminton Arena, Jatinegara",
+      "court": "Court 1, Court 2",
+      "courtNames": "Court 1, Court 2",
+      "mapsUrl": "https://maps.app.goo.gl/j8RhcaVkNpHDvbiZ6?g_st=ac",
+      "locationUrl": "https://maps.app.goo.gl/j8RhcaVkNpHDvbiZ6?g_st=ac",
+      "fee": "Rp 65.000 / person",
+      "status": "open",
+      "eventStatus": "upcoming",
+      "eventStatusText": "Upcoming",
+      "slotsLeft": 5,
+      "totalSlots": 16,
+      "slotsFilled": 0,
+      "notes": "Harap datang tepat waktu"
+    },
     {
       "id": "sched_1789895502226",
       "title": "Monday Regular Session - Cipinang Kebembem Hall",
