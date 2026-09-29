@@ -1,6 +1,6 @@
 {
   "version": "baddel_5dj11b",
-  "lastUpdated": "2026-09-29T04:38:55.557Z",
+  "lastUpdated": "2026-09-29T04:40:43.832Z",
   "players": [
     {
       "id": "basz",
@@ -262,10 +262,10 @@
       "id": "sched_1789829714284",
       "title": "Saturday Regular Session - GOR Cempaka Putih",
       "sport": "badminton",
-      "dateFormatted": "Saturday, 26 September 2026",
-      "date": "Saturday, 26 September 2026",
-      "isoDate": "2026-09-26",
-      "day": "SATURDAY",
+      "dateFormatted": "Saturday, 3 October 2026",
+      "date": "Saturday, 3 October 2026",
+      "isoDate": "2026-10-03",
+      "day": "",
       "time": "18:00 - 22:00 WIB",
       "venue": "GOR Cempaka Putih",
       "court": "Court 2, Court 3, Court 4",
@@ -273,11 +273,11 @@
       "mapsUrl": "https://maps.app.goo.gl/G88Qu9pKyHpmKrvL9",
       "locationUrl": "https://maps.app.goo.gl/G88Qu9pKyHpmKrvL9",
       "fee": "Rp 50.000 / person",
-      "status": "open",
+      "status": "full",
       "eventStatus": "upcoming",
       "eventStatusText": "Upcoming",
-      "slotsLeft": 22,
-      "totalSlots": 22,
+      "slotsLeft": 26,
+      "totalSlots": 26,
       "slotsFilled": 0,
       "notes": "3 Courts, 4 Hours each"
     },
