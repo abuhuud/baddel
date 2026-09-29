@@ -1,6 +1,6 @@
 {
   "version": "baddel_5dj11b",
-  "lastUpdated": "2026-09-29T04:25:58.685Z",
+  "lastUpdated": "2026-09-29T04:27:43.039Z",
   "players": [
     {
       "id": "basz",
@@ -244,7 +244,7 @@
       "isoDate": "2026-09-30",
       "day": "",
       "time": "20:00 - 23:00 WIB",
-      "venue": "Royal Sports Arena, Jakarta",
+      "venue": "Mustika Badminton Arena - Jatinegara",
       "court": "Court 1, Court 2",
       "courtNames": "Court 1, Court 2",
       "mapsUrl": "https://share.google/mtAUWNJUahsvXAdK3",
@@ -285,9 +285,9 @@
       "id": "sched_1789829714284",
       "title": "Saturday Regular Session - GOR Cempaka Putih",
       "sport": "badminton",
-      "dateFormatted": "Saturday, 3 October 2026",
-      "date": "Saturday, 3 October 2026",
-      "isoDate": "2026-10-03",
+      "dateFormatted": "Saturday, 26 September 2026",
+      "date": "Saturday, 26 September 2026",
+      "isoDate": "2026-09-26",
       "day": "",
       "time": "18:00 - 22:00 WIB",
       "venue": "GOR Cempaka Putih",
