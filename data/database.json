@@ -1,6 +1,6 @@
 {
   "version": "baddel_5dj11b",
-  "lastUpdated": "2026-09-29T04:20:39.276Z",
+  "lastUpdated": "2026-09-29T04:21:05.828Z",
   "players": [
     {
       "id": "basz",
@@ -265,7 +265,7 @@
       "dateFormatted": "Saturday, 26 September 2026",
       "date": "Saturday, 26 September 2026",
       "isoDate": "2026-09-26",
-      "day": "SATURDAY",
+      "day": "",
       "time": "18:00 - 22:00 WIB",
       "venue": "GOR Cempaka Putih",
       "court": "Court 2, Court 3, Court 4",
@@ -273,11 +273,11 @@
       "mapsUrl": "https://maps.app.goo.gl/G88Qu9pKyHpmKrvL9",
       "locationUrl": "https://maps.app.goo.gl/G88Qu9pKyHpmKrvL9",
       "fee": "Rp 50.000 / person",
-      "status": "open",
+      "status": "full",
       "eventStatus": "upcoming",
       "eventStatusText": "Upcoming",
-      "slotsLeft": 22,
-      "totalSlots": 22,
+      "slotsLeft": 26,
+      "totalSlots": 26,
       "slotsFilled": 0,
       "notes": "3 Courts, 4 Hours each"
     },
