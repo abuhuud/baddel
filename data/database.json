@@ -1,6 +1,6 @@
 {
   "version": "baddel_5dj11b",
-  "lastUpdated": "2026-09-29T04:31:08.763Z",
+  "lastUpdated": "2026-09-29T04:38:55.557Z",
   "players": [
     {
       "id": "basz",
@@ -242,7 +242,7 @@
       "dateFormatted": "Monday, 21 September 2026",
       "date": "Monday, 21 September 2026",
       "isoDate": "2026-09-21",
-      "day": "MONDAY",
+      "day": "",
       "time": "18:00 - 21:00 WIB",
       "venue": "Cipinang Kebembem Hall, East Jakarta",
       "court": "Court 1, Court 2",
@@ -251,8 +251,8 @@
       "locationUrl": "https://maps.app.goo.gl/bNDC74Uk2SzQXNNH9?g_st=ac",
       "fee": "Rp 50.000 / person",
       "status": "open",
-      "eventStatus": "upcoming",
-      "eventStatusText": "Upcoming",
+      "eventStatus": "completed",
+      "eventStatusText": "Completed",
       "slotsLeft": 7,
       "totalSlots": 16,
       "slotsFilled": 0,
