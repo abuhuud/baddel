@@ -1,6 +1,6 @@
 {
   "version": "baddel_5dj11b",
-  "lastUpdated": "2026-09-30T15:08:00.750Z",
+  "lastUpdated": "2026-09-30T15:08:55.217Z",
   "players": [
     {
       "id": "basz",
@@ -283,7 +283,7 @@
     },
     {
       "id": "sched_1789829714284",
-      "title": "Saturday Regular Session - GOR Cempaka Putih",
+      "title": "Mabar Rutin Baddel Sabtu - GOR Cempaka Putih",
       "sport": "badminton",
       "dateFormatted": "Saturday, 3 October 2026",
       "date": "Saturday, 3 October 2026",
@@ -302,7 +302,7 @@
       "slotsLeft": 26,
       "totalSlots": 26,
       "slotsFilled": 0,
-      "notes": "3 Courts, 4 Hours each"
+      "notes": "3 Lapangan, 4 Jam."
     },
     {
       "id": "sched_1789829229343",
